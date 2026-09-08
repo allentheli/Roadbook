@@ -6,7 +6,7 @@ const ctx = {}; new Function('with(this){' + src + '; this.LIBRARY = LIBRARY; th
 const { LIBRARY, CHANGELOG, APP_VERSION, MODS } = ctx;
 const errors = [], warnings = [];
 const ids = new Set();
-const CATS = ['breast','gi','lung','gu','hn','skin','other'];
+const CATS = ['breast','gi','lung','gu','gyn','hn','skin','other'];
 for (const r of LIBRARY){
   const tag = `[${r.id || '?'}]`;
   for (const k of ['id','disease','group','name','plan','title','subtitle','trial','summary','nodes','refs','added','reviewed','reviewedBy']) if (r[k] === undefined || r[k] === '') errors.push(`${tag} missing ${k}`);

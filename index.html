@@ -261,11 +261,11 @@
   }, {passive:true});
 })();
 </script>
-<script src="regimens.js?v=0.17.0"></script>
+<script src="regimens.js?v=0.18.0"></script>
 <script>document.getElementById('ver').textContent = 'Version ' + APP_VERSION;</script>
 <script>
 (function(){
-  const n = LIBRARY.length; const names = {breast:'breast', gi:'GI', lung:'lung', gu:'GU', hn:'head and neck', skin:'melanoma'}; const counts = {}; LIBRARY.forEach(r => { counts[r.disease] = (counts[r.disease] || 0) + 1; });
+  const n = LIBRARY.length; const names = {breast:'breast', gi:'GI', lung:'lung', gu:'GU', gyn:'gynecologic', hn:'head and neck', skin:'melanoma'}; const counts = {}; LIBRARY.forEach(r => { counts[r.disease] = (counts[r.disease] || 0) + 1; });
   const parts = Object.keys(names).filter(k => counts[k]).map(k => names[k]);
   document.getElementById('libcount').innerHTML = `<b>${n} pathways</b> across ${parts.slice(0, -1).join(', ')}, and ${parts.slice(-1)}, each with its sources and review date. <a href="app.html" style="white-space:nowrap">Open the full library →</a>`;
 })();
