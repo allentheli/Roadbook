@@ -39,13 +39,13 @@
   <div>Roadbook Oncology is an educational aid for conversations between patients and their care teams. It is not medical advice and does not replace your clinic's appointment schedule. See the <a href="disclaimer.html">disclaimer and terms of use</a>.</div>
   <div><a href="how-it-works.html">How it works</a> · <a href="about.html">About</a> · <a href="updates.html">Updates</a> · <a href="references.html">References</a> · <a href="disclaimer.html">Disclaimer</a> · <span id="ver"></span> · &copy; 2026 Roadbook Oncology. All rights reserved.</div>
 </div></footer>
-<script src="regimens.js?v=0.17.0"></script>
+<script src="regimens.js?v=0.18.0"></script>
 <script>document.getElementById('ver').textContent = 'Version ' + APP_VERSION;</script>
 <script>
 (function(){
   const fmt = (d) => new Date(d + 'T12:00:00').toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'});
   document.getElementById('log').innerHTML = CHANGELOG.map(u => `<li><time>${fmt(u.date)}</time><span>${u.text}</span></li>`).join('');
-  const cat = {breast:'Breast', gi:'GI', lung:'Lung', gu:'GU', hn:'Head and neck', skin:'Melanoma'};
+  const cat = {breast:'Breast', gi:'GI', lung:'Lung', gu:'GU', gyn:'Gynecologic', hn:'Head and neck', skin:'Melanoma'};
   document.getElementById('regtable').innerHTML = '<tr><th>Category</th><th>Group</th><th>Plan</th><th>Based on</th><th>Added</th><th>Reviewed</th></tr>' +
     LIBRARY.slice().sort((a, b) => String(b.added || '').localeCompare(String(a.added || '')) || String(a.plan || '').localeCompare(String(b.plan || ''))).map(r => `<tr><td>${cat[r.disease] || r.disease}</td><td>${r.group || ''}</td><td><b>${r.plan || r.title}</b><br><span style="color:var(--muted);font-size:12.5px">${r.name}</span></td><td>${r.trial || ''}</td><td>${r.added || ''}</td><td>${r.reviewed || ''}</td></tr>`).join('');
 })();

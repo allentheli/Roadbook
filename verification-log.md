@@ -270,3 +270,42 @@ examined "to confirm the stage and the cancer's features, which guide the next s
 default text for a hand-added surgery step is neutral for the same reason. Wording only; no
 schedule changed. The five previously signed-off pathways touched (`hrplus`, `natalee`, `apt`,
 `endo`, `genomic`) return to sign-off pending until the owner confirms the new sentence.
+
+### Gynecologic tab: eight new pathways, September 8, 2026 (v0.18.0)
+New tab and disease category `gyn` with two headings. All schedules checked against the primary
+publication abstracts fetched from PubMed in this session; a structured protocol reference
+(HemOnc.org) was not reachable from the sandbox, so each entry carries 'Source-checked; physician
+sign-off pending' and the owner should confirm cycle counts against local protocol before sign-off.
+
+Uterine and endometrial
+- `portec2`: PORTEC-2 (Nout, Lancet 2010; PMID 20206777). Vaginal brachytherapy 21 Gy HDR in 3
+  fractions versus pelvic EBRT 46 Gy/23; non-inferior vaginal control, fewer GI effects. Modelled as
+  3 weekly sessions after a 6-week healing interval; GOG-249 cited for "no chemotherapy needed".
+- `portec3`: PORTEC-3 (de Boer, Lancet Oncol 2018 and 2019 update; PMIDs 29449189, 31345626).
+  EBRT 48.6 Gy in 1.8 Gy fractions (27 fractions, about 5.5 weeks) with cisplatin 50 mg/m2 in weeks
+  1 and 4, then carboplatin AUC5 + paclitaxel 175 mg/m2 x4 q21. Modelled as weekdays 6 weeks, 3-week
+  recovery, 4 cycles. Molecular subgroup paper (León-Castillo, JCO 2020) cited in refs.
+- `gog258`: GOG-258 (Matei, NEJM 2019; PMID 31189035). Chemotherapy-alone arm: carboplatin +
+  paclitaxel x6 q21; chemoradiation added no RFS benefit. Optional vaginal brachytherapy step off by
+  default (practice, not trial).
+- `gy018`: NRG-GY018 (Eskander, NEJM 2023; PMID 36972022). Pembrolizumab with carboplatin +
+  paclitaxel x6 q21, then maintenance q6w up to 14 cycles. DUO-E (Westin, JCO 2024; PMID 37864337)
+  cited as the durvalumab alternative for dMMR.
+- `ruby`: RUBY (Mirza, NEJM 2023; PMID 36972026). Dostarlimab 500 mg with carboplatin AUC5 +
+  paclitaxel 175 q21 x6, then 1000 mg q6w up to 3 years total; modelled as 23 maintenance cycles.
+- `usc-her2`: Fader, JCO 2018 (PMID 29584549) and Clin Cancer Res 2020 update (PMID 32601075).
+  Carboplatin + paclitaxel x6 with trastuzumab, then trastuzumab maintenance until progression;
+  modelled as an open-ended q21 phase. Randomized phase II; labelled as such in the summary.
+
+Ovarian
+- `ov-pds` and `ov-nact`: sequence from EORTC 55971 (Vergote, NEJM 2010; PMID 20818904) and CHORUS
+  (Kehoe, Lancet 2015; PMID 26002111): 3 cycles carboplatin AUC5-6 + paclitaxel 175 q21, interval
+  surgery, 3 more cycles, versus primary surgery then 6 cycles. HIPEC at interval surgery (van Driel,
+  NEJM 2018; PMID 29342393) mentioned in the surgery text only. Maintenance fork: olaparib 300 mg
+  twice daily 2 years (SOLO-1, Moore NEJM 2018; PMID 30345884), niraparib up to 3 years (PRIMA,
+  González-Martín NEJM 2019; PMID 31562799), olaparib with bevacizumab for HRD-positive (PAOLA-1,
+  Ray-Coquard NEJM 2019; PMID 31851799), bevacizumab 15 mg/kg q3w for about 15 months in total
+  (GOG-218, Burger NEJM 2011; PMID 22204724). TRUST (primary versus interval surgery, 2025) was not
+  retrievable from PubMed in this session and is not cited.
+Not confirmed: the healing intervals (4 to 6 weeks) and the 3-week gap between radiation and
+chemotherapy in PORTEC-3 are typical values, not protocol text; the team sets them.

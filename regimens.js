@@ -1064,6 +1064,183 @@ const LIBRARY = [
         plain:'Regular exams, scopes, and Epstein-Barr virus DNA blood tests, with hearing and thyroid checks.' }),
   ]
 },
+
+/* ---------- Gynecologic ---------- */
+{
+  id:'portec2', plan:'Surgery, then internal radiation', group:'Uterine and endometrial', added:'2026-09-08', reviewed:'2026-09-08', reviewedBy:'Source-checked; physician sign-off pending',
+  refs:[{t:'Nout RA et al. PORTEC-2: vaginal brachytherapy versus pelvic external beam radiotherapy for high-intermediate risk endometrial cancer. Lancet 2010',q:'PORTEC-2 vaginal brachytherapy pelvic radiotherapy endometrial Nout Lancet 2010'},{t:'Randall ME et al. GOG 249: pelvic radiation versus vaginal brachytherapy plus chemotherapy in high-intermediate and high-risk early-stage endometrial cancer. JCO 2019',q:'GOG 249 vaginal cuff brachytherapy paclitaxel carboplatin pelvic radiation endometrial Randall'}],
+  disease:'gyn', name:'Surgery, then vaginal brachytherapy (PORTEC-2)',
+  trial:'PORTEC-2', summary:'Endometrial cancer, stage I to II, high-intermediate risk (age, grade, depth of invasion, or lymphovascular invasion). Hysterectomy, then vaginal brachytherapy in 3 sessions, then surveillance. GOG-249 showed adding chemotherapy does not improve on this.',
+  title:'Surgery first, then a short course of internal radiation',
+  subtitle:'Endometrial (uterine) cancer, stage I to II, high-intermediate risk',
+  nodes:[
+    S('Surgery (hysterectomy)', 'Removal of the uterus and cervix, usually with the ovaries, fallopian tubes, and some lymph nodes, most often through small keyhole incisions. The removed tissue is examined under the microscope to confirm the stage and the cancer\'s features, which guide the next steps.'),
+    R('Healing after surgery', 6, 'Time to recover from surgery. Internal radiation usually starts about 6 to 8 weeks after the operation.'),
+    P({ name:'Vaginal brachytherapy (internal radiation)', short:'Brachytherapy', mods:['radiation'], cycleDays:7, cycles:3,
+        plain:'Radiation given from inside the vagina through a small applicator, in 3 outpatient sessions about a week apart. Each session takes a few minutes, and you are not radioactive afterwards. It lowers the chance of the cancer returning at the top of the vagina with fewer bowel side effects than radiation to the whole pelvis.' }),
+    P({ name:'Surveillance', short:'Surveillance', mods:['watch'], mode:'ongoing', weeks:104, openEnded:true, freqText:'Visits and exams every 3 to 6 months, then yearly',
+        plain:'Regular visits with a pelvic exam. Scans are done if there are symptoms. Most follow-up is every 3 to 6 months for the first 2 to 3 years, then yearly.' }),
+  ]
+},
+{
+  id:'portec3', plan:'Surgery, then radiation with chemotherapy, then more chemotherapy', group:'Uterine and endometrial', added:'2026-09-08', reviewed:'2026-09-08', reviewedBy:'Source-checked; physician sign-off pending',
+  refs:[{t:'de Boer SM et al. PORTEC-3: adjuvant chemoradiotherapy versus radiotherapy alone for high-risk endometrial cancer, final results. Lancet Oncology 2018',q:'PORTEC-3 adjuvant chemoradiotherapy radiotherapy high-risk endometrial cancer de Boer Lancet Oncology 2018'},{t:'de Boer SM et al. PORTEC-3: patterns of recurrence and post-hoc survival analysis. Lancet Oncology 2019',q:'PORTEC-3 patterns of recurrence post-hoc survival de Boer Lancet Oncology 2019'},{t:'León-Castillo A et al. Molecular classification of PORTEC-3: benefit of chemotherapy by molecular subgroup. JCO 2020',q:'PORTEC-3 molecular classification p53 abnormal POLE chemotherapy benefit León-Castillo JCO 2020'}],
+  disease:'gyn', name:'Surgery, radiation with cisplatin, then carboplatin + paclitaxel ×4 (PORTEC-3)',
+  trial:'PORTEC-3', summary:'High-risk endometrial cancer: stage I grade 3 with deep invasion or lymphovascular invasion, stage II to III, or serous or clear-cell histology. Hysterectomy, pelvic radiation over about 5 to 6 weeks with cisplatin in weeks 1 and 4, then carboplatin + paclitaxel every 3 weeks ×4. Benefit is largest in stage III and p53-abnormal tumors.',
+  title:'Surgery first, then radiation with chemotherapy, then four cycles of chemotherapy',
+  subtitle:'Endometrial (uterine) cancer, high-risk stage I to III',
+  nodes:[
+    S('Surgery (hysterectomy)', 'Removal of the uterus and cervix, usually with the ovaries, fallopian tubes, and lymph nodes. The removed tissue is examined under the microscope to confirm the stage and the cancer\'s features, including its molecular profile, which guide the next steps.'),
+    HEAL(6),
+    P({ name:'Pelvic radiation with cisplatin', short:'Radiation + cisplatin', mods:['radiation','chemo'], mode:'weekdays', weeks:6,
+        plain:'Radiation to the pelvis Monday to Friday for about 5 and a half weeks. Cisplatin, a chemotherapy drug, is given by IV twice during this time, in the first and fourth weeks, to make the radiation work better.' }),
+    R('Recovery', 3, 'A short break for your body to recover from the radiation before chemotherapy starts.'),
+    P({ name:'Carboplatin + paclitaxel', short:'Carboplatin + paclitaxel', mods:['chemo'], cycleDays:21, cycles:4,
+        plain:'Two chemotherapy drugs by IV every 3 weeks, 4 times (about 3 months). This part of the treatment lowers the chance of the cancer returning elsewhere in the body.' }),
+    P({ name:'Surveillance', short:'Surveillance', mods:['watch'], mode:'ongoing', weeks:104, openEnded:true, freqText:'Visits and exams every 3 to 6 months, scans if needed',
+        plain:'Regular visits with a pelvic exam, and scans when there are symptoms or findings to check. Most follow-up is every 3 to 6 months for the first 2 to 3 years, then yearly.' }),
+  ]
+},
+{
+  id:'gog258', plan:'Surgery, then six cycles of chemotherapy', group:'Uterine and endometrial', added:'2026-09-08', reviewed:'2026-09-08', reviewedBy:'Source-checked; physician sign-off pending',
+  refs:[{t:'Matei D et al. GOG-258: adjuvant chemotherapy plus radiation versus chemotherapy alone for stage III to IVA endometrial cancer. NEJM 2019',q:'GOG 258 adjuvant chemotherapy plus radiation locally advanced endometrial cancer Matei NEJM 2019'}],
+  disease:'gyn', name:'Surgery, then carboplatin + paclitaxel ×6 (GOG-258)',
+  trial:'GOG-258', summary:'Endometrial cancer, stage III to IVA, after hysterectomy. Carboplatin + paclitaxel every 3 weeks ×6. In GOG-258, adding pelvic radiation to chemotherapy did not improve relapse-free survival; vaginal brachytherapy is an optional add-on. Compare with PORTEC-3 for the same stage.',
+  title:'Surgery first, then six cycles of chemotherapy',
+  subtitle:'Endometrial (uterine) cancer, stage III to IVA',
+  nodes:[
+    S('Surgery (hysterectomy and staging)', 'Removal of the uterus, cervix, ovaries, and fallopian tubes, with removal of visible cancer and lymph nodes. The removed tissue is examined under the microscope to confirm the stage and the cancer\'s features, which guide the next steps.'),
+    HEAL(4),
+    P({ name:'Carboplatin + paclitaxel', short:'Carboplatin + paclitaxel', mods:['chemo'], cycleDays:21, cycles:6,
+        plain:'Two chemotherapy drugs by IV every 3 weeks, 6 times (about 4 and a half months). Each visit takes a few hours. Blood counts are checked before each dose.' }),
+    P({ name:'Vaginal brachytherapy (if recommended)', short:'Brachytherapy', mods:['radiation'], cycleDays:7, cycles:3, optional:true, on:false,
+        plain:'Some teams add 3 short sessions of internal radiation to the top of the vagina, about a week apart, to lower the chance of the cancer returning there. Your team will say whether this is recommended for you.' }),
+    P({ name:'Surveillance', short:'Surveillance', mods:['watch'], mode:'ongoing', weeks:104, openEnded:true, freqText:'Visits and exams every 3 months at first, scans as needed',
+        plain:'Regular visits with a pelvic exam, and scans when there are symptoms or findings to check. Visits are every 3 months at first, then less often.' }),
+  ]
+},
+{
+  id:'gy018', plan:'Chemotherapy with immunotherapy, then immunotherapy alone', group:'Uterine and endometrial', added:'2026-09-08', reviewed:'2026-09-08', reviewedBy:'Source-checked; physician sign-off pending',
+  refs:[{t:'Eskander RN et al. NRG-GY018: pembrolizumab plus chemotherapy in advanced endometrial cancer. NEJM 2023',q:'NRG-GY018 pembrolizumab chemotherapy advanced endometrial cancer Eskander NEJM 2023'},{t:'Westin SN et al. DUO-E: durvalumab plus carboplatin/paclitaxel with maintenance durvalumab with or without olaparib in endometrial cancer. JCO 2024',q:'DUO-E durvalumab carboplatin paclitaxel olaparib endometrial cancer Westin JCO'}],
+  disease:'gyn', name:'Surgery, carboplatin + paclitaxel + pembrolizumab ×6, then pembrolizumab maintenance (NRG-GY018)',
+  trial:'NRG-GY018', summary:'Endometrial cancer, stage III to IVA with measurable disease, stage IVB, or first recurrence. Surgery where possible, then carboplatin + paclitaxel + pembrolizumab every 3 weeks ×6, then pembrolizumab every 6 weeks for up to 14 doses. Approved for both mismatch-repair-deficient and proficient tumors; durvalumab (DUO-E) is an alternative for mismatch-repair-deficient tumors. Remove the surgery step for recurrent or inoperable disease.',
+  title:'Surgery, then chemotherapy with immunotherapy, then immunotherapy on its own',
+  subtitle:'Endometrial (uterine) cancer, stage III to IV or returned after earlier treatment',
+  nodes:[
+    S('Surgery (hysterectomy and removal of visible cancer)', 'Removal of the uterus, cervix, ovaries, and fallopian tubes, with removal of as much visible cancer as possible. The removed tissue is tested for mismatch-repair proteins, which tells the team how much benefit to expect from immunotherapy.'),
+    HEAL(4),
+    P({ name:'Carboplatin + paclitaxel + pembrolizumab (Keytruda)', short:'Carbo + paclitaxel + immunotherapy', mods:['chemo','io'], cycleDays:21, cycles:6,
+        plain:'Two chemotherapy drugs plus pembrolizumab, an immunotherapy that helps your own immune system recognize and attack cancer cells, all by IV every 3 weeks, 6 times (about 4 and a half months).' }),
+    P({ name:'Pembrolizumab maintenance', short:'Pembrolizumab', mods:['io'], cycleDays:42, cycles:14,
+        plain:'Immunotherapy on its own, by IV every 6 weeks, for up to 14 doses (about 20 months). Visits are short. Treatment stops earlier if the cancer grows or side effects require it.' }),
+    P({ name:'Surveillance', short:'Surveillance', mods:['watch'], mode:'ongoing', weeks:104, openEnded:true, freqText:'Visits and scans every 3 to 6 months',
+        plain:'Regular visits, exams, and scans every 3 to 6 months once treatment is complete.' }),
+  ]
+},
+{
+  id:'ruby', plan:'Chemotherapy with immunotherapy, then immunotherapy for up to 3 years', group:'Uterine and endometrial', added:'2026-09-08', reviewed:'2026-09-08', reviewedBy:'Source-checked; physician sign-off pending',
+  refs:[{t:'Mirza MR et al. RUBY: dostarlimab for primary advanced or recurrent endometrial cancer. NEJM 2023',q:'RUBY dostarlimab primary advanced recurrent endometrial cancer Mirza NEJM 2023'}],
+  disease:'gyn', name:'Surgery, carboplatin + paclitaxel + dostarlimab ×6, then dostarlimab for up to 3 years (RUBY)',
+  trial:'RUBY', summary:'Endometrial cancer, primary stage III to IV or first recurrence. Surgery where possible, then carboplatin + paclitaxel + dostarlimab every 3 weeks ×6, then dostarlimab every 6 weeks for up to 3 years in total. Greatest benefit in mismatch-repair-deficient tumors; approved for all comers. Remove the surgery step for recurrent or inoperable disease.',
+  title:'Surgery, then chemotherapy with immunotherapy, then immunotherapy for up to three years',
+  subtitle:'Endometrial (uterine) cancer, stage III to IV or returned after earlier treatment',
+  nodes:[
+    S('Surgery (hysterectomy and removal of visible cancer)', 'Removal of the uterus, cervix, ovaries, and fallopian tubes, with removal of as much visible cancer as possible. The removed tissue is tested for mismatch-repair proteins, which tells the team how much benefit to expect from immunotherapy.'),
+    HEAL(4),
+    P({ name:'Carboplatin + paclitaxel + dostarlimab (Jemperli)', short:'Carbo + paclitaxel + immunotherapy', mods:['chemo','io'], cycleDays:21, cycles:6,
+        plain:'Two chemotherapy drugs plus dostarlimab, an immunotherapy that helps your own immune system recognize and attack cancer cells, all by IV every 3 weeks, 6 times (about 4 and a half months).' }),
+    P({ name:'Dostarlimab maintenance', short:'Dostarlimab', mods:['io'], cycleDays:42, cycles:23,
+        plain:'Immunotherapy on its own, by IV every 6 weeks, continuing until 3 years from the start of treatment. Visits are short. Treatment stops earlier if the cancer grows or side effects require it.' }),
+    P({ name:'Surveillance', short:'Surveillance', mods:['watch'], mode:'ongoing', weeks:104, openEnded:true, freqText:'Visits and scans every 3 to 6 months',
+        plain:'Regular visits, exams, and scans every 3 to 6 months once treatment is complete.' }),
+  ]
+},
+{
+  id:'usc-her2', plan:'Chemotherapy with a HER2 antibody, then the antibody alone', group:'Uterine and endometrial', added:'2026-09-08', reviewed:'2026-09-08', reviewedBy:'Source-checked; physician sign-off pending',
+  refs:[{t:'Fader AN et al. Randomized phase II trial of carboplatin-paclitaxel versus carboplatin-paclitaxel-trastuzumab in HER2-positive uterine serous carcinoma. JCO 2018',q:'Fader carboplatin paclitaxel trastuzumab uterine serous carcinoma HER2 JCO 2018'},{t:'Fader AN et al. Updated survival analysis of carboplatin-paclitaxel with or without trastuzumab in advanced HER2-positive uterine serous carcinoma. Clinical Cancer Research 2020',q:'Fader trastuzumab uterine serous carcinoma updated survival Clinical Cancer Research 2020'}],
+  disease:'gyn', name:'Surgery, carboplatin + paclitaxel + trastuzumab ×6, then trastuzumab maintenance (HER2-positive uterine serous)',
+  trial:'Fader randomized phase II (NCT01367002)', summary:'Uterine serous carcinoma that overexpresses HER2, stage III to IV or recurrent. Surgery where possible, then carboplatin + paclitaxel + trastuzumab every 3 weeks ×6, then trastuzumab alone every 3 weeks until progression. Randomized phase II with a survival benefit; guideline-listed option.',
+  title:'Surgery, then chemotherapy with a HER2-targeted antibody, then the antibody on its own',
+  subtitle:'Uterine serous carcinoma, HER2-positive, stage III to IV',
+  nodes:[
+    S('Surgery (hysterectomy and removal of visible cancer)', 'Removal of the uterus, cervix, ovaries, and fallopian tubes, with removal of as much visible cancer as possible. The removed tissue is tested for HER2, a protein on the cancer cells that the antibody in this plan targets.'),
+    HEAL(4),
+    P({ name:'Carboplatin + paclitaxel + trastuzumab (Herceptin)', short:'Carbo + paclitaxel + trastuzumab', mods:['chemo','targeted'], cycleDays:21, cycles:6,
+        plain:'Two chemotherapy drugs plus trastuzumab, an antibody that targets the HER2 protein on the cancer cells, all by IV every 3 weeks, 6 times (about 4 and a half months). Heart function is checked before and during treatment.' }),
+    P({ name:'Trastuzumab maintenance', short:'Trastuzumab', mods:['targeted'], mode:'ongoing', weeks:52, openEnded:true, freqText:'By IV every 3 weeks, for as long as it keeps working',
+        plain:'The antibody on its own, by IV every 3 weeks, continuing for as long as it keeps the cancer controlled and side effects allow. Visits are short, with heart checks every few months.' }),
+  ]
+},
+{
+  id:'ov-pds', plan:'Surgery first, then chemotherapy, then maintenance guided by tumor testing', group:'Ovarian', added:'2026-09-08', reviewed:'2026-09-08', reviewedBy:'Source-checked; physician sign-off pending',
+  refs:[{t:'Burger RA et al. GOG-218: incorporation of bevacizumab in the primary treatment of ovarian cancer. NEJM 2011',q:'GOG 218 bevacizumab primary treatment ovarian cancer Burger NEJM 2011'},{t:'Moore K et al. SOLO-1: maintenance olaparib in newly diagnosed advanced ovarian cancer with a BRCA mutation. NEJM 2018',q:'SOLO-1 maintenance olaparib newly diagnosed advanced ovarian cancer Moore NEJM 2018'},{t:'González-Martín A et al. PRIMA: niraparib in newly diagnosed advanced ovarian cancer. NEJM 2019',q:'PRIMA niraparib newly diagnosed advanced ovarian cancer González-Martín NEJM 2019'},{t:'Ray-Coquard I et al. PAOLA-1: olaparib plus bevacizumab as first-line maintenance in ovarian cancer. NEJM 2019',q:'PAOLA-1 olaparib bevacizumab first-line maintenance ovarian cancer Ray-Coquard NEJM 2019'}],
+  disease:'gyn', name:'Surgery first, carboplatin + paclitaxel ×6, then maintenance by BRCA / HRD result',
+  trial:'GOG-218 / SOLO-1 / PRIMA / PAOLA-1', summary:'High-grade ovarian, fallopian tube, or primary peritoneal cancer, stage III to IV, when the cancer looks removable up front. Debulking surgery, carboplatin + paclitaxel every 3 weeks ×6 (bevacizumab optional), then a PARP inhibitor for 2 to 3 years if BRCA-mutated or HRD-positive, otherwise bevacizumab or surveillance. Compare with the chemotherapy-first sequence.',
+  title:'Surgery first, then chemotherapy, then a maintenance tablet chosen by the tumor\'s genes',
+  subtitle:'Ovarian cancer (including fallopian tube and primary peritoneal), stage III to IV',
+  nodes:[
+    S('Surgery (debulking)', 'A major operation to remove the ovaries, fallopian tubes, uterus, and as much visible cancer as possible from the abdomen. Removing all visible cancer is the strongest predictor of a good outcome. The removed tissue is tested for BRCA mutations and homologous recombination deficiency (HRD), which decide the maintenance step.'),
+    HEAL(4),
+    P({ name:'Carboplatin + paclitaxel', short:'Carboplatin + paclitaxel', mods:['chemo'], cycleDays:21, cycles:6,
+        plain:'Two chemotherapy drugs by IV every 3 weeks, 6 times (about 4 and a half months). Each visit takes several hours. Blood counts are checked before each dose.' }),
+    P({ name:'Bevacizumab (Avastin), if used', short:'Bevacizumab', mods:['targeted'], cycleDays:21, cycles:5, optional:true, on:false, concurrent:true,
+        plain:'An antibody that blocks the blood supply to tumors, given by IV with the chemotherapy from the second cycle onwards, then continued in the maintenance step. Used mainly when cancer could not be fully removed. Your team will say whether it is part of your plan.' }),
+    D({ name:'Tumor test result (BRCA and HRD)', short:'Gene test', question:'What did the tumor\'s gene tests show?',
+        plain:'The removed tumor is tested for BRCA mutations and for a wider repair defect called homologous recombination deficiency (HRD). About half of high-grade ovarian cancers have one of these, and they respond especially well to PARP inhibitor tablets.',
+        branches:[
+          Br('BRCA mutation or HRD-positive', [
+            P({ name:'Olaparib (Lynparza) tablets for 2 years', short:'Olaparib', mods:['targeted'], mode:'daily', weeks:104, optional:true, on:true,
+                plain:'A PARP inhibitor tablet taken twice a day for 2 years, starting within about 2 months of the last chemotherapy (SOLO-1). If bevacizumab is part of your plan, olaparib is given alongside it (PAOLA-1). Blood counts are checked regularly.' }),
+            P({ name:'Niraparib (Zejula) tablets for 3 years', short:'Niraparib', mods:['targeted'], mode:'daily', weeks:156, optional:true, on:false,
+                plain:'The other PARP inhibitor option: one tablet a day for up to 3 years (PRIMA). Your team recommends one PARP inhibitor, not both.' }),
+          ], 'BRCA or HRD positive'),
+          Br('No BRCA mutation and HRD-negative', [
+            P({ name:'Bevacizumab (Avastin) maintenance, if used', short:'Bevacizumab', mods:['targeted'], cycleDays:21, cycles:16, optional:true, on:false,
+                plain:'If bevacizumab was started with chemotherapy, it continues on its own by IV every 3 weeks for about 15 months in total (GOG-218).' }),
+            P({ name:'Niraparib (Zejula) tablets, if recommended', short:'Niraparib', mods:['targeted'], mode:'daily', weeks:156, optional:true, on:false,
+                plain:'Niraparib is approved for all patients after a response to chemotherapy, but the benefit is smaller when the tumor is HRD-negative (PRIMA). Your team will weigh it against side effects.' }),
+            P({ name:'Surveillance', short:'Surveillance', mods:['watch'], mode:'ongoing', weeks:104, openEnded:true, freqText:'Visits, blood tests (CA-125), and scans every 3 months at first',
+                plain:'Regular visits with a blood test for the tumor marker CA-125 and scans when needed, every 3 months at first and less often over time.' }),
+          ], 'BRCA and HRD negative'),
+        ] }),
+  ]
+},
+{
+  id:'ov-nact', plan:'Chemotherapy first, surgery in the middle, then more chemotherapy and maintenance', group:'Ovarian', added:'2026-09-08', reviewed:'2026-09-08', reviewedBy:'Source-checked; physician sign-off pending',
+  refs:[{t:'Vergote I et al. EORTC 55971: neoadjuvant chemotherapy or primary surgery in stage IIIC or IV ovarian cancer. NEJM 2010',q:'EORTC 55971 neoadjuvant chemotherapy primary surgery stage IIIC IV ovarian cancer Vergote NEJM 2010'},{t:'Kehoe S et al. CHORUS: primary chemotherapy versus primary surgery for newly diagnosed advanced ovarian cancer. Lancet 2015',q:'CHORUS primary chemotherapy versus primary surgery advanced ovarian cancer Kehoe Lancet 2015'},{t:'van Driel WJ et al. Hyperthermic intraperitoneal chemotherapy in ovarian cancer (OVHIPEC-1). NEJM 2018',q:'hyperthermic intraperitoneal chemotherapy ovarian cancer interval cytoreductive surgery van Driel NEJM 2018'},{t:'Moore K et al. SOLO-1: maintenance olaparib in newly diagnosed advanced ovarian cancer with a BRCA mutation. NEJM 2018',q:'SOLO-1 maintenance olaparib newly diagnosed advanced ovarian cancer Moore NEJM 2018'},{t:'González-Martín A et al. PRIMA: niraparib in newly diagnosed advanced ovarian cancer. NEJM 2019',q:'PRIMA niraparib newly diagnosed advanced ovarian cancer González-Martín NEJM 2019'}],
+  disease:'gyn', name:'Carboplatin + paclitaxel ×3, interval debulking surgery, ×3 more, then maintenance by BRCA / HRD result',
+  trial:'EORTC 55971 / CHORUS', summary:'High-grade ovarian, fallopian tube, or primary peritoneal cancer, stage IIIC to IV, when up-front surgery is unlikely to remove everything or is too risky. Carboplatin + paclitaxel every 3 weeks ×3, interval debulking surgery (heated intraperitoneal chemotherapy optional), 3 more cycles, then a PARP inhibitor for 2 to 3 years if BRCA-mutated or HRD-positive, otherwise bevacizumab or surveillance. Compare with the surgery-first sequence.',
+  title:'Chemotherapy first, surgery in the middle, then chemotherapy and a maintenance tablet chosen by the tumor\'s genes',
+  subtitle:'Ovarian cancer (including fallopian tube and primary peritoneal), stage IIIC to IV',
+  nodes:[
+    P({ name:'Carboplatin + paclitaxel (before surgery)', short:'Carboplatin + paclitaxel', mods:['chemo'], cycleDays:21, cycles:3,
+        plain:'Two chemotherapy drugs by IV every 3 weeks, 3 times, to shrink the cancer so that surgery can remove more of it safely. A biopsy before this step confirms the diagnosis and is tested for BRCA mutations and HRD.' }),
+    S('Interval surgery (debulking)', 'A major operation, about 3 to 4 weeks after the third cycle, to remove the ovaries, fallopian tubes, uterus, and as much visible cancer as possible. Some centers add heated chemotherapy washed through the abdomen during the operation (HIPEC). The removed tissue shows how well the chemotherapy worked.'),
+    HEAL(4),
+    P({ name:'Carboplatin + paclitaxel (after surgery)', short:'Carboplatin + paclitaxel', mods:['chemo'], cycleDays:21, cycles:3,
+        plain:'Three more cycles of the same two drugs by IV every 3 weeks, to complete 6 cycles in total.' }),
+    P({ name:'Bevacizumab (Avastin), if used', short:'Bevacizumab', mods:['targeted'], cycleDays:21, cycles:3, optional:true, on:false, concurrent:true,
+        plain:'An antibody that blocks the blood supply to tumors, given by IV with the chemotherapy after surgery, then continued in the maintenance step. Your team will say whether it is part of your plan.' }),
+    D({ name:'Tumor test result (BRCA and HRD)', short:'Gene test', question:'What did the tumor\'s gene tests show?',
+        plain:'The tumor is tested for BRCA mutations and for a wider repair defect called homologous recombination deficiency (HRD). About half of high-grade ovarian cancers have one of these, and they respond especially well to PARP inhibitor tablets.',
+        branches:[
+          Br('BRCA mutation or HRD-positive', [
+            P({ name:'Olaparib (Lynparza) tablets for 2 years', short:'Olaparib', mods:['targeted'], mode:'daily', weeks:104, optional:true, on:true,
+                plain:'A PARP inhibitor tablet taken twice a day for 2 years, starting within about 2 months of the last chemotherapy (SOLO-1). If bevacizumab is part of your plan, olaparib is given alongside it (PAOLA-1). Blood counts are checked regularly.' }),
+            P({ name:'Niraparib (Zejula) tablets for 3 years', short:'Niraparib', mods:['targeted'], mode:'daily', weeks:156, optional:true, on:false,
+                plain:'The other PARP inhibitor option: one tablet a day for up to 3 years (PRIMA). Your team recommends one PARP inhibitor, not both.' }),
+          ], 'BRCA or HRD positive'),
+          Br('No BRCA mutation and HRD-negative', [
+            P({ name:'Bevacizumab (Avastin) maintenance, if used', short:'Bevacizumab', mods:['targeted'], cycleDays:21, cycles:16, optional:true, on:false,
+                plain:'If bevacizumab was started with chemotherapy, it continues on its own by IV every 3 weeks for about 15 months in total (GOG-218).' }),
+            P({ name:'Niraparib (Zejula) tablets, if recommended', short:'Niraparib', mods:['targeted'], mode:'daily', weeks:156, optional:true, on:false,
+                plain:'Niraparib is approved for all patients after a response to chemotherapy, but the benefit is smaller when the tumor is HRD-negative (PRIMA). Your team will weigh it against side effects.' }),
+            P({ name:'Surveillance', short:'Surveillance', mods:['watch'], mode:'ongoing', weeks:104, openEnded:true, freqText:'Visits, blood tests (CA-125), and scans every 3 months at first',
+                plain:'Regular visits with a blood test for the tumor marker CA-125 and scans when needed, every 3 months at first and less often over time.' }),
+          ], 'BRCA and HRD negative'),
+        ] }),
+  ]
+}
 ];
 
 /* A worked comparison, used by the "See a comparison" example link.
@@ -1084,8 +1261,9 @@ const COMPARE_EXAMPLE = {
   ],
 };
 
-const APP_VERSION = '0.17.0';
+const APP_VERSION = '0.18.0';
 const CHANGELOG = [
+  { date:'2026-09-08', text:'0.18.0: New Gynecologic tab with eight pathways. Uterine and endometrial: PORTEC-2 (surgery, vaginal brachytherapy), PORTEC-3 (surgery, radiation with cisplatin, carboplatin + paclitaxel), GOG-258 (surgery, carboplatin + paclitaxel ×6), NRG-GY018 (chemotherapy + pembrolizumab, then pembrolizumab), RUBY (chemotherapy + dostarlimab, then dostarlimab up to 3 years), HER2-positive uterine serous (chemotherapy + trastuzumab, then trastuzumab). Ovarian: surgery-first and chemotherapy-first sequences, each ending in a maintenance choice set by the BRCA and HRD results.' },
   { date:'2026-09-08', text:'0.17.0: Renamed to Roadbook; new wordmark and mark; old ONCourse URLs redirect with the share fragment preserved.' },
   { date:'2026-09-04', text:'0.16.0: The builder now asks each new user to agree once to the terms of use before opening: educational aid, physician responsibility for doses and schedules, no patient names, and the copyright notice. Shared plans and examples open straight to the patient view as before. A LICENSE file states the all-rights-reserved terms in the source repository. The terms of use now name the authors, state that ONCourse is a personal project independent of any employer, and add governing law (Washington), user responsibility, and the agreement as a whole.' },
   { date:'2026-09-03', text:'Breast surgery text: "examined to see how well the treatment worked" now appears only when treatment came before surgery (KEYNOTE-522, DESTINY-Breast11, TCHP). Surgery-first pathways say the removed tissue confirms the stage and the cancer\'s features, which guide the next steps.' },
