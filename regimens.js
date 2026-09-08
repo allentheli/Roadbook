@@ -1084,8 +1084,9 @@ const COMPARE_EXAMPLE = {
   ],
 };
 
-const APP_VERSION = '0.16.0';
+const APP_VERSION = '0.17.0';
 const CHANGELOG = [
+  { date:'2026-09-08', text:'0.17.0: Renamed to Roadbook; new wordmark and mark; old ONCourse URLs redirect with the share fragment preserved.' },
   { date:'2026-09-04', text:'0.16.0: The builder now asks each new user to agree once to the terms of use before opening: educational aid, physician responsibility for doses and schedules, no patient names, and the copyright notice. Shared plans and examples open straight to the patient view as before. A LICENSE file states the all-rights-reserved terms in the source repository. The terms of use now name the authors, state that ONCourse is a personal project independent of any employer, and add governing law (Washington), user responsibility, and the agreement as a whole.' },
   { date:'2026-09-03', text:'Breast surgery text: "examined to see how well the treatment worked" now appears only when treatment came before surgery (KEYNOTE-522, DESTINY-Breast11, TCHP). Surgery-first pathways say the removed tissue confirms the stage and the cancer\'s features, which guide the next steps.' },
   { date:'2026-09-03', text:'0.15.0: Compare options gains a "show only the steps that differ" switch, so shared steps such as surgery or hormone therapy drop out of the columns and are listed in one line instead. Breast: the two adjuvant chemotherapy-only pathways (dose-dense AC then paclitaxel; TC ×4) are now triple-negative by default with the hormone-therapy step switched off, and two new hormone-receptor-positive pathways carry the same chemotherapy followed by endocrine therapy.' },

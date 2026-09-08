@@ -33,7 +33,7 @@ const CURSOR = `(() => {
 (async () => {
   const srv = spawn('python3', ['-m', 'http.server', String(PORT)], { cwd: root, stdio: 'ignore' });
   await new Promise(r => setTimeout(r, 800));
-  const tmp = fs.mkdtempSync(path.join(require('os').tmpdir(), 'oncourse-demo-'));
+  const tmp = fs.mkdtempSync(path.join(require('os').tmpdir(), 'roadbook-demo-'));
   let b;
   try {
     b = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});

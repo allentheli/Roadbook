@@ -1,4 +1,4 @@
-# Using Claude Design on ONCourse (updated for v0.5)
+# Using Claude Design on Roadbook (formerly ONCourse; written for v0.5)
 
 ## Workflow
 

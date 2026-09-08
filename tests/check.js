@@ -1,4 +1,4 @@
-// Dependency-free sanity check for ONCourse. Run: node tests/check.js
+// Dependency-free sanity check for Roadbook. Run: node tests/check.js
 // Exits non-zero if the library is malformed, so it can gate a commit.
 const fs = require('fs');
 const src = fs.readFileSync(__dirname + '/../regimens.js', 'utf8');
@@ -97,7 +97,33 @@ if (CHANGELOG[0] && LIBRARY.some(r => r.added === CHANGELOG[0].date) === false) 
     });
   }
 }
-console.log(`ONCourse library check: ${LIBRARY.length} pathways, version ${APP_VERSION}, ${CHANGELOG.length} changelog entries`);
+// brand and rename checks
+{
+  const fs = require('fs'), path = require('path');
+  const root = path.join(__dirname, '..');
+  const OG_IMAGE = 'https://allentheli.github.io/Roadbook/assets/brand/og.png'; // the one absolute URL on the site; live once the repository is renamed
+  const ENTRY = ['index.html', 'app.html', 'about.html', 'how-it-works.html', 'updates.html', 'references.html', 'disclaimer.html'];
+  // (a) the old name survives only in README.md and the redirect stub
+  for (const f of fs.readdirSync(root).filter(n => n.endsWith('.html'))){
+    fs.readFileSync(path.join(root, f), 'utf8').split('\n').forEach((line, i) => {
+      if (/ONCourse/.test(line)) errors.push(`${f}:${i + 1} old name in user-visible copy`);
+    });
+  }
+  if (!/\(formerly ONCourse\)/.test(fs.readFileSync(path.join(root, 'README.md'), 'utf8'))) errors.push('README.md should say "(formerly ONCourse)" once');
+  // (b) head block on every entry point
+  for (const f of ENTRY){
+    const h = fs.readFileSync(path.join(root, f), 'utf8');
+    const title = (h.match(/<title>([^<]*)<\/title>/) || [])[1] || '';
+    if (!/^Roadbook( Oncology: .+)?$/.test(title)) errors.push(`${f}: <title> should be "Roadbook" or "Roadbook Oncology: ..." (got "${title}")`);
+    if (!h.includes(`<meta property="og:image" content="${OG_IMAGE}">`)) errors.push(`${f}: og:image must be ${OG_IMAGE}`);
+    for (const need of ['<link rel="icon" href="assets/brand/favicon.svg" type="image/svg+xml">', '<link rel="icon" href="assets/brand/favicon.ico" sizes="32x32">', '<link rel="apple-touch-icon" href="assets/brand/apple-touch-icon.png">', '<meta property="og:site_name" content="Roadbook Oncology">'])
+      if (!h.includes(need)) errors.push(`${f}: missing ${need}`);
+  }
+  // (c) rasterised brand files exist
+  for (const f of ['og.png', 'favicon.ico', 'favicon.svg', 'apple-touch-icon.png', 'roadbook-mark.svg', 'roadbook-wordmark-color-outlined.svg', 'roadbook-wordmark-mono-outlined.svg'])
+    if (!fs.existsSync(path.join(root, 'assets', 'brand', f))) errors.push(`assets/brand/${f} is missing (run tools/outline-brand.js then tools/rasterize-brand.js)`);
+}
+console.log(`Roadbook library check: ${LIBRARY.length} pathways, version ${APP_VERSION}, ${CHANGELOG.length} changelog entries`);
 warnings.forEach(w => console.log('  warning:', w));
 errors.forEach(e => console.log('  ERROR:', e));
 if (errors.length){ console.log(`\n${errors.length} error(s). Do not commit.`); process.exit(1); }

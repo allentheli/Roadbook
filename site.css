@@ -13,7 +13,8 @@ header.top{border-bottom:1px solid var(--line);background:#fff;position:sticky;t
 section,[id]{scroll-margin-top:76px}
 header.top .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
 .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font:600 21px/1 var(--serif);letter-spacing:-.01em}
-.logo svg{width:30px;height:30px}
+.logo svg.mark{width:30px;height:30px}
+.logo svg.wordmark{height:.747em;width:auto}
 nav.main{display:flex;gap:22px;align-items:center;font-size:14.5px}
 nav.main a{color:var(--ink-2);text-decoration:none}
 nav.main a:hover{color:var(--ink)}
@@ -118,7 +119,7 @@ ol.steps-guide li::before{content:counter(sg);position:absolute;left:0;top:1px;w
 @media (max-width:760px){
   header.top .wrap{height:58px;padding:0 16px}
   .logo{font-size:19px}
-  .logo svg{width:26px;height:26px}
+  .logo svg.mark{width:26px;height:26px}
   .wrap{padding:0 16px}
 }
 
@@ -215,3 +216,4 @@ section.final .byline{margin-top:18px;color:var(--muted);font-size:14.5px}
   .trust .wrap{gap:8px 18px;font-size:13px}
   .pull{font-size:20px}
 }
+

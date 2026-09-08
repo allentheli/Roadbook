@@ -1,0 +1,1 @@
+These two identical files go into a separate public repository named `ONCourse` with GitHub Pages enabled, so every old link, including share links whose plan lives in the URL fragment, forwards to Roadbook. They are versioned here and are not served from this repository.
