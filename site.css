@@ -15,6 +15,8 @@ header.top .wrap{display:flex;align-items:center;justify-content:space-between;h
 .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font:600 21px/1 var(--serif);letter-spacing:-.01em}
 .logo svg.mark{width:30px;height:30px}
 .logo svg.wordmark{height:.747em;width:auto}
+/* the full-name wordmark includes descenders, so it is taller than the cap-height box; the nudge recentres the caps on the mark */
+.logo svg.wordmark.full{height:.974em;position:relative;top:.11em}
 nav.main{display:flex;gap:22px;align-items:center;font-size:14.5px}
 nav.main a{color:var(--ink-2);text-decoration:none}
 nav.main a:hover{color:var(--ink)}
