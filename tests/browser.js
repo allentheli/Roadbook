@@ -127,16 +127,16 @@ const BASE = `http://localhost:${PORT}`;
       const note = 'Please call the nurse line if you have a fever of 100.4 or higher, uncontrolled nausea or vomiting, or new shortness of breath. Bring this sheet to every visit. ';
       await p3.evaluate((t) => { state.opts.notes = t; renderAll(); }, note.repeat(2));
       await p3.waitForTimeout(700);
-      const two = await p3.evaluate(() => { const f = printFit(985, 752, false, 765); return { twoPage: f.twoPage, k: f.k, notice: !document.getElementById('tb-fitnote').hidden }; });
+      const two = await p3.evaluate(() => { const f = printFit(985, 752, false, 765); return { multi: f.multiPage, pages: f.pages, k: f.k, notice: !document.getElementById('tb-fitnote').hidden }; });
       const f2 = path.join(os.tmpdir(), 'roadbook-twopage.pdf');
       await p3.evaluate(() => applyPrintZoom()); await p3.pdf({ path: f2, preferCSSPageSize: true, landscape: true });
       const n2 = pages(f2);
-      ok('a plan past the readability floors prints on two pages at full size', two.twoPage === true && two.k === 1 && n2 === 2);
+      ok('a plan past the readability floors prints on two pages at full size', two.multi === true && two.pages === 2 && two.k === 1 && n2 === 2);
       ok('the preview bar says when a plan needs two pages', two.notice);
       await p3.evaluate(() => { state.opts.notes = ''; renderAll(); }); await p3.waitForTimeout(700);
-      const one = await p3.evaluate(() => ({ twoPage: printFit(985, 752, false, 765).twoPage, notice: !document.getElementById('tb-fitnote').hidden }));
+      const one = await p3.evaluate(() => ({ multi: printFit(985, 752, false, 765).multiPage, notice: !document.getElementById('tb-fitnote').hidden }));
       await p3.evaluate(() => applyPrintZoom()); await p3.pdf({ path: f2, preferCSSPageSize: true, landscape: true });
-      ok('trimming the note brings the plan back to one page and clears the warning', one.twoPage === false && !one.notice && pages(f2) === 1);
+      ok('trimming the note brings the plan back to one page and clears the warning', one.multi === false && !one.notice && pages(f2) === 1);
       fs.unlinkSync(f2); await p3.close();
     }
     if (/#p=/.test(link)){

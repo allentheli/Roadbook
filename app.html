@@ -531,7 +531,7 @@ body.patient .main{padding:24px 20px 60px}
       <button class="btn sec" id="saveimg">Save handout as image (PNG)</button>
       <button class="btn sec" id="savemap">Save just the map as image (PNG)</button>
     </div>
-    <p class="hint">Plans print on one page whenever the text stays readable; a very full plan prints on two pages at full size instead. In Chrome, untick "Headers and footers" in the print dialog so the browser's own date line does not print over the sheet.</p>
+    <p class="hint">Plans print on one page whenever the text stays readable; a very full plan prints at full size on more pages instead. In Chrome, untick "Headers and footers" in the print dialog so the browser's own date line does not print over the sheet.</p>
     <div class="linkbox"><input type="text" id="linkout" readonly placeholder="Link appears here"><button class="btn sec" id="copylink">Copy link</button></div>
     <div class="qr-side" id="qrside"></div>
     <p class="hint" id="linkhint"></p>
@@ -1490,10 +1490,10 @@ function fitNotice(){
   const wasCollapsed = document.body.classList.contains('msheet');
   if (wasCollapsed) document.body.classList.remove('msheet');
   let fit = null;
-  try { fit = printFit(985, 752, false, 765); } catch (e) {} finally { if (wasCollapsed) document.body.classList.add('msheet'); }
+  try { fit = printFit(985, 752, false, 765, 787); } catch (e) {} finally { if (wasCollapsed) document.body.classList.add('msheet'); }
   let msg = '';
-  if (fit && fit.twoPage){
-    const n = fit.pages > 2 ? 'more than two pages' : 'two pages';
+  if (fit && fit.multiPage){
+    const n = (['', '', 'two', 'three', 'four', 'five', 'six'][fit.pages] || fit.pages) + ' pages';
     msg = state.opts.detail === 'visits'
       ? `This plan prints on ${n}. Overview detail, or a shorter note, fits more on each page.`
       : `This plan prints on ${n}. Shorten the note or the step text to fit one.`;
@@ -1812,8 +1812,8 @@ let _printCssTpl = '', _printPortraitTpl = '';
 })();
 // width and target are the page's content box less a little slack; limit is
 // the real content height on the shorter of Letter and A4, the line past which
-// the plan prints on two pages.
-function printFit(width, target, portrait, limit){
+// the plan prints on more pages; pageH is Letter's, used only to count them.
+function printFit(width, target, portrait, limit, pageH){
   // Readability floors. The map is the point of the page, so its labels get a
   // hard minimum in rendered pixels; body type gets one too. Both are honoured
   // before any scaling, so a tight plan loses whitespace and gains columns
@@ -1914,14 +1914,13 @@ function printFit(width, target, portrait, limit){
   ladder();
 
   // 4. Past the hard floors the type is too small to hand to a patient, so a
-  //    plan that still does not fit prints on two pages at full size instead.
-  //    The print engine breaks the pages and the existing break-inside rules
+  //    plan that still does not fit prints at full size on as many pages as
+  //    it needs (a visit-by-visit plan with dates can run to several). The
+  //    print engine breaks the pages and the existing break-inside rules
   //    keep each section whole, so a block that does not fit the rest of a
   //    page moves to the next one and leaves a gap. pageCount walks the
   //    sheet's blocks (and the rows of the step grid) the same way, so the
-  //    count is what will print. A plan too full even for two full-size
-  //    pages gets the same ladder, tightened until it fits two; past the
-  //    floors it runs to more.
+  //    count is what will print.
   const pageCount = (pageH) => {
     const base = cl.getBoundingClientRect().top;
     const blocks = [];
@@ -1944,20 +1943,15 @@ function printFit(width, target, portrait, limit){
     }
     return n;
   };
-  const twoPage = h > lim;
+  const multiPage = h > lim;
   let pages = 1;
-  if (twoPage){
-    k = 1; maph = 230; cols = 3; g = 1; h = put();
-    let tgt = 2 * target - 120;
-    for (let i = 0; i < 5 && pageCount(lim) > 2; i++){ target = tgt; ladder(); tgt -= 100; }
-    pages = pageCount(lim) > 2 ? 3 : 2;
-  }
+  if (multiPage){ k = 1; maph = 230; cols = 3; g = 1; h = put(); pages = pageCount(pageH || lim); }
   // The map is sized by width, so on wider paper (A4 landscape) an uncapped
   // map would grow and could push a fitted page over. Pin it to the height it
   // has here, and the fit holds on either paper.
   if (svg){ const mh = svg.getBoundingClientRect().height; if (mh > 0 && mh < maph) maph = Math.ceil(mh); }
   wrap.remove();
-  return { k: +k.toFixed(4), maph, cols, g: +g.toFixed(3), twoPage, pages };
+  return { k: +k.toFixed(4), maph, cols, g: +g.toFixed(3), multiPage, pages };
 }
 // content box at .35in margins: landscape height binds on A4 (727px), width on
 // Letter (985px); portrait width binds on A4 (727px), height on Letter (985px)
@@ -2075,10 +2069,10 @@ function applyPrintZoomInner(){
   // Letter landscape has 787px between the page margins and A4 landscape 765px;
   // the fit aims a few pixels under the A4 figure so neither the PDF engine's
   // rounding nor the wider A4 page (see the map pin in printFit) spills a line,
-  // and only a plan that cannot reach 765px at the floors goes to two pages.
-  const L = printFit(985, 752, false, 765);
-  const P = printFit(727, 1018, true, 1027);
-  document.body.classList.toggle('twopage', !!L.twoPage);
+  // and only a plan that cannot reach 765px at the floors goes to more pages.
+  const L = printFit(985, 752, false, 765, 787);
+  const P = printFit(727, 1018, true, 1027, 1027);
+  document.body.classList.toggle('multipage', !!L.multiPage);
   // Always emitted, even for a plan that needs no scaling, so the map is pinned
   // to the height measured here and cannot grow on wider paper. The landscape
   // block also matches portrait pages, so the portrait values are restated.
