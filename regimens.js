@@ -34,33 +34,33 @@ const LIBRARY = [
 
 /* ---------------- BREAST ---------------- */
 {
-  id:'kn522', plan:'Chemo-immunotherapy around surgery', group:'Triple-negative', added:'2026-08-31', reviewed:'2026-09-02', reviewedBy:'AL, 2026-09-02', refs:[{t:'Schmid P et al. Pembrolizumab for early triple-negative breast cancer. NEJM 2020 (KEYNOTE-522)',q:'KEYNOTE-522 Schmid pembrolizumab early triple-negative NEJM 2020'},{t:'Schmid P et al. Overall survival with pembrolizumab in early-stage TNBC. NEJM 2024',q:'KEYNOTE-522 overall survival Schmid NEJM 2024'},{t:'Masuda N et al. CREATE-X: adjuvant capecitabine for HER2-negative residual disease after neoadjuvant chemotherapy. NEJM 2017',q:'CREATE-X adjuvant capecitabine residual disease neoadjuvant Masuda NEJM 2017'}], disease:'breast', name:'KEYNOTE-522: chemo + pembrolizumab, surgery, pembrolizumab (+ capecitabine per CREATE-X if cancer remains)',
+  id:'kn522', plan:'Chemo-immunotherapy around surgery', group:'Triple-negative', added:'2026-08-31', reviewed:'2026-09-19', reviewedBy:'Source-checked; physician sign-off pending', refs:[{t:'Schmid P et al. Pembrolizumab for early triple-negative breast cancer. NEJM 2020 (KEYNOTE-522)',q:'KEYNOTE-522 Schmid pembrolizumab early triple-negative NEJM 2020'},{t:'Schmid P et al. Overall survival with pembrolizumab in early-stage TNBC. NEJM 2024',q:'KEYNOTE-522 overall survival Schmid NEJM 2024'},{t:'Masuda N et al. CREATE-X: adjuvant capecitabine for HER2-negative residual disease after neoadjuvant chemotherapy. NEJM 2017',q:'CREATE-X adjuvant capecitabine residual disease neoadjuvant Masuda NEJM 2017'}], disease:'breast', name:'KEYNOTE-522: chemo + pembrolizumab, surgery, pembrolizumab (+ capecitabine per CREATE-X if cancer remains)',
   trial:'KEYNOTE-522 and CREATE-X trials', summary:'Triple-negative, stage II–III. Neoadjuvant chemo-immunotherapy, surgery, adjuvant pembrolizumab; capecitabine added for residual disease (CREATE-X).',
   title:'Chemotherapy with immunotherapy before surgery, then immunotherapy after',
   subtitle:'Triple-negative breast cancer, stage II to III',
   nodes:[
-    P({ name:'Paclitaxel + carboplatin + pembrolizumab (Keytruda)', short:'Carbo + paclitaxel + immunotherapy', mods:['chemo','io'], cycleDays:21, cycles:4,
+    P({ name:'Paclitaxel + carboplatin + pembrolizumab', short:'Carbo + paclitaxel + pembrolizumab', mods:['chemo','io'], cycleDays:21, cycles:4,
         visits:[{d:1,label:'Paclitaxel, carboplatin, and pembrolizumab'},{d:8,label:'Paclitaxel and carboplatin'},{d:15,label:'Paclitaxel and carboplatin'}],
-        plain:'Paclitaxel weekly plus carboplatin (weekly or once per 3-week cycle), plus pembrolizumab every 3 weeks. Pembrolizumab is immunotherapy: it helps your own immune system recognize and attack cancer cells.' }),
-    P({ name:'Doxorubicin (or epirubicin) + cyclophosphamide + pembrolizumab', short:'AC + immunotherapy', mods:['chemo','io'], cycleDays:21, cycles:4,
+        plain:'Paclitaxel and carboplatin chemotherapy, with pembrolizumab every 3 weeks. Pembrolizumab is immunotherapy: it helps your immune system attack cancer cells.' }),
+    P({ name:'Doxorubicin (or epirubicin) + cyclophosphamide + pembrolizumab', short:'AC + pembrolizumab', mods:['chemo','io'], cycleDays:21, cycles:4,
         visits:[{d:1,label:'Doxorubicin, cyclophosphamide, and pembrolizumab'}],
-        plain:'Two different chemotherapy drugs every 3 weeks, with pembrolizumab continuing. A growth-factor injection after each dose helps your blood counts recover.' }),
+        plain:'Two chemotherapy drugs every 3 weeks, with pembrolizumab continuing. A growth-factor injection after each dose supports your blood counts.' }),
     RECOVER(4),
     SURGERY_BREAST(true),
     HEAL(5),
     D({ name:'Pathology results', short:'Results', question:'What did the pathology report show?',
-        plain:'The report tells us whether any cancer remained in the tissue removed at surgery. Immunotherapy continues either way; if cancer remained, an oral chemotherapy may be added.',
+        plain:'The report tells us whether any cancer remained in the tissue removed at surgery. Pembrolizumab continues either way; if cancer remained, chemotherapy tablets may be added.',
         branches:[
           Br('No remaining cancer (complete response)', [
-            P({ name:'Pembrolizumab (Keytruda)', short:'Pembrolizumab', mods:['io'], cycleDays:21, cycles:9, plain:'Immunotherapy on its own, every 3 weeks, for 9 more doses. Each visit is short.' }),
+            P({ name:'Pembrolizumab', short:'Pembrolizumab', mods:['io'], cycleDays:21, cycles:9, plain:'Pembrolizumab on its own, every 3 weeks, for 9 more doses. Each visit is short.' }),
             RADIATION_ALONGSIDE(),
           ]),
           Br('Some cancer remained', [
-            P({ name:'Pembrolizumab (Keytruda)', short:'Pembrolizumab', mods:['io'], cycleDays:21, cycles:9, plain:'Immunotherapy on its own, every 3 weeks, for 9 more doses.' }),
+            P({ name:'Pembrolizumab', short:'Pembrolizumab', mods:['io'], cycleDays:21, cycles:9, plain:'Pembrolizumab on its own, every 3 weeks, for 9 more doses.' }),
             RADIATION_ALONGSIDE(),
             P({ name:'Capecitabine (oral chemotherapy)', short:'Capecitabine tablets', mods:['chemo'], cycleDays:21, cycles:8, optional:true, on:true, concurrent:true, afterPrev:true,
                 visits:[{d:1,label:'Start 14 days of capecitabine tablets, then 7 days off'}],
-                plain:'Chemotherapy tablets taken at home for 2 weeks out of every 3, for about 6 months, starting once radiation has finished. Giving them after radiation is common practice rather than a rule from the trial; your team sets the exact order. Immunotherapy continues at the same time. If you carry a BRCA gene change, olaparib tablets for 1 year may be recommended instead.' }),
+                plain:'Chemotherapy tablets taken at home, 2 weeks on and 1 week off, for about 6 months, usually after radiation; your team sets the order. Pembrolizumab continues alongside. If you carry a BRCA gene change, olaparib tablets for 1 year may be recommended instead.' }),
           ]),
         ] }),
   ]
@@ -1120,7 +1120,7 @@ const LIBRARY = [
   ]
 },
 {
-  id:'gy018', plan:'Chemotherapy with immunotherapy, then immunotherapy alone', group:'Uterine and endometrial', added:'2026-09-08', reviewed:'2026-09-08', reviewedBy:'Source-checked; physician sign-off pending',
+  id:'gy018', plan:'Chemotherapy with immunotherapy, then immunotherapy alone', group:'Uterine and endometrial', added:'2026-09-08', reviewed:'2026-09-19', reviewedBy:'Source-checked; physician sign-off pending',
   refs:[{t:'Eskander RN et al. NRG-GY018: pembrolizumab plus chemotherapy in advanced endometrial cancer. NEJM 2023',q:'NRG-GY018 pembrolizumab chemotherapy advanced endometrial cancer Eskander NEJM 2023'},{t:'Westin SN et al. DUO-E: durvalumab plus carboplatin/paclitaxel with maintenance durvalumab with or without olaparib in endometrial cancer. JCO 2024',q:'DUO-E durvalumab carboplatin paclitaxel olaparib endometrial cancer Westin JCO'}],
   disease:'gyn', name:'Surgery, carboplatin + paclitaxel + pembrolizumab ×6, then pembrolizumab maintenance (NRG-GY018)',
   trial:'NRG-GY018', summary:'Endometrial cancer, stage III to IVA with measurable disease, stage IVB, or first recurrence. Surgery where possible, then carboplatin + paclitaxel + pembrolizumab every 3 weeks ×6, then pembrolizumab every 6 weeks for up to 14 doses. Approved for both mismatch-repair-deficient and proficient tumors; durvalumab (DUO-E) is an alternative for mismatch-repair-deficient tumors. Remove the surgery step for recurrent or inoperable disease.',
@@ -1129,7 +1129,7 @@ const LIBRARY = [
   nodes:[
     S('Surgery (hysterectomy and removal of visible cancer)', 'Removal of the uterus, cervix, ovaries, and fallopian tubes, with removal of as much visible cancer as possible. The removed tissue is tested for mismatch-repair proteins, which tells the team how much benefit to expect from immunotherapy.'),
     HEAL(4),
-    P({ name:'Carboplatin + paclitaxel + pembrolizumab (Keytruda)', short:'Carbo + paclitaxel + immunotherapy', mods:['chemo','io'], cycleDays:21, cycles:6,
+    P({ name:'Carboplatin + paclitaxel + pembrolizumab (Keytruda)', short:'Carbo + paclitaxel + pembrolizumab', mods:['chemo','io'], cycleDays:21, cycles:6,
         plain:'Two chemotherapy drugs plus pembrolizumab, an immunotherapy that helps your own immune system recognize and attack cancer cells, all by IV every 3 weeks, 6 times (about 4 and a half months).' }),
     P({ name:'Pembrolizumab maintenance', short:'Pembrolizumab', mods:['io'], cycleDays:42, cycles:14,
         plain:'Immunotherapy on its own, by IV every 6 weeks, for up to 14 doses (about 20 months). Visits are short. Treatment stops earlier if the cancer grows or side effects require it.' }),
@@ -1138,7 +1138,7 @@ const LIBRARY = [
   ]
 },
 {
-  id:'ruby', plan:'Chemotherapy with immunotherapy, then immunotherapy for up to 3 years', group:'Uterine and endometrial', added:'2026-09-08', reviewed:'2026-09-08', reviewedBy:'Source-checked; physician sign-off pending',
+  id:'ruby', plan:'Chemotherapy with immunotherapy, then immunotherapy for up to 3 years', group:'Uterine and endometrial', added:'2026-09-08', reviewed:'2026-09-19', reviewedBy:'Source-checked; physician sign-off pending',
   refs:[{t:'Mirza MR et al. RUBY: dostarlimab for primary advanced or recurrent endometrial cancer. NEJM 2023',q:'RUBY dostarlimab primary advanced recurrent endometrial cancer Mirza NEJM 2023'}],
   disease:'gyn', name:'Surgery, carboplatin + paclitaxel + dostarlimab ×6, then dostarlimab for up to 3 years (RUBY)',
   trial:'RUBY', summary:'Endometrial cancer, primary stage III to IV or first recurrence. Surgery where possible, then carboplatin + paclitaxel + dostarlimab every 3 weeks ×6, then dostarlimab every 6 weeks for up to 3 years in total. Greatest benefit in mismatch-repair-deficient tumors; approved for all comers. Remove the surgery step for recurrent or inoperable disease.',
@@ -1147,7 +1147,7 @@ const LIBRARY = [
   nodes:[
     S('Surgery (hysterectomy and removal of visible cancer)', 'Removal of the uterus, cervix, ovaries, and fallopian tubes, with removal of as much visible cancer as possible. The removed tissue is tested for mismatch-repair proteins, which tells the team how much benefit to expect from immunotherapy.'),
     HEAL(4),
-    P({ name:'Carboplatin + paclitaxel + dostarlimab (Jemperli)', short:'Carbo + paclitaxel + immunotherapy', mods:['chemo','io'], cycleDays:21, cycles:6,
+    P({ name:'Carboplatin + paclitaxel + dostarlimab (Jemperli)', short:'Carbo + paclitaxel + dostarlimab', mods:['chemo','io'], cycleDays:21, cycles:6,
         plain:'Two chemotherapy drugs plus dostarlimab, an immunotherapy that helps your own immune system recognize and attack cancer cells, all by IV every 3 weeks, 6 times (about 4 and a half months).' }),
     P({ name:'Dostarlimab maintenance', short:'Dostarlimab', mods:['io'], cycleDays:42, cycles:23,
         plain:'Immunotherapy on its own, by IV every 6 weeks, continuing until 3 years from the start of treatment. Visits are short. Treatment stops earlier if the cancer grows or side effects require it.' }),
@@ -1261,8 +1261,9 @@ const COMPARE_EXAMPLE = {
   ],
 };
 
-const APP_VERSION = '0.20.0';
+const APP_VERSION = '0.20.1';
 const CHANGELOG = [
+  { date:'2026-09-19', text:'0.20.1: KEYNOTE-522 step text shortened and the map labels name the drug ("Carbo + paclitaxel + pembrolizumab", "AC + pembrolizumab") instead of "immunotherapy"; the brand name is dropped. The same map wording is used in the NRG-GY018 and RUBY pathways. No schedule changed.' },
   { date:'2026-09-19', text:'0.20.0: A plan that cannot fit one page without small type now prints at full size on two or more pages instead of shrinking further. Body text never drops below 82% of normal and map labels never below 9 px. The preview says before you print how many pages a plan will take; shortening the care-team note or the step text brings it back to one.' },
   { date:'2026-09-19', text:'0.19.0: Printing fits every plan on one page in both the builder and the patient view; the patient view could run to a second page. A tight plan now closes up whitespace and changes the number of step columns before any text shrinks, map labels never print smaller than 9 px, and body text never drops below 82% of its normal size. A surgery that starts the timeline no longer has its label clipped at the left edge of the printed map.' },
   { date:'2026-09-08', text:'0.18.0: New Gynecologic tab with eight pathways. Uterine and endometrial: PORTEC-2 (surgery, vaginal brachytherapy), PORTEC-3 (surgery, radiation with cisplatin, carboplatin + paclitaxel), GOG-258 (surgery, carboplatin + paclitaxel ×6), NRG-GY018 (chemotherapy + pembrolizumab, then pembrolizumab), RUBY (chemotherapy + dostarlimab, then dostarlimab up to 3 years), HER2-positive uterine serous (chemotherapy + trastuzumab, then trastuzumab). Ovarian: surgery-first and chemotherapy-first sequences, each ending in a maintenance choice set by the BRCA and HRD results.' },
