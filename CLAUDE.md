@@ -39,4 +39,4 @@ Roadbook (formerly ONCourse) is a static site (GitHub Pages) that turns cancer t
 10. Run `node tests/check.js`. Open a pull request for clinical changes so the owner reviews the diff; commit typo fixes directly.
 
 ## Style
-No em dashes in patient text; no emoji; sentence case; drug names as generic (brand) on first mention, e.g. pembrolizumab (Keytruda).
+No em dashes in patient text; no emoji; sentence case; generic drug names only, never brand names (pembrolizumab, not Keytruda); tests/check.js rejects the common ones.

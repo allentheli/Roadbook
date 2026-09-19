@@ -60,6 +60,17 @@ if (!/^\d+\.\d+(\.\d+)?$/.test(APP_VERSION)) errors.push('APP_VERSION must look 
 }
 for (const c of CHANGELOG){ if (!c.date || !c.text) errors.push('CHANGELOG entry missing date or text'); }
 if (CHANGELOG[0] && LIBRARY.some(r => r.added === CHANGELOG[0].date) === false) warnings.push('Newest changelog date matches no regimen "added" date — fine if the change was not a new regimen');
+// style guardrail: patient-facing text uses generic drug names only. Citations in
+// refs may keep a brand, since an FDA label is titled by it.
+const BRANDS = ['Keytruda','Opdivo','Imfinzi','Zejula','Enhertu','Avastin','Verzenio','Tecentriq','Kisqali','Tagrisso','Lynparza','Kadcyla','Yervoy','Welireg','Tafinlar','Padcev','Mekinist','Jemperli','Herceptin','Alecensa','Perjeta','Phesgo','Xeloda','Ibrance','Nerlynx','Tukysa','Trodelvy','Libtayo','Bavencio','Lenvima','Cabometyx','Xtandi','Zytiga','Erleada','Nubeqa','Lupron','Zoladex','Orgovyx','Rubraca','Talzenna','Lumakras','Krazati','Rybrevant','Lorbrena','Alunbrig','Braftovi','Mektovi','Cotellic','Neulasta','Neupogen','Abraxane','Taxol','Taxotere','Adriamycin','Cytoxan','Faslodex','Piqray','Truqap','Orserdu','Itovebi','Afinitor','Halaven','Gemzar'];
+const brandRe = new RegExp('\\b(' + BRANDS.join('|') + ')\\b');
+for (const r of LIBRARY){
+  const strip = { ...r }; delete strip.refs;
+  const m = JSON.stringify(strip).match(brandRe);
+  if (m) errors.push(`${r.id}: brand name "${m[1]}" in patient-facing text; use the generic name`);
+}
+if (ctx.COMPARE_EXAMPLE){ const m = JSON.stringify(ctx.COMPARE_EXAMPLE).match(brandRe); if (m) errors.push(`compare example: brand name "${m[1]}"; use the generic name`); }
+
 // privacy guardrail: the site promises that nothing leaves the browser, so no page,
 // script, or stylesheet may load or call an external resource. Plain <a href> links are fine.
 {

@@ -321,3 +321,13 @@ that giving it after radiation is practice rather than a trial rule, and that ol
 recommended instead for a BRCA carrier. Map labels: "Carbo + paclitaxel + immunotherapy" is now
 "Carbo + paclitaxel + pembrolizumab" (kn522, gy018) and "Carbo + paclitaxel + dostarlimab"
 (ruby); "AC + immunotherapy" is now "AC + pembrolizumab". Owner sign-off pending on the wording.
+
+## 2026-09-19: brand names removed library-wide
+
+Style change only, at the owner's instruction: every "(Brand)" after a generic drug name is removed
+from step names, map labels and patient text across all 60 pathways (Keytruda, Opdivo, Imfinzi,
+Zejula, Enhertu, Avastin, Verzenio, Tecentriq, Kisqali, Tagrisso, Lynparza, Kadcyla, Yervoy,
+Welireg, Tafinlar, Padcev, Mekinist, Jemperli, Herceptin, Alecensa). The two map labels that used
+a brand as the label ("Enhertu (T-DXd)", "Enhertu or Kadcyla") now read "Trastuzumab deruxtecan"
+and "Trastuzumab deruxtecan or emtansine". FDA-label citations in `refs` keep the brand, since
+that is the document's title. No agent, schedule or timing changed; review metadata untouched.
