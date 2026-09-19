@@ -44,7 +44,7 @@ const LIBRARY = [
         plain:'Paclitaxel and carboplatin chemotherapy, with pembrolizumab every 3 weeks. Pembrolizumab is immunotherapy: it helps your immune system attack cancer cells.' }),
     P({ name:'Doxorubicin (or epirubicin) + cyclophosphamide + pembrolizumab', short:'AC + pembrolizumab', mods:['chemo','io'], cycleDays:21, cycles:4,
         visits:[{d:1,label:'Doxorubicin, cyclophosphamide, and pembrolizumab'}],
-        plain:'Two chemotherapy drugs every 3 weeks, with pembrolizumab continuing. A growth-factor injection after each dose supports your blood counts.' }),
+        plain:'Doxorubicin and cyclophosphamide chemotherapy every 3 weeks, with pembrolizumab continuing. A growth-factor injection after each dose supports your blood counts.' }),
     RECOVER(4),
     SURGERY_BREAST(true),
     HEAL(5),
