@@ -78,3 +78,4 @@ Review the list, then run the add/change prompt for the ones you want.
 - Every clinical change gets a `CHANGELOG` line, and so does any builder change a user would notice.
   Design, copy-editing and internal engineering stay out of it; the Updates page is the public record, not a commit log.
 - `how-it-works.html` is the builder walkthrough. If a control changes, update that page in the same commit.
+- The landing-page images (`hero*.png`, `compare.png`, `decision.png`, `route-kn522.png`) each have a `.webp` twin that the page loads first. After re-rendering any of them, run `python3 tools/webp-landing.py` so the twin matches; the library check warns if it is stale.

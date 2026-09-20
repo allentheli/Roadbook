@@ -203,6 +203,14 @@ const BASE = `http://localhost:${PORT}`;
         if (!r) allOk = false;
       }
       ok('every public page has a skip link that appears on focus and one main landmark', allOk);
+      // the landing page serves its images as WebP (Chromium supports it), at the PNG's full size, and the lazy slides too
+      await q.goto(`${BASE}/index.html`, { waitUntil: 'load' }); await q.waitForTimeout(300);
+      await q.click('#hstab-2'); await q.waitForTimeout(600);
+      const wp = await q.evaluate(() => {
+        const a = document.querySelector('#hs-0 img'), c = document.querySelector('#hs-2 img'), m = document.querySelector('#forks img, .imgcard img');
+        return { hero: a.currentSrc.endsWith('.webp') && a.naturalWidth === 2112, flot: c.currentSrc.endsWith('.webp') && c.naturalWidth === 2112, map: m && m.currentSrc.endsWith('.webp') };
+      });
+      ok('landing images load as WebP at full size, including a lazy hero slide', wp.hero && wp.flot && wp.map);
       await q.goto(`${BASE}/some/missing/path/404.html`, { waitUntil: 'load' }).catch(() => {});
       await q.goto(`${BASE}/404.html`, { waitUntil: 'load' });
       const nf = await q.evaluate(() => ({ home: [...document.querySelectorAll('a')].some(a => /home page/i.test(a.textContent) && a.href.endsWith('/index.html')), noLib: !document.querySelector('script[src^="regimens.js"]'), styled: getComputedStyle(document.querySelector('header.top')).position === 'sticky' }));
