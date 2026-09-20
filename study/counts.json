@@ -1,0 +1,23 @@
+{
+  "tag": "v0.18.0-audit",
+  "commit": "af9f4deb25e34d208d8486cd4450d2beb38693c9",
+  "input_sha256": "87374d6a3e2e6fe54b07d70ac44ea43bbe253d232989ba7718512d4d3a2f5dde",
+  "seed": 20260919,
+  "batch_size": 10,
+  "counts": {
+    "agents": 201,
+    "cycle_length": 94,
+    "n_cycles": 94,
+    "visit_days": 27,
+    "interval_duration": 82,
+    "procedure_identity": 51,
+    "decision_condition": 15,
+    "branch_set": 15,
+    "sequence": 60,
+    "duration": 49,
+    "frequency_text": 41,
+    "schedule": 547,
+    "total": 729,
+    "pathways": 60
+  }
+}

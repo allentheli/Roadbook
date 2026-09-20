@@ -1,0 +1,61 @@
+order,batch,pathway_id,disease,group,pathway_name,n_schedule_assertions,n_all_assertions
+1,1,tchp,breast,HER2-positive,"TCHP, surgery, trastuzumab + pertuzumab",17,21
+2,1,genomic,breast,"HR-positive, HER2-negative","Surgery, genomic test (Oncotype DX / MammaPrint), then chemotherapy only if the test shows benefit (choose TC or dose-dense AC-T)",21,25
+3,1,db11,breast,HER2-positive,"DESTINY-Breast11: T-DXd then THP, surgery, HER2 therapy",21,25
+4,1,natalee,breast,"HR-positive, HER2-negative","NATALEE: surgery, optional chemo (TC or dose-dense AC-T), then an aromatase inhibitor with ribociclib for 3 years",12,14
+5,1,hrplus,breast,"HR-positive, HER2-negative","HR-positive high risk: surgery, optional chemo (TC or dose-dense AC-T), endocrine therapy + abemaciclib",12,14
+6,1,ddac-t,breast,Triple-negative,"Surgery, dose-dense AC then weekly paclitaxel",10,12
+7,1,ddac-t-hr,breast,"HR-positive, HER2-negative","Surgery, dose-dense AC then weekly paclitaxel, then endocrine therapy",10,12
+8,1,tc4,breast,Triple-negative,"Surgery, then docetaxel + cyclophosphamide ×4 (TC)",7,9
+9,1,kn522,breast,Triple-negative,"KEYNOTE-522: chemo + pembrolizumab, surgery, pembrolizumab (+ capecitabine per CREATE-X if cancer remains)",22,26
+10,1,apt,breast,HER2-positive,"APT: surgery, weekly paclitaxel + trastuzumab, then trastuzumab",11,13
+11,2,endo,breast,"HR-positive, HER2-negative","Surgery, radiation, endocrine therapy only",4,6
+12,2,tc4-hr,breast,"HR-positive, HER2-negative","Surgery, then docetaxel + cyclophosphamide ×4 (TC), then endocrine therapy",7,9
+13,2,anal,gi,Anal canal,"Anal canal: chemoradiation, response assessment, salvage surgery only if needed",5,10
+14,2,tnt-lcrt,gi,Rectal,"Long-course chemoradiation and chemotherapy before surgery, then rectal resection",9,12
+15,2,flot,gi,Esophageal and stomach,"Gastric/GEJ: FLOT + durvalumab, surgery, FLOT + durvalumab",19,21
+16,2,rapido,gi,Rectal,"Rectal TNT: short-course radiation, CAPOX, surgery",9,11
+17,2,atomic,gi,Colon,"ATOMIC: surgery, FOLFOX + atezolizumab, then atezolizumab (dMMR / MSI-high, stage III)",12,15
+18,2,prodige23,gi,Rectal,"Rectal TNT: FOLFIRINOX, chemoradiation, surgery, FOLFOX",12,14
+19,2,prodige24,gi,Pancreas,"Pancreatic: surgery, adjuvant mFOLFIRINOX",6,9
+20,2,opra,gi,Rectal,"Rectal organ preservation: chemoradiation, FOLFOX, then watch-and-wait or surgery",9,14
+21,3,capox,gi,Colon,"Colon stage III: surgery, CAPOX (3 or 6 months)",6,9
+22,3,cross,gi,Esophageal and stomach,"Esophageal: CROSS chemoradiation, surgery, nivolumab if needed",11,16
+23,3,alina,lung,"Non-small cell, operable","ALINA: surgery, alectinib for 2 years",4,8
+24,3,pacific,lung,"Non-small cell, stage III","PACIFIC: chemoradiation, then durvalumab",6,7
+25,3,adaura,lung,"Non-small cell, operable","ADAURA: surgery, chemo, osimertinib for 3 years",7,11
+26,3,laura,lung,"Non-small cell, stage III","LAURA: chemoradiation, then osimertinib",5,7
+27,3,cm816,lung,"Non-small cell, operable","CheckMate 816: chemo + nivolumab, then surgery",9,14
+28,3,kn671,lung,"Non-small cell, operable","KEYNOTE-671: chemo + pembrolizumab, surgery, pembrolizumab",10,12
+29,3,cm77t,lung,"Non-small cell, operable","CheckMate 77T: chemo + nivolumab, surgery, nivolumab",8,10
+30,3,adriatic,lung,Small cell,"Limited-stage SCLC: chemoradiation, then durvalumab",12,13
+31,4,kidney-surv,gu,Kidney,"Nephrectomy, then surveillance",2,5
+32,4,cm274,gu,Bladder,"Chemo, cystectomy, adjuvant nivolumab (CheckMate 274)",10,15
+33,4,prostatectomy,gu,Prostate,"Radical prostatectomy, PSA surveillance, radiation only if PSA rises",3,6
+34,4,ls022,gu,Kidney,"LITESPARK-022: nephrectomy, then pembrolizumab + belzutifan for a year",7,10
+35,4,imvigor011,gu,Bladder,"IMvigor011: cystectomy, ctDNA testing, atezolizumab if ctDNA-positive",10,15
+36,4,prostate-short,gu,Prostate,Radiation + 4 months of ADT,10,12
+37,4,trimodality,gu,Bladder,"Trimodality bladder preservation: TURBT, chemoradiation, surveillance",3,6
+38,4,ev303,gu,Bladder,"KEYNOTE-905 / EV-303: enfortumab vedotin + pembrolizumab, cystectomy, EV + pembrolizumab",13,15
+39,4,prostate-long,gu,Prostate,Radiation + 2–3 years of ADT (± abiraterone),12,14
+40,4,niagara,gu,Bladder,"NIAGARA: chemo + durvalumab, cystectomy, durvalumab",9,11
+41,5,kn564,gu,Kidney,"KEYNOTE-564: nephrectomy, then pembrolizumab for a year",5,8
+42,5,active-surv,gu,Prostate,Active surveillance (low-risk prostate cancer),1,3
+43,5,npc-crt,hn,Nasopharynx,Nasopharyngeal cancer: concurrent cisplatin + radiation (no induction),4,6
+44,5,kn689,hn,"Oral cavity, throat, and larynx","KEYNOTE-689: pembrolizumab, surgery, pembrolizumab + radiation (± cisplatin), pembrolizumab",12,15
+45,5,npc,hn,Nasopharynx,"Nasopharyngeal cancer: gemcitabine/cisplatin ×3, then cisplatin + radiation",8,10
+46,5,npc-adj,hn,Nasopharynx,"Nasopharyngeal cancer: cisplatin + radiation, then adjuvant cisplatin + 5-FU ×3",9,11
+47,5,hn-postop,hn,"Oral cavity, throat, and larynx","Surgery, then radiation with or without cisplatin (pathology-guided)",5,9
+48,5,hn-crt,hn,"Oral cavity, throat, and larynx",Definitive chemoradiation: cisplatin + radiation (7 weeks),5,10
+49,5,nadina,skin,Stage III (lymph node involvement),"NADINA: ipilimumab + nivolumab ×2, surgery, adjuvant therapy only without a major response",9,14
+50,5,s1801,skin,Stage III (lymph node involvement),"SWOG S1801: pembrolizumab ×3, surgery, pembrolizumab ×15",9,12
+51,6,combiad,skin,"Stage II to III, after surgery","Surgery, then dabrafenib + trametinib for one year (BRAF V600)",4,8
+52,6,mel-adj-io,skin,"Stage II to III, after surgery","Surgery, then adjuvant pembrolizumab (or nivolumab) for one year",5,8
+53,6,ruby,gyn,Uterine and endometrial,"Surgery, carboplatin + paclitaxel + dostarlimab ×6, then dostarlimab for up to 3 years (RUBY)",8,11
+54,6,portec2,gyn,Uterine and endometrial,"Surgery, then vaginal brachytherapy (PORTEC-2)",5,8
+55,6,ov-pds,gyn,Ovarian,"Surgery first, carboplatin + paclitaxel ×6, then maintenance by BRCA / HRD result",17,22
+56,6,usc-her2,gyn,Uterine and endometrial,"Surgery, carboplatin + paclitaxel + trastuzumab ×6, then trastuzumab maintenance (HER2-positive uterine serous)",5,8
+57,6,gog258,gyn,Uterine and endometrial,"Surgery, then carboplatin + paclitaxel ×6 (GOG-258)",8,11
+58,6,ov-nact,gyn,Ovarian,"Carboplatin + paclitaxel ×3, interval debulking surgery, ×3 more, then maintenance by BRCA / HRD result",20,25
+59,6,gy018,gyn,Uterine and endometrial,"Surgery, carboplatin + paclitaxel + pembrolizumab ×6, then pembrolizumab maintenance (NRG-GY018)",8,11
+60,6,portec3,gyn,Uterine and endometrial,"Surgery, radiation with cisplatin, then carboplatin + paclitaxel ×4 (PORTEC-3)",8,11
