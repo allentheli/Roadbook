@@ -41,7 +41,7 @@ Because the pages read `regimens.js` at load time, adding a regimen or a changel
 4. Review the plain-language text and the schedule against the source Claude cites. You are the editor of record.
 5. On GitHub, open `regimens.js`, click the pencil, replace the contents, commit. The site updates within about a minute.
 
-If you use Claude Code on the repository, step 5 becomes "commit and push" done for you; ask it to open a pull request so you still review the diff.
+If you use Claude Code on the repository, step 5 becomes "commit and push" done for you; ask it to open a pull request so you still review the diff. GitHub runs the library check (`tests/check.js`) on every push and pull request; a red cross next to the pull request means the check found an error, and the details are one click away under "Checks".
 
 ## Prompt: add or change a regimen after a new approval
 

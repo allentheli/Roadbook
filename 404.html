@@ -2,18 +2,26 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script>
+// GitHub Pages serves this page at whatever address was not found, so relative
+// links and stylesheets would resolve against that address. A <base> pointing at
+// the site root (the repository path on github.io, otherwise the domain root)
+// makes them resolve as they do on every other page.
+(function(){ var root = /\.github\.io$/.test(location.hostname) ? '/' + (location.pathname.split('/')[1] || '') + '/' : '/'; var b = document.createElement('base'); b.href = root; document.head.appendChild(b); })();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Roadbook Oncology: sources for every pathway</title>
-<meta name="description" content="Primary sources, protocol references, and review dates for every pathway in Roadbook.">
+<title>Roadbook Oncology: page not found</title>
+<meta name="description" content="That page is not here. Links to the Roadbook home page and the builder.">
 <meta property="og:site_name" content="Roadbook Oncology">
 <meta property="og:title" content="Roadbook: treatment maps for cancer care">
-<meta property="og:description" content="Primary sources, protocol references, and review dates for every pathway in Roadbook.">
+<meta property="og:description" content="That page is not here. Links to the Roadbook home page and the builder.">
 <meta property="og:image" content="https://allentheli.github.io/Roadbook/assets/brand/og.png">
 <link rel="icon" href="assets/brand/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="assets/brand/favicon.ico" sizes="32x32">
 <link rel="apple-touch-icon" href="assets/brand/apple-touch-icon.png">
 <link rel="stylesheet" href="fonts/fonts.css">
 <link rel="stylesheet" href="site.css?v=045">
+<meta name="robots" content="noindex">
 </head>
 <body>
 <a class="skip" href="#content">Skip to content</a>
@@ -26,30 +34,18 @@
   </div>
 </div></header>
 <main id="content">
-
-<section style="border-top:0"><div class="wrap">
-  <p class="eyebrow">References</p>
-  <h1 class="display" style="font-size:40px">Sources for every pathway</h1>
-  <p class="sub">Links open the citation on PubMed. Schedules are also cross-checked against structured protocol references (HemOnc.org, eviQ) and current FDA labeling. Each pathway lists when it was last reviewed and by whom. "Physician sign-off pending" means the source check, which is AI-assisted, is complete and the founder's clinical sign-off is in progress.</p>
-  <p class="sub">Dosing and schedules can differ between a trial protocol, the FDA label, and institutional practice. Roadbook follows the published protocol and does not show doses. Confirm cycles, intervals, and doses against your institution's protocol before treating.</p>
-  <div class="refs" id="refs"></div>
+<section style="border-top:0"><div class="wrap prose">
+  <p class="eyebrow">Page not found</p>
+  <h1>That page is not here.</h1>
+  <p>The address may have been mistyped, or the page has moved. Nothing on Roadbook is lost: every page is one click away.</p>
+  <p><a class="btn" href="index.html" style="color:#fff">Go to the home page</a> <a class="btn sec" href="app.html">Open the builder</a></p>
+  <h2>If you followed a link from a handout</h2>
+  <p>A plan's link and QR code point to the builder page and carry the plan in the part of the address after the # sign. If a scanner or an app dropped that part, ask the person who gave you the handout for the link again, or scan the QR code once more.</p>
 </div></section>
-
 </main>
 <footer><div class="wrap">
   <div>Roadbook Oncology is an educational aid for conversations between patients and their care teams. It is not medical advice and does not replace your clinic's appointment schedule. See the <a href="disclaimer.html">disclaimer and terms of use</a>.</div>
-  <div><a href="how-it-works.html">How it works</a> · <a href="about.html">About</a> · <a href="updates.html">Updates</a> · <a href="references.html">References</a> · <a href="disclaimer.html">Disclaimer</a> · <span id="ver"></span> · &copy; 2026 Roadbook Oncology. All rights reserved.</div>
+  <div><a href="how-it-works.html">How it works</a> · <a href="about.html">About</a> · <a href="updates.html">Updates</a> · <a href="references.html">References</a> · <a href="disclaimer.html">Disclaimer</a> · &copy; 2026 Roadbook Oncology. All rights reserved.</div>
 </div></footer>
-<script src="regimens.js?v=0.22.0"></script>
-<script>document.getElementById('ver').textContent = 'Version ' + APP_VERSION;</script>
-<script>
-(function(){
-  const cat = [['breast','Breast'],['gi','GI'],['lung','Lung'],['gu','GU'],['gyn','Gynecologic'],['hn','Head and neck'],['skin','Melanoma']];
-  document.getElementById('refs').innerHTML = cat.map(([k,l]) => {
-    const rs = LIBRARY.filter(r => r.disease === k); const groups = [];
-    rs.forEach(r => { if (!groups.includes(r.group)) groups.push(r.group); });
-    return `<h3>${l}</h3>` + groups.map(g => `<h4>${g}</h4>` + rs.filter(r => r.group === g).map(r => `<div class="refblock"><b>${r.plan || r.title}</b> <span class="meta">${r.trial ? 'Based on ' + r.trial + ' · ' : ''}reviewed ${r.reviewed || ''}${r.reviewedBy ? ' · ' + r.reviewedBy : ''}</span><ul>${(r.refs || []).map(x => `<li><a href="https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(x.q || x.t)}" target="_blank" rel="noopener">${x.t}</a></li>`).join('') || '<li><small>Guideline-based; no trial citation listed.</small></li>'}</ul></div>`).join('')).join('');
-  }).join('');
-})();
-</script>
+
 </body></html>

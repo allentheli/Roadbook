@@ -1,0 +1,18 @@
+# Runs the dependency-free library check on every push and pull request, so a
+# commit that breaks the library (a brand name, a bad stamp, a missing field)
+# shows a red cross on GitHub before it is merged. Identical to running
+# `node tests/check.js` locally, which the playbook still asks for before
+# every commit. The browser test needs Chromium and stays a local run.
+name: Library check
+on:
+  push:
+  pull_request:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node tests/check.js

@@ -331,3 +331,33 @@ Welireg, Tafinlar, Padcev, Mekinist, Jemperli, Herceptin, Alecensa). The two map
 a brand as the label ("Enhertu (T-DXd)", "Enhertu or Kadcyla") now read "Trastuzumab deruxtecan"
 and "Trastuzumab deruxtecan or emtansine". FDA-label citations in `refs` keep the brand, since
 that is the document's title. No agent, schedule or timing changed; review metadata untouched.
+
+## 2026-09-20: step descriptions tightened library-wide
+
+Text edits only; no agent, cycle length, cycle count, duration or start timing changed, so no
+source was re-opened. Two kinds of edit across the library, at the owner's request:
+
+1. Schedule restatements removed (42 descriptions in 33 pathways). The line under every step
+   already prints the schedule from the step's own data ("Every 3 weeks, 4 times (about 3
+   months). Starts week 13."), so a description that opened with the same cadence said it
+   twice. The cadence was kept where it carries something the schedule line cannot: two
+   cadences in one step (dose-dense AC then paclitaxel, in hrplus, natalee and genomic),
+   stage-dependent dose counts (mel-adj-io), day-of-cycle detail (gemcitabine on days 1 and
+   8; etoposide on 3 days in a row), and named alternatives (nivolumab every 4 weeks for 12
+   doses; dose-dense MVAC; CAPOX 5 cycles). Duration was likewise dropped from a description
+   when the schedule line shows it (ribociclib "for 3 years", olaparib "for 2 years",
+   belzutifan "for up to 54 weeks", durvalumab "for up to 12 months").
+2. The 35 longest descriptions (over 220 characters) shortened, most to 180 to 240
+   characters. Facts kept in every case: agents, what each does, where and how it is given,
+   the tests that guide the next step, and the "your team decides" caveats. Dropped: repeated
+   or decorative phrasing ("examined under the microscope to confirm" became "confirms"), and
+   two claims stated more strongly than the text needs ("with the same chance of cure" for
+   deferred treatment on active surveillance; "the strongest predictor of a good outcome" for
+   complete debulking became "matters most for the outcome"). hrplus and natalee now both say
+   chemotherapy is "beneficial" for some people, per the style rule, where hrplus said
+   "recommended". The builder's step-type check (chemo, immunotherapy, targeted, hormone,
+   radiation, monitoring words) still finds its word in every edited description.
+
+Also in this release: an alongside step ("At the same time: Radiation...") prints its schedule
+after a comma rather than in a second pair of parentheses. Review metadata untouched. Owner
+sign-off pending on the wording.
