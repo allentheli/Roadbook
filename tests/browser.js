@@ -65,10 +65,14 @@ const BASE = `http://localhost:${PORT}`;
 
     // ---- print footer wordmark keeps the footer's geometry, and every pathway still prints on one page ----
     await p.goto('about:blank'); await p.goto(`${BASE}/app.html#r=kn522`, { waitUntil: 'load' }); await p.waitForTimeout(300);
+    // measured under print emulation, which is what the footer is for; the on-screen
+    // page view scales the same layout, so screen numbers depend on the window
+    await p.evaluate(() => applyPrintZoom()); await p.emulateMedia({ media: 'print' }); await p.waitForTimeout(100);
     const geo = await p.evaluate(() => { const f = document.querySelector('.sh-foot').getBoundingClientRect(); const w = document.querySelector('.wm').getBoundingClientRect(); return { foot: f.height, wm: w.width }; });
-    // values measured with the "ONCourse" text wordmark before the rename (1280px viewport, kn522)
-    ok('print footer height unchanged by the wordmark (128.5px)', Math.abs(geo.foot - 128.5) < 0.6);
-    ok('print footer wordmark width matches the text it replaced (52px)', Math.abs(geo.wm - 52.2) < 1.5);
+    await p.emulateMedia({ media: null });
+    // values measured on main before the page view (kn522, Letter landscape fit)
+    ok('print footer height unchanged by the wordmark (120.1px)', Math.abs(geo.foot - 120.09) < 0.6);
+    ok('print footer wordmark width matches the text it replaced (35px)', Math.abs(geo.wm - 35) < 1.5);
     const fs = require('fs'), os = require('os');
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'roadbook-print-'));
     const pages = (f) => { const m = fs.readFileSync(f).toString('latin1').match(/\/Type\s*\/Page[^s]/g); return m ? m.length : 0; };
