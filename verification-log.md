@@ -361,3 +361,20 @@ source was re-opened. Two kinds of edit across the library, at the owner's reque
 Also in this release: an alongside step ("At the same time: Radiation...") prints its schedule
 after a comma rather than in a second pair of parentheses. Review metadata untouched. Owner
 sign-off pending on the wording.
+
+## 2026-09-20: remaining schedule restatements removed (0.22.1)
+
+Text edits only; no source re-opened. The owner asked whether the step data (cycle length and
+number of cycles) already gives the schedule, so the text still duplicated it. It did in 24 more
+descriptions that the first pass missed, because they stated the cadence without a count
+("Two chemotherapy drugs every 2 weeks, with a growth-factor injection..."; "The two antibodies
+continue every 3 weeks, without chemotherapy..."). Those now describe the drugs and how they are
+given, and the schedule line under the step states the cadence. Eleven descriptions still name
+a cadence on purpose: weekly paclitaxel beside antibodies every 3 weeks (db11); dose-dense AC
+then paclitaxel (hrplus, natalee, genomic); capecitabine "2 of every 3 weeks" within a CAPOX
+cycle (capox, rapido); trastuzumab "weekly or every 3 weeks" (apt); pembrolizumab every 3 weeks
+through a course of daily radiation (kn689); pembrolizumab "every 6 weeks (or every 3 weeks)"
+(ls022); stage-dependent dose counts with the nivolumab alternative (mel-adj-io); and the
+trastuzumab emtansine alternative matching the 14 doses (db11). The last "Visits are short"
+phrase (usc-her2 maintenance) is gone, per the owner's earlier instruction. Review metadata
+untouched; owner sign-off pending on the wording.
