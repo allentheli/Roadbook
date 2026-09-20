@@ -1261,8 +1261,9 @@ const COMPARE_EXAMPLE = {
   ],
 };
 
-const APP_VERSION = '0.22.2';
+const APP_VERSION = '0.22.3';
 const CHANGELOG = [
+  { date:'2026-09-20', text:'0.22.3: The page-count note in the preview bar now says only how many pages the plan prints on ("This plan prints on two pages."); the advice to shorten the text is gone, since two pages is a fine outcome. It no longer appears on the landing-page examples, and on a phone it is one short line under the buttons.' },
   { date:'2026-09-20', text:'0.22.2: A drug given alongside a treatment step for exactly the same span now joins that step\'s bar on the map, in two colours with one label ("FLOT + durvalumab", "FOLFOX + atezolizumab"), the way a step carrying both types has always drawn. It stays its own step in the list under the map and can still be switched off. A drug that runs for a different span keeps its own thin bar above the step. A drug also keeps one shade wherever it appears in a plan: "Durvalumab alone" after "FLOT + durvalumab", or carboplatin and paclitaxel before and after surgery, no longer draw in a lighter shade than the same drug earlier on.' },
   { date:'2026-09-20', text:'0.22.1: Step descriptions no longer state the step\'s own cycle length or dose count in any pathway; the schedule line under each step carries it. A cadence stays in the text only where it adds something the line cannot show, such as two cadences within one step, a choice of spacing, or a dose count that depends on stage.' },
   { date:'2026-09-20', text:'0.22.0: On a phone, a plan opened from its link or QR code shows the map at a readable size in a strip that scrolls sideways, instead of the whole map squeezed to the screen width. The builder\'s page-count note no longer appears above a shared plan. Step descriptions across the library are shorter: the schedule is no longer repeated in the text, since the line under each step already states it, and the longest descriptions were tightened. An alongside step now reads "At the same time: Radiation, Monday to Friday..." instead of two sets of parentheses.' },

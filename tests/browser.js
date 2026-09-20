@@ -142,6 +142,17 @@ const BASE = `http://localhost:${PORT}`;
       await p3.evaluate(() => applyPrintZoom()); await p3.pdf({ path: f2, preferCSSPageSize: true, landscape: true });
       ok('trimming the note brings the plan back to one page and clears the warning', one.multi === false && !one.notice && pages(f2) === 1);
       fs.unlinkSync(f2); await p3.close();
+      // the same two-page plan on a phone: one short line; and on a landing-page example: no note at all
+      const ph3 = await b.newPage({ viewport: { width: 390, height: 844 } }); hook(ph3);
+      await ph3.goto(`${BASE}/app.html#r=kn522`, { waitUntil: 'load' }); await ph3.waitForTimeout(300);
+      await ph3.evaluate((t) => { state.opts.notes = t; renderAll(); }, note.repeat(2)); await ph3.waitForTimeout(700);
+      const phn = await ph3.evaluate(() => { const n = document.getElementById('tb-fitnote'); return { hidden: n.hidden, text: n.textContent }; });
+      ok('phone: the page-count note is one short line', !phn.hidden && /^Prints on \d+ pages\.$/.test(phn.text));
+      await ph3.goto('about:blank'); await ph3.goto(`${BASE}/app.html#r=kn522&demo=1`, { waitUntil: 'load' }); await ph3.waitForTimeout(300);
+      await ph3.evaluate((t) => { state.opts.notes = t; renderAll(); }, note.repeat(2)); await ph3.waitForTimeout(700);
+      const dm = await ph3.evaluate(() => ({ demo: document.body.classList.contains('demo'), shown: getComputedStyle(document.getElementById('tb-fitnote')).display !== 'none' }));
+      ok('a landing-page example never shows the page-count note', dm.demo && !dm.shown);
+      await ph3.close();
     }
     if (/#p=/.test(link)){
       const p2 = await b.newPage(); hook(p2);
