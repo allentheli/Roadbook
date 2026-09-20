@@ -1106,6 +1106,76 @@ function renderRoute(ctx, startDate, colors){
       x0 = q.x; if (!q.node.afterPrev) break; k = prevUp(k); }
     return { text:parts.join(', then '), x:x0 };
   };
+  // a label may run past its own bar into empty space, up to the next item on
+  // the row that draws its own name (rests draw none)
+  const phaseBudget = (it, idx) => {
+    let labelEnd = null;
+    for (let j = idx + 1; j < ctx.items.length && labelEnd == null; j++){
+      const q = ctx.items[j];
+      if (q.row !== it.row || q.kind === 'up') continue;
+      if (q.kind === 'phase') labelEnd = q.x - 8;
+      else if (q.kind === 'event') labelEnd = q.x - 30;
+      else if (q.kind === 'decision') labelEnd = q.x - 28;
+    }
+    if (labelEnd == null){ const e = ctx.rowExt[it.row]; labelEnd = (e && isFinite(e.max) ? e.max : it.x + it.w) + 12; }
+    labelEnd = Math.min(labelEnd, width - 4);
+    const maxC = Math.max(4, Math.floor((Math.max(it.w, labelEnd - it.x) + 4) / 7.2));
+    const hasUp = ctx.items.some(u => u.kind === 'up' && u.row === it.row && Math.abs(u.x - it.x) < 1);
+    return { maxC, hasUp };
+  };
+  // a truncated label should not end in a dangling "+"
+  const truncL = (str, max) => { str = String(str); return str.length <= max ? str : str.slice(0, Math.max(1, max - 1)).replace(/[\s+]+$/, '') + '…'; };
+  const phaseLines = (label, maxC, hasUp) => {
+    let lines;
+    if (label.length <= maxC) lines = [label];
+    else if (label.includes(' + ')){
+      // keep the last "+ ..." part (often a just-added treatment type) on its
+      // own line in full; truncate the front of the label instead
+      const segs = label.split(' + ');
+      const last = '+ ' + segs.pop();
+      lines = [truncL(segs.join(' + '), maxC), truncL(last, maxC)];
+    } else lines = wrapText(label, maxC).map(l => truncL(l, maxC));
+    if (lines.length > 1 && hasUp) lines = [truncL(label, maxC)];
+    return lines;
+  };
+  // Labels that would truncate may instead sit one line above their row at
+  // full length, with a leader down to the bar, when that upper line is free
+  // there: no alongside lane, no two-line neighbour and no earlier callout in
+  // the way. Decided up front so each callout knows what the others took.
+  const LM = state.opts.labelMode || '';
+  const callouts = new Map();
+  if (LM){
+    const taken = {};   // per row: intervals occupied on the upper line
+    const claim = (row, a, b, who) => (taken[row] = taken[row] || []).push([a, b, who]);
+    const others = (row, self) => (taken[row] || []).filter(t => t[2] !== self);
+    const labelOf = (it) => it.kind === 'event' ? (it.node.short || it.node.name.replace(/\s*\(.*\)\s*$/, '')) : (it.node.short || it.node.name);
+    // natural two-line labels occupy the upper line already
+    ctx.items.forEach((it, idx) => {
+      if (it.kind !== 'phase' || it.node.t === 'rest') return;
+      const b = phaseBudget(it, idx), lines = phaseLines(labelOf(it), b.maxC, b.hasUp);
+      if (lines.length > 1) claim(it.row, it.x, it.x + 7.2 * lines[0].length + 4, idx);
+    });
+    ctx.items.forEach((it, idx) => {
+      let need = false, cw = 7.2, x0 = it.x + 2;
+      if (it.kind === 'event'){ need = labelOf(it).length > 12; cw = 6.6; x0 = it.x; }
+      else if (it.kind === 'phase' && it.node.t !== 'rest'){
+        const b = phaseBudget(it, idx); if (b.hasUp) return;
+        need = phaseLines(labelOf(it), b.maxC, b.hasUp).some(l => l.endsWith('…'));
+      }
+      if (!need) return;
+      const label = labelOf(it), w = cw * label.length + 4;
+      // slide left (a little) when a neighbour owns the upper line to the right
+      const occ = others(it.row, idx);
+      let start = x0;
+      const blockedAt = (a) => occ.find(([p, q]) => a < q && a + w > p);
+      for (let tries = 0; tries < 3; tries++){
+        const hit = blockedAt(start); if (!hit) break;
+        start = hit[0] - w - 4;
+      }
+      if (start < 0 || start > x0 || x0 - start > 60 || start + w > width - 2 || blockedAt(start)) return;
+      callouts.set(idx, { label, start }); claim(it.row, start, start + w, idx);
+    });
+  }
   for (const it of ctx.items){
     const n = it.node, y0 = it.row * rowH, idx = ctx.items.indexOf(it); let s = '';
     if (it.kind === 'decision'){
@@ -1118,7 +1188,12 @@ function renderRoute(ctx, startDate, colors){
       // timeline would run past the drawing's left edge, which the printed
       // page clips; that one hangs from the marker's left edge instead.
       const flush = (txt, size) => it.x + 11 - txt.length * size * 0.27 < 0;
-      const label = trunc(n.name.replace(/\s*\(.*\)\s*$/, ''), 12), lf = flush(label, 11.5);
+      const label = trunc(n.short || n.name.replace(/\s*\(.*\)\s*$/, ''), 12), lf = flush(label, 11.5);
+      if (callouts.has(idx)){
+        const co = callouts.get(idx), ly = y0 + nameY - 14;
+        s += T(co.start, ly, co.label, { size:11.5, weight:600, fill:'#172033', halo:3.5 });
+        s += `<path d="M${(LM === 'tick' ? it.x + 11 : co.start + 1).toFixed(1)} ${(ly + 3).toFixed(1)} L${(it.x + 11).toFixed(1)} ${(y0 + barY - 8).toFixed(1)}" stroke="#9AA3B2" stroke-width="1.2" fill="none"/>`;
+      } else
       s += T(lf ? it.x : it.x + 11, y0 + nameY - 5, label, { size:11.5, weight:600, fill:'#172033', anchor: lf ? '' : 'middle' });
       if (!ctx.noDate.has(n.id)){ const d = startText(it.week), df = flush(d, 10.5); s += T(df ? it.x : it.x + 11, y0 + startY, d, { size:10.5, anchor: df ? '' : 'middle' }); }
     } else if (it.kind === 'up'){
@@ -1143,34 +1218,16 @@ function renderRoute(ctx, startDate, colors){
       if (n.openEnded) s += `<rect x="${it.x}" y="${y0 + barY}" width="${it.w.toFixed(1)}" height="${L.barH}" rx="4" fill="url(#fade)"/>`;
       if (w > 52 && it.w > 70){ const bx = it.x + it.w * 0.72; s += `<path d="M${bx - 3} ${y0 + barY + L.barH + 3} L${bx + 3} ${y0 + barY - 3} M${bx + 3} ${y0 + barY + L.barH + 3} L${bx + 9} ${y0 + barY - 3}" stroke="#fff" stroke-width="2.5"/>`; }
       if (it.kind === 'phase'){
-        // a label may run past its own bar into empty space, up to the next
-        // item on the row that draws its own name (rests draw none)
-        let labelEnd = null;
-        for (let j = idx + 1; j < ctx.items.length && labelEnd == null; j++){
-          const q = ctx.items[j];
-          if (q.row !== it.row || q.kind === 'up') continue;
-          if (q.kind === 'phase') labelEnd = q.x - 8;
-          else if (q.kind === 'event') labelEnd = q.x - 30;
-          else if (q.kind === 'decision') labelEnd = q.x - 28;
-        }
-        if (labelEnd == null){ const e = ctx.rowExt[it.row]; labelEnd = (e && isFinite(e.max) ? e.max : it.x + it.w) + 12; }
-        labelEnd = Math.min(labelEnd, width - 4);
-        const maxC = Math.max(4, Math.floor((Math.max(it.w, labelEnd - it.x) + 4) / 7.2));
+        const { maxC, hasUp } = phaseBudget(it, idx);
         const label = n.short || n.name;
-        const hasUp = ctx.items.some(u => u.kind === 'up' && u.row === it.row && Math.abs(u.x - it.x) < 1);
-        // a truncated label should not end in a dangling "+"
-        const truncL = (s, max) => { s = String(s); return s.length <= max ? s : s.slice(0, Math.max(1, max - 1)).replace(/[\s+]+$/, '') + '…'; };
-        let lines;
-        if (label.length <= maxC) lines = [label];
-        else if (label.includes(' + ')){
-          // keep the last "+ ..." part (often a just-added treatment type) on its
-          // own line in full; truncate the front of the label instead
-          const segs = label.split(' + ');
-          const last = '+ ' + segs.pop();
-          lines = [truncL(segs.join(' + '), maxC), truncL(last, maxC)];
-        } else lines = wrapText(label, maxC).map(l => truncL(l, maxC));
-        if (lines.length > 1 && hasUp) lines = [truncL(label, maxC)];
-        lines.forEach((ln, i) => { s += T(it.x + 2, y0 + nameY - (lines.length - 1 - i) * 12.5, ln, { size:12.5, weight:600, fill:'#172033' }); });
+        const co = callouts.get(idx);
+        const lines = co ? [label] : phaseLines(label, maxC, hasUp);
+        if (co){
+          const ly = y0 + nameY - 14;
+          s += T(co.start, ly, label, { size:12.5, weight:600, fill:'#172033', halo:3.5 });
+          if (LM === 'tick') s += `<path d="M${(it.x + 3).toFixed(1)} ${(ly + 3).toFixed(1)} V${(y0 + barY - 3).toFixed(1)}" stroke="#9AA3B2" stroke-width="1.2" fill="none"/>`;
+          else s += `<path d="M${(co.start + 1).toFixed(1)} ${(ly + 3).toFixed(1)} L${(it.x + Math.min(it.w / 2, 24)).toFixed(1)} ${(y0 + barY - 3).toFixed(1)}" stroke="#9AA3B2" stroke-width="1.2" fill="none"/>`;
+        } else lines.forEach((ln, i) => { s += T(it.x + 2, y0 + nameY - (lines.length - 1 - i) * 12.5, ln, { size:12.5, weight:600, fill:'#172033' }); });
         s += T(it.x + 2, y0 + durY, n.openEnded ? 'ongoing' : (n.mode === 'weekdays' && !(w > 0)) ? 'to be set' : durShort(w), { size:11 });
         if (!ctx.noDate.has(n.id)) s += T(it.x + 2, y0 + startY, startText(it.week), { size:10.5 });
       } else {

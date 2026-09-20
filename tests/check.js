@@ -64,9 +64,11 @@ if (CHANGELOG[0] && LIBRARY.some(r => r.added === CHANGELOG[0].date) === false) 
 // refs may keep a brand, since an FDA label is titled by it.
 const BRANDS = ['Keytruda','Opdivo','Imfinzi','Zejula','Enhertu','Avastin','Verzenio','Tecentriq','Kisqali','Tagrisso','Lynparza','Kadcyla','Yervoy','Welireg','Tafinlar','Padcev','Mekinist','Jemperli','Herceptin','Alecensa','Perjeta','Phesgo','Xeloda','Ibrance','Nerlynx','Tukysa','Trodelvy','Libtayo','Bavencio','Lenvima','Cabometyx','Xtandi','Zytiga','Erleada','Nubeqa','Lupron','Zoladex','Orgovyx','Rubraca','Talzenna','Lumakras','Krazati','Rybrevant','Lorbrena','Alunbrig','Braftovi','Mektovi','Cotellic','Neulasta','Neupogen','Abraxane','Taxol','Taxotere','Adriamycin','Cytoxan','Faslodex','Piqray','Truqap','Orserdu','Itovebi','Afinitor','Halaven','Gemzar'];
 const brandRe = new RegExp('\\b(' + BRANDS.join('|') + ')\\b');
+// the owner's two exceptions: the generic names are too long for a map label
+const ALLOWED = /Trastuzumab deruxtecan \(Enhertu\)|trastuzumab emtansine \(Kadcyla\)|Enhertu \(T-DXd\)|Enhertu or Kadcyla/g;
 for (const r of LIBRARY){
   const strip = { ...r }; delete strip.refs;
-  const m = JSON.stringify(strip).match(brandRe);
+  const m = JSON.stringify(strip).replace(ALLOWED, '').match(brandRe);
   if (m) errors.push(`${r.id}: brand name "${m[1]}" in patient-facing text; use the generic name`);
 }
 if (ctx.COMPARE_EXAMPLE){ const m = JSON.stringify(ctx.COMPARE_EXAMPLE).match(brandRe); if (m) errors.push(`compare example: brand name "${m[1]}"; use the generic name`); }

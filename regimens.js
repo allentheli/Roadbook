@@ -12,7 +12,7 @@ const MODS = {
 // small constructors keep the library readable
 const P = (o) => Object.assign({ t:'phase', mods:['chemo'], mode:'cycles', cycleDays:21, cycles:4, on:true }, o);
 const R = (name, weeks, plain) => ({ t:'rest', name, weeks, plain });
-const S = (name, plain) => ({ t:'event', name, mods:['surgery'], plain });
+const S = (name, plain, short) => ({ t:'event', name, mods:['surgery'], plain, ...(short ? { short } : {}) });
 const D = (o) => Object.assign({ t:'decision', emph:null, only:false }, o);
 const Br = (cond, nodes, short) => short ? ({ cond, nodes, short }) : ({ cond, nodes });
 
@@ -71,7 +71,7 @@ const LIBRARY = [
   title:'HER2-targeted treatment before surgery, then continued after',
   subtitle:'HER2-positive breast cancer, stage II to III',
   nodes:[
-    P({ name:'Trastuzumab deruxtecan', short:'Trastuzumab deruxtecan', mods:['targeted'], cycleDays:21, cycles:4,
+    P({ name:'Trastuzumab deruxtecan (Enhertu)', short:'Enhertu (T-DXd)', mods:['targeted'], cycleDays:21, cycles:4,
         plain:'An antibody that locks onto the HER2 protein on cancer cells and delivers chemotherapy directly inside them. Given by IV every 3 weeks, 4 times.' }),
     P({ name:'Paclitaxel + trastuzumab + pertuzumab (THP)', short:'Paclitaxel + HER2 antibodies', mods:['chemo','targeted'], cycleDays:21, cycles:4,
         visits:[{d:1,label:'Paclitaxel, trastuzumab, and pertuzumab'},{d:8,label:'Paclitaxel'},{d:15,label:'Paclitaxel'}],
@@ -88,7 +88,7 @@ const LIBRARY = [
             ENDOCRINE_ALONGSIDE(),
           ]),
           Br('Some cancer remained', [
-            P({ name:'Trastuzumab deruxtecan', short:'Trastuzumab deruxtecan', mods:['targeted'], cycleDays:21, cycles:14, plain:'Trastuzumab deruxtecan every 3 weeks for up to 14 doses (DESTINY-Breast05). Trastuzumab emtansine for 14 doses is an alternative.' }),
+            P({ name:'Trastuzumab deruxtecan (Enhertu)', short:'Enhertu (T-DXd)', mods:['targeted'], cycleDays:21, cycles:14, plain:'Trastuzumab deruxtecan every 3 weeks for up to 14 doses (DESTINY-Breast05). Trastuzumab emtansine for 14 doses is an alternative.' }),
             RADIATION_ALONGSIDE(),
             ENDOCRINE_ALONGSIDE(),
           ]),
@@ -115,7 +115,7 @@ const LIBRARY = [
             ENDOCRINE_ALONGSIDE(),
           ]),
           Br('Some cancer remained', [
-            P({ name:'Trastuzumab deruxtecan or trastuzumab emtansine', short:'Trastuzumab deruxtecan or emtansine', mods:['targeted'], cycleDays:21, cycles:14, plain:'An antibody that carries chemotherapy directly into HER2-positive cells, every 3 weeks for up to 14 doses.' }),
+            P({ name:'Trastuzumab deruxtecan (Enhertu) or trastuzumab emtansine (Kadcyla)', short:'Enhertu or Kadcyla', mods:['targeted'], cycleDays:21, cycles:14, plain:'An antibody that carries chemotherapy directly into HER2-positive cells, every 3 weeks for up to 14 doses.' }),
             RADIATION_ALONGSIDE(),
             ENDOCRINE_ALONGSIDE(),
           ]),
@@ -652,7 +652,7 @@ const LIBRARY = [
   title:'Removing the tumor through a scope, then chemoradiation to keep your bladder',
   subtitle:'Muscle-invasive bladder cancer (stage II to IIIA), bladder-preserving approach',
   nodes:[
-    S('Scope surgery to remove the visible tumor (TURBT)', 'The tumor is removed through the urethra with a scope, without any incision. This is done as completely as possible before radiation.'),
+    S('Scope surgery to remove the visible tumor (TURBT)', 'The tumor is removed through the urethra with a scope, without any incision. This is done as completely as possible before radiation.', 'Scope surgery'),
     R('Recovery', 3, 'A few weeks to heal before radiation begins.'),
     P({ name:'Chemoradiation', short:'Radiation + chemo', mods:['radiation','chemo'], mode:'weekdays', weeks:'',
         plain:'Radiation to the bladder every weekday, with low-dose chemotherapy (cisplatin, or 5-FU with mitomycin) to make the radiation more effective. The course is either about 4 weeks or about 6 and a half weeks; your radiation team sets the schedule.' }),
