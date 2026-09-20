@@ -1056,11 +1056,11 @@ function T(x, y, txt, o={}){
   const halo = o.halo ? ` stroke="#fff" stroke-width="${o.halo}" stroke-linejoin="round" paint-order="stroke"` : '';
   return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" font-size="${o.size || 10}" font-weight="${o.weight || 400}" fill="${o.fill || '#6B7385'}"${o.anchor ? ` text-anchor="${o.anchor}"` : ''}${halo}>${esc(txt)}</text>`;
 }
-function wrapText(s, max){
+function wrapText(s, max, maxLines = 2){
   const words = String(s || '').split(/\s+/); const lines = []; let cur = '';
   for (const w of words){ if ((cur + ' ' + w).trim().length > max && cur){ lines.push(cur); cur = w; } else cur = (cur + ' ' + w).trim(); }
   if (cur) lines.push(cur);
-  if (lines.length > 2){ const rest = lines.slice(1).join(' '); lines.length = 1; lines.push(trunc(rest, max)); }
+  if (lines.length > maxLines){ const rest = lines.slice(maxLines - 1).join(' '); lines.length = maxLines - 1; lines.push(trunc(rest, max)); }
   return lines;
 }
 function renderRoute(ctx, startDate, colors){
@@ -1092,7 +1092,7 @@ function renderRoute(ctx, startDate, colors){
   for (let r = 0; r < ctx.rows; r++){ const e = ctx.rowExt[r]; if (!e || !isFinite(e.min)) continue; g += `<line x1="${e.min}" y1="${cy(r)}" x2="${e.max}" y2="${cy(r)}" stroke="#D9DEE7" stroke-width="2"/>`; }
   for (const f of ctx.forks){
     g += curve(f.fx, cy(f.frow), f.tx, cy(f.trow), f.dim);
-    const lines = wrapText(f.cond, 21);
+    const lines = wrapText(f.cond, 21, 3);
     if (f.single){ lines.forEach((ln, i) => { g += T(f.fx + 8, cy(f.frow) + 24 + i * 12, ln, { size:10.5, fill:'#3B4557', weight:600, halo:3.5 }); }); }
     else { const base = cy(f.trow) - 10 - (lines.length - 1) * 12; lines.forEach((ln, i) => { g += T(f.tx - 6, base + i * 12, ln, { size:10.5, anchor:'end', fill: f.dim ? '#9AA3B2' : '#172033', weight: f.expected ? 600 : 400, halo:3.5 }); }); }
   }
@@ -1142,9 +1142,10 @@ function renderRoute(ctx, startDate, colors){
   // full length, with a leader down to the bar, when that upper line is free
   // there: no alongside lane, no two-line neighbour and no earlier callout in
   // the way. Decided up front so each callout knows what the others took.
-  const LM = state.opts.labelMode || '';
+  // The leader is a short straight tick at the bar's left edge (the owner's
+  // choice over an angled leader).
   const callouts = new Map();
-  if (LM){
+  {
     const taken = {};   // per row: intervals occupied on the upper line
     const claim = (row, a, b, who) => (taken[row] = taken[row] || []).push([a, b, who]);
     const others = (row, self) => (taken[row] || []).filter(t => t[2] !== self);
@@ -1192,7 +1193,7 @@ function renderRoute(ctx, startDate, colors){
       if (callouts.has(idx)){
         const co = callouts.get(idx), ly = y0 + nameY - 14;
         s += T(co.start, ly, co.label, { size:11.5, weight:600, fill:'#172033', halo:3.5 });
-        s += `<path d="M${(LM === 'tick' ? it.x + 11 : co.start + 1).toFixed(1)} ${(ly + 3).toFixed(1)} L${(it.x + 11).toFixed(1)} ${(y0 + barY - 8).toFixed(1)}" stroke="#9AA3B2" stroke-width="1.2" fill="none"/>`;
+        s += `<path d="M${(it.x + 11).toFixed(1)} ${(ly + 3).toFixed(1)} V${(y0 + barY - 8).toFixed(1)}" stroke="#9AA3B2" stroke-width="1.2" fill="none"/>`;
       } else
       s += T(lf ? it.x : it.x + 11, y0 + nameY - 5, label, { size:11.5, weight:600, fill:'#172033', anchor: lf ? '' : 'middle' });
       if (!ctx.noDate.has(n.id)){ const d = startText(it.week), df = flush(d, 10.5); s += T(df ? it.x : it.x + 11, y0 + startY, d, { size:10.5, anchor: df ? '' : 'middle' }); }
@@ -1225,8 +1226,7 @@ function renderRoute(ctx, startDate, colors){
         if (co){
           const ly = y0 + nameY - 14;
           s += T(co.start, ly, label, { size:12.5, weight:600, fill:'#172033', halo:3.5 });
-          if (LM === 'tick') s += `<path d="M${(it.x + 3).toFixed(1)} ${(ly + 3).toFixed(1)} V${(y0 + barY - 3).toFixed(1)}" stroke="#9AA3B2" stroke-width="1.2" fill="none"/>`;
-          else s += `<path d="M${(co.start + 1).toFixed(1)} ${(ly + 3).toFixed(1)} L${(it.x + Math.min(it.w / 2, 24)).toFixed(1)} ${(y0 + barY - 3).toFixed(1)}" stroke="#9AA3B2" stroke-width="1.2" fill="none"/>`;
+          s += `<path d="M${(it.x + 3).toFixed(1)} ${(ly + 3).toFixed(1)} V${(y0 + barY - 3).toFixed(1)}" stroke="#9AA3B2" stroke-width="1.2" fill="none"/>`;
         } else lines.forEach((ln, i) => { s += T(it.x + 2, y0 + nameY - (lines.length - 1 - i) * 12.5, ln, { size:12.5, weight:600, fill:'#172033' }); });
         s += T(it.x + 2, y0 + durY, n.openEnded ? 'ongoing' : (n.mode === 'weekdays' && !(w > 0)) ? 'to be set' : durShort(w), { size:11 });
         if (!ctx.noDate.has(n.id)) s += T(it.x + 2, y0 + startY, startText(it.week), { size:10.5 });
