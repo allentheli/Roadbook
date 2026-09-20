@@ -41,10 +41,10 @@ const LIBRARY = [
   nodes:[
     P({ name:'Paclitaxel + carboplatin + pembrolizumab', short:'Carbo + paclitaxel + pembrolizumab', mods:['chemo','io'], cycleDays:21, cycles:4,
         visits:[{d:1,label:'Paclitaxel, carboplatin, and pembrolizumab'},{d:8,label:'Paclitaxel and carboplatin'},{d:15,label:'Paclitaxel and carboplatin'}],
-        plain:'Paclitaxel and carboplatin chemotherapy, with pembrolizumab every 3 weeks. Pembrolizumab is immunotherapy: it helps your immune system attack cancer cells.' }),
+        plain:'Paclitaxel and carboplatin chemotherapy, with pembrolizumab. Pembrolizumab is immunotherapy: it helps your immune system attack cancer cells.' }),
     P({ name:'Doxorubicin (or epirubicin) + cyclophosphamide + pembrolizumab', short:'AC + pembrolizumab', mods:['chemo','io'], cycleDays:21, cycles:4,
         visits:[{d:1,label:'Doxorubicin, cyclophosphamide, and pembrolizumab'}],
-        plain:'Doxorubicin and cyclophosphamide chemotherapy every 3 weeks, with pembrolizumab continuing. A growth-factor injection after each dose supports your blood counts.' }),
+        plain:'Doxorubicin and cyclophosphamide chemotherapy, with pembrolizumab continuing. A growth-factor injection after each dose supports your blood counts.' }),
     RECOVER(4),
     SURGERY_BREAST(true),
     HEAL(5),
@@ -83,7 +83,7 @@ const LIBRARY = [
         plain:'The report tells us whether any cancer remained. HER2-targeted treatment continues either way, to complete about one year in total.',
         branches:[
           Br('No remaining cancer (complete response)', [
-            P({ name:'Trastuzumab + pertuzumab', short:'HER2 antibodies (HP)', mods:['targeted'], cycleDays:21, cycles:9, plain:'The two HER2 antibodies continue every 3 weeks, without chemotherapy, to complete about one year of HER2-targeted treatment counting the treatment given before surgery. Often given as an injection under the skin.' }),
+            P({ name:'Trastuzumab + pertuzumab', short:'HER2 antibodies (HP)', mods:['targeted'], cycleDays:21, cycles:9, plain:'The two HER2 antibodies continue without chemotherapy, to complete about one year of HER2-targeted treatment counting the treatment given before surgery. Often given as an injection under the skin.' }),
             RADIATION_ALONGSIDE(),
             ENDOCRINE_ALONGSIDE(),
           ]),
@@ -110,7 +110,7 @@ const LIBRARY = [
         plain:'HER2-targeted treatment continues either way, to complete about one year in total.',
         branches:[
           Br('No remaining cancer (complete response)', [
-            P({ name:'Trastuzumab + pertuzumab', short:'HER2 antibodies (HP)', mods:['targeted'], cycleDays:21, cycles:11, plain:'The two antibodies continue every 3 weeks, without chemotherapy, to complete one year. Often given as an injection under the skin.' }),
+            P({ name:'Trastuzumab + pertuzumab', short:'HER2 antibodies (HP)', mods:['targeted'], cycleDays:21, cycles:11, plain:'The two antibodies continue without chemotherapy, to complete one year. Often given as an injection under the skin.' }),
             RADIATION_ALONGSIDE(),
             ENDOCRINE_ALONGSIDE(),
           ]),
@@ -131,8 +131,8 @@ const LIBRARY = [
     SURGERY_BREAST(),
     HEAL(4),
     P({ name:'Doxorubicin + cyclophosphamide (dose-dense AC)', short:'Doxorubicin + cyclophosphamide', mods:['chemo'], cycleDays:14, cycles:4,
-        plain:'Two chemotherapy drugs every 2 weeks, with a growth-factor injection after each dose to support your blood counts.' }),
-    P({ name:'Paclitaxel', short:'Paclitaxel', mods:['chemo'], cycleDays:7, cycles:12, plain:'One chemotherapy drug given weekly for 12 weeks. Visits are shorter than the AC visits.' }),
+        plain:'Two chemotherapy drugs by IV, with a growth-factor injection after each dose to support your blood counts.' }),
+    P({ name:'Paclitaxel', short:'Paclitaxel', mods:['chemo'], cycleDays:7, cycles:12, plain:'One chemotherapy drug by IV, following the AC part of the course.' }),
     RADIATION_AFTER(true),
     P({ name:'Hormone (endocrine) therapy, if hormone-receptor positive', short:'Hormone tablet', mods:['endocrine'], mode:'daily', weeks:260, optional:true, on:false,
         plain:'If the cancer is hormone-receptor positive: one tablet a day (such as tamoxifen, letrozole, or anastrozole) for 5 to 10 years, starting once chemotherapy is finished.' }),
@@ -186,7 +186,7 @@ const LIBRARY = [
   nodes:[
     P({ name:'mFOLFIRINOX', short:'FOLFIRINOX', mods:['chemo'], cycleDays:14, cycles:6,
         visits:[{d:1,label:'Oxaliplatin, irinotecan, leucovorin, then a 5-FU pump worn home for about 46 hours'}],
-        plain:'Three chemotherapy drugs by IV every 2 weeks. One of them (5-FU) runs through a small pump you wear home for about 2 days, then a nurse disconnects it.' }),
+        plain:'Three chemotherapy drugs by IV. One of them (5-FU) runs through a small pump you wear home for about 2 days, then a nurse disconnects it.' }),
     P({ name:'Chemoradiation', short:'Radiation + capecitabine', mods:['radiation','chemo'], mode:'weekdays', weeks:5,
         plain:'Radiation to the pelvis every weekday for 5 weeks, with a low-dose chemotherapy tablet (capecitabine) on radiation days to make the radiation work better.' }),
     R('Recovery before surgery', 7, 'About 6 to 8 weeks for the tumor to keep shrinking and your body to recover. Imaging is repeated before surgery.'),
@@ -194,7 +194,7 @@ const LIBRARY = [
     R('Healing after surgery', 6, 'Recovery from surgery, usually 6 to 8 weeks before chemotherapy restarts.'),
     P({ name:'mFOLFOX6', short:'FOLFOX', mods:['chemo'], cycleDays:14, cycles:6,
         visits:[{d:1,label:'Oxaliplatin and leucovorin, then a 5-FU pump for about 46 hours'}],
-        plain:'Two chemotherapy drugs (oxaliplatin and 5-FU) every 2 weeks for 3 months, to lower the chance of the cancer coming back. Capecitabine tablets are an alternative.' }),
+        plain:'Two chemotherapy drugs (oxaliplatin and 5-FU) to lower the chance of the cancer coming back. Capecitabine tablets are an alternative.' }),
   ]
 },
 {
@@ -208,7 +208,7 @@ const LIBRARY = [
     R('Short break', 2, 'Chemotherapy starts about 2 weeks after radiation ends (11 to 18 days in the RAPIDO trial).'),
     P({ name:'CAPOX', short:'CAPOX', mods:['chemo'], cycleDays:21, cycles:6,
         visits:[{d:1,label:'Oxaliplatin by IV, then capecitabine tablets twice a day for 14 days'}],
-        plain:'Oxaliplatin by IV every 3 weeks plus capecitabine tablets at home for 2 of every 3 weeks, for about 4 and a half months. FOLFOX every 2 weeks (9 cycles) is an alternative.' }),
+        plain:'Oxaliplatin by IV on day 1, plus capecitabine tablets at home for 2 of every 3 weeks. FOLFOX every 2 weeks (9 cycles) is an alternative.' }),
     R('Recovery before surgery', 3, 'A short break of 2 to 4 weeks, with imaging to plan surgery.'),
     S('Surgery (rectal resection)', 'Removal of the rectal tumor and surrounding tissue. A temporary ostomy (stoma) is common and is usually reversed a few months later.'),
     R('Healing after surgery', 6, 'Recovery from surgery. No further chemotherapy is planned after surgery in this approach.'),
@@ -268,15 +268,15 @@ const LIBRARY = [
         visits:[{d:1,label:'Docetaxel, oxaliplatin, leucovorin, then a 5-FU pump worn home for 24 hours'}],
         plain:'Four chemotherapy drugs by IV. One of them (5-FU) runs through a small pump you wear home for a day.' }),
     P({ name:'Durvalumab', short:'Durvalumab', mods:['io'], cycleDays:28, cycles:2, optional:true, on:true, concurrent:true,
-        plain:'Immunotherapy by IV every 4 weeks, on the same days as chemotherapy: 2 doses before surgery. It helps your immune system recognize and attack cancer cells.' }),
+        plain:'Immunotherapy by IV on chemotherapy days, before surgery. It helps your immune system recognize and attack cancer cells.' }),
     R('Recovery before surgery', 5, 'About 4 to 6 weeks to recover, with scans to plan the operation.'),
     S('Surgery (gastrectomy)', 'Removal of part or all of the stomach, with nearby lymph nodes. Recovery takes several weeks and includes learning a new way of eating.'),
     R('Healing after surgery', 7, 'Recovery and adjusting to eating after stomach surgery, usually 6 to 8 weeks before treatment restarts.'),
     P({ name:'FLOT chemotherapy', short:'FLOT', mods:['chemo'], cycleDays:14, cycles:4,
         visits:[{d:1,label:'Docetaxel, oxaliplatin, leucovorin, then a 5-FU pump worn home for 24 hours'}],
-        plain:'The same four chemotherapy drugs every 2 weeks, 4 more times.' }),
+        plain:'The same four chemotherapy drugs again, after surgery.' }),
     P({ name:'Durvalumab', short:'Durvalumab', mods:['io'], cycleDays:28, cycles:2, optional:true, on:true, concurrent:true,
-        plain:'Immunotherapy every 4 weeks, on chemotherapy days: 2 doses after surgery.' }),
+        plain:'Immunotherapy on chemotherapy days, after surgery.' }),
     P({ name:'Durvalumab alone', short:'Durvalumab alone', mods:['io'], cycleDays:28, cycles:10, optional:true, on:true,
         plain:'Immunotherapy on its own, to complete about a year in total.' }),
   ]
@@ -300,8 +300,8 @@ const LIBRARY = [
                 plain:'No further treatment. Visits and scans on a regular schedule.' }),
           ]),
           Br('Some cancer remained', [
-            P({ name:'Nivolumab', short:'Nivolumab', mods:['io'], cycleDays:14, cycles:8, plain:'Immunotherapy by IV every 2 weeks for the first 16 weeks. It helps your immune system recognize and attack cancer cells.' }),
-            P({ name:'Nivolumab', short:'Nivolumab', mods:['io'], cycleDays:28, cycles:9, plain:'Then every 4 weeks to complete one year in total.' }),
+            P({ name:'Nivolumab', short:'Nivolumab', mods:['io'], cycleDays:14, cycles:8, plain:'Immunotherapy by IV. It helps your immune system recognize and attack cancer cells.' }),
+            P({ name:'Nivolumab', short:'Nivolumab', mods:['io'], cycleDays:28, cycles:9, plain:'The same immunotherapy at a wider spacing, to complete one year in total.' }),
           ]),
         ] }),
   ]
@@ -331,7 +331,7 @@ const LIBRARY = [
     R('Healing after surgery', 8, 'Recovery from surgery. Chemotherapy usually starts 6 to 12 weeks after the operation.'),
     P({ name:'mFOLFIRINOX', short:'FOLFIRINOX', mods:['chemo'], cycleDays:14, cycles:12,
         visits:[{d:1,label:'Oxaliplatin, irinotecan, leucovorin, then a 5-FU pump worn home for about 46 hours'}],
-        plain:'Three chemotherapy drugs by IV every 2 weeks for 6 months. One of them (5-FU) runs through a small pump you wear home for about 2 days.' }),
+        plain:'Three chemotherapy drugs by IV. One of them (5-FU) runs through a small pump you wear home for about 2 days.' }),
     P({ name:'Monitoring (surveillance)', short:'Surveillance', mods:['watch'], mode:'ongoing', weeks:52, openEnded:true, freqText:'Visits, blood tests, and scans every 3 to 6 months',
         plain:'Regular visits with blood tests and scans every 3 to 6 months.' }),
   ]
@@ -389,7 +389,7 @@ const LIBRARY = [
     RECOVER(4),
     S('Surgery (lung resection)', 'Removal of the lobe (or part) of the lung containing the cancer, plus nearby lymph nodes.'),
     R('Healing after surgery', 6, 'Recovery from surgery before immunotherapy restarts.'),
-    P({ name:'Nivolumab', short:'Nivolumab', mods:['io'], cycleDays:28, cycles:13, plain:'Immunotherapy on its own every 4 weeks for up to a year.' }),
+    P({ name:'Nivolumab', short:'Nivolumab', mods:['io'], cycleDays:28, cycles:13, plain:'Immunotherapy on its own after surgery, to complete about a year in total.' }),
   ]
 },
 {
@@ -459,7 +459,7 @@ const LIBRARY = [
     P({ name:'Preventive brain radiation (PCI)', short:'Brain radiation', mods:['radiation'], mode:'weekdays', weeks:2, optional:true, on:false,
         plain:'Low-dose radiation to the brain over about 2 weeks to lower the chance of cancer spreading there. Recommended for some people; MRI monitoring is an alternative.' }),
     R('Recovery', 3, 'A short break of 1 to 6 weeks, with scans to confirm the cancer has responded.'),
-    P({ name:'Durvalumab', short:'Durvalumab', mods:['io'], cycleDays:28, cycles:26, plain:'Immunotherapy by IV every 4 weeks for up to 2 years. Treatment stops at 24 months at the latest; the exact number of doses depends on when it started. It helps your immune system keep the cancer from coming back.' }),
+    P({ name:'Durvalumab', short:'Durvalumab', mods:['io'], cycleDays:28, cycles:26, plain:'Immunotherapy by IV for up to 2 years. Treatment stops at 24 months at the latest; the exact number of doses depends on when it started. It helps your immune system keep the cancer from coming back.' }),
   ]
 },
 
@@ -476,7 +476,7 @@ const LIBRARY = [
     HEAL(4),
     P({ name:'Paclitaxel + trastuzumab', short:'Paclitaxel + trastuzumab', mods:['chemo','targeted'], cycleDays:7, cycles:12,
         visits:[{d:1,label:'Paclitaxel and trastuzumab'}],
-        plain:'A lower-intensity chemotherapy (paclitaxel) plus the HER2 antibody trastuzumab, both given weekly for 12 weeks.' }),
+        plain:'A lower-intensity chemotherapy (paclitaxel) plus the HER2 antibody trastuzumab, both by IV on the same day.' }),
     P({ name:'Trastuzumab', short:'Trastuzumab', mods:['targeted'], cycleDays:21, cycles:13,
         plain:'The HER2 antibody continues on its own, either weekly or every 3 weeks, to complete one year. Often given as an injection under the skin.' }),
     RADIATION_ALONGSIDE(),
@@ -511,8 +511,8 @@ const LIBRARY = [
     SURGERY_BREAST(),
     HEAL(4),
     P({ name:'Doxorubicin + cyclophosphamide (dose-dense AC)', short:'Doxorubicin + cyclophosphamide', mods:['chemo'], cycleDays:14, cycles:4,
-        plain:'Two chemotherapy drugs every 2 weeks, with a growth-factor injection after each dose to support your blood counts.' }),
-    P({ name:'Paclitaxel', short:'Paclitaxel', mods:['chemo'], cycleDays:7, cycles:12, plain:'One chemotherapy drug given weekly for 12 weeks. Visits are shorter than the AC visits.' }),
+        plain:'Two chemotherapy drugs by IV, with a growth-factor injection after each dose to support your blood counts.' }),
+    P({ name:'Paclitaxel', short:'Paclitaxel', mods:['chemo'], cycleDays:7, cycles:12, plain:'One chemotherapy drug by IV, following the AC part of the course.' }),
     RADIATION_AFTER(true),
     P({ name:'Hormone (endocrine) therapy', short:'Hormone tablet', mods:['endocrine'], mode:'daily', weeks:260,
         plain:'One tablet a day (such as tamoxifen, letrozole, or anastrozole) for 5 to 10 years, starting once chemotherapy is finished. Your team chooses the tablet and how long to continue.' }),
@@ -585,7 +585,7 @@ const LIBRARY = [
     R('Healing after surgery', 8, 'Recovery from surgery, usually 6 to 10 weeks before treatment restarts.'),
     P({ name:'Enfortumab vedotin + pembrolizumab', short:'Enfortumab + pembrolizumab', mods:['targeted','io'], cycleDays:21, cycles:6,
         visits:[{d:1,label:'Enfortumab vedotin and pembrolizumab'},{d:8,label:'Enfortumab vedotin'}],
-        plain:'The same combination continues after surgery for 6 cycles (about 4 months).' }),
+        plain:'The same combination continues after surgery.' }),
     P({ name:'Pembrolizumab', short:'Pembrolizumab', mods:['io'], cycleDays:21, cycles:8,
         plain:'Immunotherapy on its own, to complete about one year of pembrolizumab in total.' }),
   ]
@@ -769,11 +769,11 @@ const LIBRARY = [
     R('Healing after surgery', 5, 'Recovery from surgery. Treatment usually starts within 6 to 8 weeks of the operation.'),
     P({ name:'mFOLFOX6 chemotherapy', short:'FOLFOX', mods:['chemo'], cycleDays:14, cycles:12,
         visits:[{d:1,label:'Oxaliplatin and leucovorin, then a 5-FU pump for about 46 hours'}],
-        plain:'Two chemotherapy drugs (oxaliplatin and 5-FU) every 2 weeks for 6 months. One of them runs through a small pump you wear home for about 2 days.' }),
+        plain:'Two chemotherapy drugs (oxaliplatin and 5-FU). One of them runs through a small pump you wear home for about 2 days.' }),
     P({ name:'Atezolizumab', short:'Atezolizumab', mods:['io'], cycleDays:14, cycles:12, concurrent:true,
-        plain:'Immunotherapy by IV every 2 weeks, given on the same days as chemotherapy. It helps your immune system recognize and attack cancer cells, which works particularly well in mismatch-repair-deficient cancers.' }),
+        plain:'Immunotherapy by IV, given on the same days as chemotherapy. It helps your immune system recognize and attack cancer cells, which works particularly well in mismatch-repair-deficient cancers.' }),
     P({ name:'Atezolizumab alone', short:'Atezolizumab alone', mods:['io'], cycleDays:14, cycles:13,
-        plain:'Immunotherapy continues on its own every 2 weeks for 6 more months, to complete one year in total.' }),
+        plain:'Immunotherapy continues on its own, to complete one year in total.' }),
     P({ name:'Monitoring (surveillance)', short:'Surveillance', mods:['watch'], mode:'ongoing', weeks:52, openEnded:true, freqText:'Blood test every 3 to 6 months, scan every 6 to 12 months',
         plain:'Regular check-ups: a blood test (CEA) every 3 to 6 months, a CT scan every 6 to 12 months, and a colonoscopy about one year after surgery.' }),
   ]
@@ -1150,7 +1150,7 @@ const LIBRARY = [
     P({ name:'Carboplatin + paclitaxel + dostarlimab', short:'Carbo + paclitaxel + dostarlimab', mods:['chemo','io'], cycleDays:21, cycles:6,
         plain:'Two chemotherapy drugs plus dostarlimab, an immunotherapy that helps your own immune system recognize and attack cancer cells, all by IV.' }),
     P({ name:'Dostarlimab maintenance', short:'Dostarlimab', mods:['io'], cycleDays:42, cycles:23,
-        plain:'Immunotherapy on its own, by IV every 6 weeks, continuing until 3 years from the start of treatment. Visits are short. Treatment stops earlier if the cancer grows or side effects require it.' }),
+        plain:'Immunotherapy on its own, by IV, continuing until 3 years from the start of treatment. Treatment stops earlier if the cancer grows or side effects require it.' }),
     P({ name:'Surveillance', short:'Surveillance', mods:['watch'], mode:'ongoing', weeks:104, openEnded:true, freqText:'Visits and scans every 3 to 6 months',
         plain:'Regular visits, exams, and scans every 3 to 6 months once treatment is complete.' }),
   ]
@@ -1168,7 +1168,7 @@ const LIBRARY = [
     P({ name:'Carboplatin + paclitaxel + trastuzumab', short:'Carbo + paclitaxel + trastuzumab', mods:['chemo','targeted'], cycleDays:21, cycles:6,
         plain:'Two chemotherapy drugs plus trastuzumab, an antibody that targets the HER2 protein on the cancer cells, all by IV. Heart function is checked before and during treatment.' }),
     P({ name:'Trastuzumab maintenance', short:'Trastuzumab', mods:['targeted'], mode:'ongoing', weeks:52, openEnded:true, freqText:'By IV every 3 weeks, for as long as it keeps working',
-        plain:'The antibody on its own, by IV every 3 weeks, continuing for as long as it keeps the cancer controlled and side effects allow. Visits are short, with heart checks every few months.' }),
+        plain:'The antibody on its own, by IV, continuing for as long as it keeps the cancer controlled and side effects allow. Heart function is checked every few months.' }),
   ]
 },
 {
@@ -1196,7 +1196,7 @@ const LIBRARY = [
           ], 'BRCA or HRD positive'),
           Br('No BRCA mutation and HRD-negative', [
             P({ name:'Bevacizumab maintenance, if used', short:'Bevacizumab', mods:['targeted'], cycleDays:21, cycles:16, optional:true, on:false,
-                plain:'If bevacizumab was started with chemotherapy, it continues on its own by IV every 3 weeks for about 15 months in total (GOG-218).' }),
+                plain:'If bevacizumab was started with chemotherapy, it continues on its own by IV, to about 15 months in total (GOG-218).' }),
             P({ name:'Niraparib tablets, if recommended', short:'Niraparib', mods:['targeted'], mode:'daily', weeks:156, optional:true, on:false,
                 plain:'Niraparib is approved for all patients after a response to chemotherapy, but the benefit is smaller when the tumor is HRD-negative (PRIMA). Your team will weigh it against side effects.' }),
             P({ name:'Surveillance', short:'Surveillance', mods:['watch'], mode:'ongoing', weeks:104, openEnded:true, freqText:'Visits, blood tests (CA-125), and scans every 3 months at first',
@@ -1218,7 +1218,7 @@ const LIBRARY = [
     S('Interval surgery (debulking)', 'A major operation, 3 to 4 weeks after the third cycle, to remove the ovaries, fallopian tubes, uterus, and as much visible cancer as possible. Some centers add heated chemotherapy in the abdomen (HIPEC). The tissue shows how well the chemotherapy worked.'),
     HEAL(4),
     P({ name:'Carboplatin + paclitaxel (after surgery)', short:'Carboplatin + paclitaxel', mods:['chemo'], cycleDays:21, cycles:3,
-        plain:'Three more cycles of the same two drugs by IV every 3 weeks, to complete 6 cycles in total.' }),
+        plain:'The same two drugs by IV, to complete 6 cycles in total.' }),
     P({ name:'Bevacizumab, if used', short:'Bevacizumab', mods:['targeted'], cycleDays:21, cycles:3, optional:true, on:false, concurrent:true,
         plain:'An antibody that blocks the blood supply to tumors, given by IV with the chemotherapy after surgery, then continued in the maintenance step. Your team will say whether it is part of your plan.' }),
     D({ name:'Tumor test result (BRCA and HRD)', short:'Gene test', question:'What did the tumor\'s gene tests show?',
@@ -1232,7 +1232,7 @@ const LIBRARY = [
           ], 'BRCA or HRD positive'),
           Br('No BRCA mutation and HRD-negative', [
             P({ name:'Bevacizumab maintenance, if used', short:'Bevacizumab', mods:['targeted'], cycleDays:21, cycles:16, optional:true, on:false,
-                plain:'If bevacizumab was started with chemotherapy, it continues on its own by IV every 3 weeks for about 15 months in total (GOG-218).' }),
+                plain:'If bevacizumab was started with chemotherapy, it continues on its own by IV, to about 15 months in total (GOG-218).' }),
             P({ name:'Niraparib tablets, if recommended', short:'Niraparib', mods:['targeted'], mode:'daily', weeks:156, optional:true, on:false,
                 plain:'Niraparib is approved for all patients after a response to chemotherapy, but the benefit is smaller when the tumor is HRD-negative (PRIMA). Your team will weigh it against side effects.' }),
             P({ name:'Surveillance', short:'Surveillance', mods:['watch'], mode:'ongoing', weeks:104, openEnded:true, freqText:'Visits, blood tests (CA-125), and scans every 3 months at first',
@@ -1261,8 +1261,9 @@ const COMPARE_EXAMPLE = {
   ],
 };
 
-const APP_VERSION = '0.22.0';
+const APP_VERSION = '0.22.1';
 const CHANGELOG = [
+  { date:'2026-09-20', text:'0.22.1: Step descriptions no longer state the step\'s own cycle length or dose count in any pathway; the schedule line under each step carries it. A cadence stays in the text only where it adds something the line cannot show, such as two cadences within one step, a choice of spacing, or a dose count that depends on stage.' },
   { date:'2026-09-20', text:'0.22.0: On a phone, a plan opened from its link or QR code shows the map at a readable size in a strip that scrolls sideways, instead of the whole map squeezed to the screen width. The builder\'s page-count note no longer appears above a shared plan. Step descriptions across the library are shorter: the schedule is no longer repeated in the text, since the line under each step already states it, and the longest descriptions were tightened. An alongside step now reads "At the same time: Radiation, Monday to Friday..." instead of two sets of parentheses.' },
   { date:'2026-09-20', text:'0.21.2: A plan opened from its link or QR code is now a dead end: the page shows the plan and the print button and nothing that leads elsewhere on the site. The About link that a desktop or tablet showed above a shared plan is gone.' },
   { date:'2026-09-20', text:'0.21.1: Printing is landscape only; the separate portrait print layout (two step columns, a smaller map) is gone, because Chrome could apply it to a landscape page. The map always prints at full size. A tight plan closes up whitespace and changes the number of step columns, then the text below the map scales down, never below 79%; the three densest library plans use that floor and stay on one page. The landing page examples are re-rendered from the current build.' },
