@@ -74,6 +74,7 @@ Review the list, then run the add/change prompt for the ones you want.
 - `plan` is the short title patients see; `title` is the one-sentence sequence; `subtitle` is the cancer line.
 - `group` drives the sub-headings in each tab; reuse existing group names exactly.
 - Hormone-therapy type is offered only for breast and prostate regimens.
+- A drug given with a step for the whole of that step is a second type on the step, or its own `concurrent:true, optional:true` step if it must be switchable; the map draws both as one two-colour bar. A separate lane above the bar is only for something that runs for a different span (radiation inside a year of antibody, a hormone tablet that outlasts everything).
 - Every clinical change gets a `CHANGELOG` line, and so does any builder change a user would notice.
   Design, copy-editing and internal engineering stay out of it; the Updates page is the public record, not a commit log.
 - `how-it-works.html` is the builder walkthrough. If a control changes, update that page in the same commit.

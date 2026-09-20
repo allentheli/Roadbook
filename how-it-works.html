@@ -45,7 +45,7 @@
     <li><b>Schedule.</b> Cycle length and number of cycles for infusions; weeks for daily tablets, radiation, or monitoring. The duration updates as you type.</li>
     <li><b>Treatment type.</b> Sets the color of the bar and what appears in the legend. A step can carry more than one type. Adding a type also adds it to the step's timeline label (for example, a chemotherapy step gains "+ immunotherapy"), and if the description does not mention it, the builder offers a sentence you can drop in.</li>
     <li><b>Include this step.</b> Switch optional steps on or off. Anything switched off disappears from the map, the step list, and the totals.</li>
-    <li><b>Alongside the step before it.</b> Draws the step on its own thin bar above the main one, for treatment that runs at the same time. If it should instead begin when that alongside step finishes, tick <b>starts after</b> and the map will place it there.</li>
+    <li><b>Alongside the step before it.</b> For treatment that runs at the same time. If it covers exactly the span of the step before it, the map folds it into that step's bar (two colours, one label such as "FLOT + durvalumab"); if it runs for a different span, it gets its own thin bar above the main one. If it should instead begin when that alongside step finishes, tick <b>starts after</b> and the map will place it there.</li>
     <li><b>Order.</b> The arrows on each row move a step earlier or later. You do not need to open a step to move it.</li>
     <li><b>Add, duplicate, remove.</b> At the bottom of each open step, and at the end of the list.</li>
   </ul>
@@ -90,7 +90,7 @@
   <div>Roadbook Oncology is an educational aid for conversations between patients and their care teams. It is not medical advice and does not replace your clinic's appointment schedule. See the <a href="disclaimer.html">disclaimer and terms of use</a>.</div>
   <div><a href="how-it-works.html">How it works</a> · <a href="about.html">About</a> · <a href="updates.html">Updates</a> · <a href="references.html">References</a> · <a href="disclaimer.html">Disclaimer</a> · <span id="ver"></span> · &copy; 2026 Roadbook Oncology. All rights reserved.</div>
 </div></footer>
-<script src="regimens.js?v=0.22.1"></script>
+<script src="regimens.js?v=0.22.2"></script>
 <script>document.getElementById('ver').textContent = 'Version ' + APP_VERSION;</script>
 
 </body></html>

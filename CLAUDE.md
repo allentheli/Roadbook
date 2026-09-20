@@ -26,6 +26,7 @@ Roadbook (formerly ONCourse) is a static site (GitHub Pages) that turns cancer t
 3. Prefer "beneficial" over "needed" when a test guides chemotherapy; treatment is a choice the evidence informs.
 4. Protocol-specified intervals stay as protocol; practice-variable intervals get a typical default and text saying the team sets it. Radiation whose course varies uses `weeks:''`.
 5. Use existing `group` names exactly (they become sub-headings). Hormone-therapy steps only in breast and prostate pathways. Surveillance is `mods:['watch']` alone. Decisions are top-level only, 2–3 branches.
+   A drug given together with a step for the whole of that step is either a second type on the step (`mods:['chemo','io']`) or, when the physician must be able to switch it off, its own step with `concurrent:true, optional:true` right after it; the map draws both the same way, one bar in two colours with one label. Use a separate alongside step with its own lane only for something that runs for a different span (radiation inside a year of antibody, a hormone tablet that outlasts everything, tablets after radiation).
 6. Set `added` (new) and `reviewed` (any change) to today; set `reviewedBy` to `'Source-checked; physician sign-off pending'` unless the owner has signed off, in which case use their initials and the date.
 7. Add a one-line `CHANGELOG` entry at the top. Bump `APP_VERSION`: patch for content, minor for features.
    The changelog is the public update log, so it carries clinical changes (pathways added or corrected, schedules re-verified)
