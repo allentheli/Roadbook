@@ -1261,8 +1261,9 @@ const COMPARE_EXAMPLE = {
   ],
 };
 
-const APP_VERSION = '0.21.1';
+const APP_VERSION = '0.21.2';
 const CHANGELOG = [
+  { date:'2026-09-20', text:'0.21.2: A plan opened from its link or QR code is now a dead end: the page shows the plan and the print button and nothing that leads elsewhere on the site. The About link that a desktop or tablet showed above a shared plan is gone.' },
   { date:'2026-09-20', text:'0.21.1: Printing is landscape only; the separate portrait print layout (two step columns, a smaller map) is gone, because Chrome could apply it to a landscape page. The map always prints at full size. A tight plan closes up whitespace and changes the number of step columns, then the text below the map scales down, never below 79%; the three densest library plans use that floor and stay on one page. The landing page examples are re-rendered from the current build.' },
   { date:'2026-09-20', text:'0.21.0: On a desktop the builder and the preview show the handout as the printed page (Letter, landscape), laid out and fitted exactly as it prints, scaled to the window; a red line marks where each page ends on a plan that takes more than one. Phones keep the scrolling column.' },
   { date:'2026-09-19', text:'0.20.1: Drug names are now generic only; brand names such as Keytruda, Opdivo and Enhertu are gone from every step across the library. KEYNOTE-522 step text shortened and the map labels name the drug ("Carbo + paclitaxel + pembrolizumab", "AC + pembrolizumab") instead of "immunotherapy"; the same map wording is used in the NRG-GY018 and RUBY pathways. No schedule changed.' },

@@ -150,6 +150,8 @@ const BASE = `http://localhost:${PORT}`;
       ok('share link opens the plan in patient view', await p2.evaluate(() =>
         document.body.classList.contains('patient') && document.body.innerText.includes('Renamed QA step')));
       ok('shared plan is never gated', await p2.evaluate(() => document.getElementById('gate').hidden));
+      ok('shared plan is a dead end: no visible link leads anywhere', await p2.evaluate(() =>
+        [...document.querySelectorAll('a[href]')].every(a => { const r = a.getBoundingClientRect(); return r.width === 0 || r.height === 0 || getComputedStyle(a).visibility === 'hidden'; })));
       await p2.close();
     }
 
