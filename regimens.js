@@ -1261,8 +1261,9 @@ const COMPARE_EXAMPLE = {
   ],
 };
 
-const APP_VERSION = '0.20.1';
+const APP_VERSION = '0.21.0';
 const CHANGELOG = [
+  { date:'2026-09-20', text:'0.21.0: On a desktop the builder and the preview show the handout as the printed page (Letter, landscape), laid out and fitted exactly as it prints, scaled to the window; a red line marks where each page ends on a plan that takes more than one. Phones keep the scrolling column.' },
   { date:'2026-09-19', text:'0.20.1: Drug names are now generic only; brand names such as Keytruda, Opdivo and Enhertu are gone from every step across the library. KEYNOTE-522 step text shortened and the map labels name the drug ("Carbo + paclitaxel + pembrolizumab", "AC + pembrolizumab") instead of "immunotherapy"; the same map wording is used in the NRG-GY018 and RUBY pathways. No schedule changed.' },
   { date:'2026-09-19', text:'0.20.0: A plan that cannot fit one page without small type now prints at full size on two or more pages instead of shrinking further. Body text never drops below 82% of normal and map labels never below 9 px. The preview says before you print how many pages a plan will take; shortening the care-team note or the step text brings it back to one.' },
   { date:'2026-09-19', text:'0.19.0: Printing fits every plan on one page in both the builder and the patient view; the patient view could run to a second page. A tight plan now closes up whitespace and changes the number of step columns before any text shrinks, map labels never print smaller than 9 px, and body text never drops below 82% of its normal size. A surgery that starts the timeline no longer has its label clipped at the left edge of the printed map.' },
