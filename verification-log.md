@@ -309,3 +309,25 @@ Ovarian
   retrievable from PubMed in this session and is not cited.
 Not confirmed: the healing intervals (4 to 6 weeks) and the 3-week gap between radiation and
 chemotherapy in PORTEC-3 are typical values, not protocol text; the team sets them.
+
+## 2026-09-19: KEYNOTE-522 wording (kn522), map labels in gy018 and ruby
+
+Text edits only; no agent, cycle length, cycle count, duration or start timing changed, so no
+source was re-opened. `kn522`: the three longest step texts were shortened (paclitaxel +
+carboplatin + pembrolizumab; AC + pembrolizumab; capecitabine after residual disease) and the
+branch steps say "pembrolizumab" rather than "immunotherapy"; the brand name (Keytruda) was
+dropped from the step names. The capecitabine text keeps the two facts that matter clinically:
+that giving it after radiation is practice rather than a trial rule, and that olaparib may be
+recommended instead for a BRCA carrier. Map labels: "Carbo + paclitaxel + immunotherapy" is now
+"Carbo + paclitaxel + pembrolizumab" (kn522, gy018) and "Carbo + paclitaxel + dostarlimab"
+(ruby); "AC + immunotherapy" is now "AC + pembrolizumab". Owner sign-off pending on the wording.
+
+## 2026-09-19: brand names removed library-wide
+
+Style change only, at the owner's instruction: every "(Brand)" after a generic drug name is removed
+from step names, map labels and patient text across all 60 pathways (Keytruda, Opdivo, Imfinzi,
+Zejula, Enhertu, Avastin, Verzenio, Tecentriq, Kisqali, Tagrisso, Lynparza, Kadcyla, Yervoy,
+Welireg, Tafinlar, Padcev, Mekinist, Jemperli, Herceptin, Alecensa). The two map labels that used
+a brand as the label ("Enhertu (T-DXd)", "Enhertu or Kadcyla") now read "Trastuzumab deruxtecan"
+and "Trastuzumab deruxtecan or emtansine". FDA-label citations in `refs` keep the brand, since
+that is the document's title. No agent, schedule or timing changed; review metadata untouched.

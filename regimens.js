@@ -12,7 +12,7 @@ const MODS = {
 // small constructors keep the library readable
 const P = (o) => Object.assign({ t:'phase', mods:['chemo'], mode:'cycles', cycleDays:21, cycles:4, on:true }, o);
 const R = (name, weeks, plain) => ({ t:'rest', name, weeks, plain });
-const S = (name, plain) => ({ t:'event', name, mods:['surgery'], plain });
+const S = (name, plain, short) => ({ t:'event', name, mods:['surgery'], plain, ...(short ? { short } : {}) });
 const D = (o) => Object.assign({ t:'decision', emph:null, only:false }, o);
 const Br = (cond, nodes, short) => short ? ({ cond, nodes, short }) : ({ cond, nodes });
 
@@ -34,33 +34,33 @@ const LIBRARY = [
 
 /* ---------------- BREAST ---------------- */
 {
-  id:'kn522', plan:'Chemo-immunotherapy around surgery', group:'Triple-negative', added:'2026-08-31', reviewed:'2026-09-02', reviewedBy:'AL, 2026-09-02', refs:[{t:'Schmid P et al. Pembrolizumab for early triple-negative breast cancer. NEJM 2020 (KEYNOTE-522)',q:'KEYNOTE-522 Schmid pembrolizumab early triple-negative NEJM 2020'},{t:'Schmid P et al. Overall survival with pembrolizumab in early-stage TNBC. NEJM 2024',q:'KEYNOTE-522 overall survival Schmid NEJM 2024'},{t:'Masuda N et al. CREATE-X: adjuvant capecitabine for HER2-negative residual disease after neoadjuvant chemotherapy. NEJM 2017',q:'CREATE-X adjuvant capecitabine residual disease neoadjuvant Masuda NEJM 2017'}], disease:'breast', name:'KEYNOTE-522: chemo + pembrolizumab, surgery, pembrolizumab (+ capecitabine per CREATE-X if cancer remains)',
+  id:'kn522', plan:'Chemo-immunotherapy around surgery', group:'Triple-negative', added:'2026-08-31', reviewed:'2026-09-19', reviewedBy:'Source-checked; physician sign-off pending', refs:[{t:'Schmid P et al. Pembrolizumab for early triple-negative breast cancer. NEJM 2020 (KEYNOTE-522)',q:'KEYNOTE-522 Schmid pembrolizumab early triple-negative NEJM 2020'},{t:'Schmid P et al. Overall survival with pembrolizumab in early-stage TNBC. NEJM 2024',q:'KEYNOTE-522 overall survival Schmid NEJM 2024'},{t:'Masuda N et al. CREATE-X: adjuvant capecitabine for HER2-negative residual disease after neoadjuvant chemotherapy. NEJM 2017',q:'CREATE-X adjuvant capecitabine residual disease neoadjuvant Masuda NEJM 2017'}], disease:'breast', name:'KEYNOTE-522: chemo + pembrolizumab, surgery, pembrolizumab (+ capecitabine per CREATE-X if cancer remains)',
   trial:'KEYNOTE-522 and CREATE-X trials', summary:'Triple-negative, stage II–III. Neoadjuvant chemo-immunotherapy, surgery, adjuvant pembrolizumab; capecitabine added for residual disease (CREATE-X).',
   title:'Chemotherapy with immunotherapy before surgery, then immunotherapy after',
   subtitle:'Triple-negative breast cancer, stage II to III',
   nodes:[
-    P({ name:'Paclitaxel + carboplatin + pembrolizumab (Keytruda)', short:'Carbo + paclitaxel + immunotherapy', mods:['chemo','io'], cycleDays:21, cycles:4,
+    P({ name:'Paclitaxel + carboplatin + pembrolizumab', short:'Carbo + paclitaxel + pembrolizumab', mods:['chemo','io'], cycleDays:21, cycles:4,
         visits:[{d:1,label:'Paclitaxel, carboplatin, and pembrolizumab'},{d:8,label:'Paclitaxel and carboplatin'},{d:15,label:'Paclitaxel and carboplatin'}],
-        plain:'Paclitaxel weekly plus carboplatin (weekly or once per 3-week cycle), plus pembrolizumab every 3 weeks. Pembrolizumab is immunotherapy: it helps your own immune system recognize and attack cancer cells.' }),
-    P({ name:'Doxorubicin (or epirubicin) + cyclophosphamide + pembrolizumab', short:'AC + immunotherapy', mods:['chemo','io'], cycleDays:21, cycles:4,
+        plain:'Paclitaxel and carboplatin chemotherapy, with pembrolizumab every 3 weeks. Pembrolizumab is immunotherapy: it helps your immune system attack cancer cells.' }),
+    P({ name:'Doxorubicin (or epirubicin) + cyclophosphamide + pembrolizumab', short:'AC + pembrolizumab', mods:['chemo','io'], cycleDays:21, cycles:4,
         visits:[{d:1,label:'Doxorubicin, cyclophosphamide, and pembrolizumab'}],
-        plain:'Two different chemotherapy drugs every 3 weeks, with pembrolizumab continuing. A growth-factor injection after each dose helps your blood counts recover.' }),
+        plain:'Doxorubicin and cyclophosphamide chemotherapy every 3 weeks, with pembrolizumab continuing. A growth-factor injection after each dose supports your blood counts.' }),
     RECOVER(4),
     SURGERY_BREAST(true),
     HEAL(5),
     D({ name:'Pathology results', short:'Results', question:'What did the pathology report show?',
-        plain:'The report tells us whether any cancer remained in the tissue removed at surgery. Immunotherapy continues either way; if cancer remained, an oral chemotherapy may be added.',
+        plain:'The report tells us whether any cancer remained in the tissue removed at surgery. Pembrolizumab continues either way; if cancer remained, chemotherapy tablets may be added.',
         branches:[
           Br('No remaining cancer (complete response)', [
-            P({ name:'Pembrolizumab (Keytruda)', short:'Pembrolizumab', mods:['io'], cycleDays:21, cycles:9, plain:'Immunotherapy on its own, every 3 weeks, for 9 more doses. Each visit is short.' }),
+            P({ name:'Pembrolizumab', short:'Pembrolizumab', mods:['io'], cycleDays:21, cycles:9, plain:'Pembrolizumab on its own, every 3 weeks, for 9 more doses.' }),
             RADIATION_ALONGSIDE(),
           ]),
           Br('Some cancer remained', [
-            P({ name:'Pembrolizumab (Keytruda)', short:'Pembrolizumab', mods:['io'], cycleDays:21, cycles:9, plain:'Immunotherapy on its own, every 3 weeks, for 9 more doses.' }),
+            P({ name:'Pembrolizumab', short:'Pembrolizumab', mods:['io'], cycleDays:21, cycles:9, plain:'Pembrolizumab on its own, every 3 weeks, for 9 more doses.' }),
             RADIATION_ALONGSIDE(),
             P({ name:'Capecitabine (oral chemotherapy)', short:'Capecitabine tablets', mods:['chemo'], cycleDays:21, cycles:8, optional:true, on:true, concurrent:true, afterPrev:true,
                 visits:[{d:1,label:'Start 14 days of capecitabine tablets, then 7 days off'}],
-                plain:'Chemotherapy tablets taken at home for 2 weeks out of every 3, for about 6 months, starting once radiation has finished. Giving them after radiation is common practice rather than a rule from the trial; your team sets the exact order. Immunotherapy continues at the same time. If you carry a BRCA gene change, olaparib tablets for 1 year may be recommended instead.' }),
+                plain:'Chemotherapy tablets taken at home, 2 weeks on and 1 week off, for about 6 months, usually after radiation; your team sets the order. Pembrolizumab continues alongside. If you carry a BRCA gene change, olaparib tablets for 1 year may be recommended instead.' }),
           ]),
         ] }),
   ]
@@ -88,7 +88,7 @@ const LIBRARY = [
             ENDOCRINE_ALONGSIDE(),
           ]),
           Br('Some cancer remained', [
-            P({ name:'Trastuzumab deruxtecan (Enhertu)', short:'Enhertu (T-DXd)', mods:['targeted'], cycleDays:21, cycles:14, plain:'Trastuzumab deruxtecan every 3 weeks for up to 14 doses (DESTINY-Breast05). Trastuzumab emtansine (Kadcyla) for 14 doses is an alternative.' }),
+            P({ name:'Trastuzumab deruxtecan (Enhertu)', short:'Enhertu (T-DXd)', mods:['targeted'], cycleDays:21, cycles:14, plain:'Trastuzumab deruxtecan every 3 weeks for up to 14 doses (DESTINY-Breast05). Trastuzumab emtansine for 14 doses is an alternative.' }),
             RADIATION_ALONGSIDE(),
             ENDOCRINE_ALONGSIDE(),
           ]),
@@ -151,7 +151,7 @@ const LIBRARY = [
     P({ name:'Chemotherapy (dose-dense AC then paclitaxel), if recommended', short:'ddAC then paclitaxel', mods:['chemo'], cycleDays:14, cycles:8, optional:true, on:false,
         plain:'The other common option, often used for higher-risk cancers: doxorubicin and cyclophosphamide every 2 weeks, 4 times, then paclitaxel every 2 weeks, 4 times, or weekly for 12 weeks. A growth-factor injection follows each dose.' }),
     RADIATION_AFTER(true),
-    P({ name:'Hormone therapy + abemaciclib (Verzenio)', short:'Hormone + abemaciclib', mods:['endocrine','targeted'], mode:'daily', weeks:104,
+    P({ name:'Hormone therapy + abemaciclib', short:'Hormone + abemaciclib', mods:['endocrine','targeted'], mode:'daily', weeks:104,
         plain:'A daily hormone-blocking tablet plus abemaciclib twice a day for 2 years. Abemaciclib is a targeted drug that slows the growth of cancer cells.' }),
     P({ name:'Hormone therapy continues', short:'Hormone tablet', mods:['endocrine'], mode:'daily', weeks:156,
         plain:'The hormone-blocking tablet continues on its own to complete 5 to 10 years in total.' }),
@@ -170,7 +170,7 @@ const LIBRARY = [
     P({ name:'Chemotherapy (dose-dense AC then paclitaxel), if beneficial', short:'ddAC then paclitaxel', mods:['chemo'], cycleDays:14, cycles:8, optional:true, on:false,
         plain:'The other common option, often used for higher-risk cancers: doxorubicin and cyclophosphamide every 2 weeks, 4 times, then paclitaxel every 2 weeks, 4 times, or weekly for 12 weeks. A growth-factor injection follows each dose.' }),
     RADIATION_AFTER(true),
-    P({ name:'Aromatase inhibitor + ribociclib (Kisqali)', short:'Hormone + ribociclib', mods:['endocrine','targeted'], mode:'daily', weeks:156,
+    P({ name:'Aromatase inhibitor + ribociclib', short:'Hormone + ribociclib', mods:['endocrine','targeted'], mode:'daily', weeks:156,
         plain:'A daily hormone-blocking tablet (letrozole or anastrozole) plus ribociclib for 3 years. Ribociclib is taken for 3 weeks, then 1 week off, over and over. It is a targeted drug that slows the growth of cancer cells. Blood tests and a heart tracing are checked in the first cycles. If you have not been through menopause, an injection every 4 weeks switches off the ovaries.' }),
     P({ name:'Hormone (endocrine) therapy continues', short:'Hormone tablet', mods:['endocrine'], mode:'daily', weeks:104,
         plain:'The hormone-blocking tablet continues on its own to complete at least 5 years in total.' }),
@@ -267,7 +267,7 @@ const LIBRARY = [
     P({ name:'FLOT chemotherapy', short:'FLOT', mods:['chemo'], cycleDays:14, cycles:4,
         visits:[{d:1,label:'Docetaxel, oxaliplatin, leucovorin, then a 5-FU pump worn home for 24 hours'}],
         plain:'Four chemotherapy drugs by IV every 2 weeks, 4 times. One of them (5-FU) runs through a small pump you wear home for a day.' }),
-    P({ name:'Durvalumab (Imfinzi)', short:'Durvalumab', mods:['io'], cycleDays:28, cycles:2, optional:true, on:true, concurrent:true,
+    P({ name:'Durvalumab', short:'Durvalumab', mods:['io'], cycleDays:28, cycles:2, optional:true, on:true, concurrent:true,
         plain:'Immunotherapy by IV every 4 weeks, on the same days as chemotherapy: 2 doses before surgery. It helps your immune system recognize and attack cancer cells.' }),
     R('Recovery before surgery', 5, 'About 4 to 6 weeks to recover, with scans to plan the operation.'),
     S('Surgery (gastrectomy)', 'Removal of part or all of the stomach, with nearby lymph nodes. Recovery takes several weeks and includes learning a new way of eating.'),
@@ -275,10 +275,10 @@ const LIBRARY = [
     P({ name:'FLOT chemotherapy', short:'FLOT', mods:['chemo'], cycleDays:14, cycles:4,
         visits:[{d:1,label:'Docetaxel, oxaliplatin, leucovorin, then a 5-FU pump worn home for 24 hours'}],
         plain:'The same four chemotherapy drugs every 2 weeks, 4 more times.' }),
-    P({ name:'Durvalumab (Imfinzi)', short:'Durvalumab', mods:['io'], cycleDays:28, cycles:2, optional:true, on:true, concurrent:true,
+    P({ name:'Durvalumab', short:'Durvalumab', mods:['io'], cycleDays:28, cycles:2, optional:true, on:true, concurrent:true,
         plain:'Immunotherapy every 4 weeks, on chemotherapy days: 2 doses after surgery.' }),
-    P({ name:'Durvalumab (Imfinzi) alone', short:'Durvalumab alone', mods:['io'], cycleDays:28, cycles:10, optional:true, on:true,
-        plain:'Immunotherapy on its own every 4 weeks for 10 more doses (about 10 months). Each visit is short.' }),
+    P({ name:'Durvalumab alone', short:'Durvalumab alone', mods:['io'], cycleDays:28, cycles:10, optional:true, on:true,
+        plain:'Immunotherapy on its own every 4 weeks for 10 more doses (about 10 months).' }),
   ]
 },
 {
@@ -300,8 +300,8 @@ const LIBRARY = [
                 plain:'No further treatment. Visits and scans on a regular schedule.' }),
           ]),
           Br('Some cancer remained', [
-            P({ name:'Nivolumab (Opdivo)', short:'Nivolumab', mods:['io'], cycleDays:14, cycles:8, plain:'Immunotherapy by IV every 2 weeks for the first 16 weeks. It helps your immune system recognize and attack cancer cells.' }),
-            P({ name:'Nivolumab (Opdivo)', short:'Nivolumab', mods:['io'], cycleDays:28, cycles:9, plain:'Then every 4 weeks to complete one year in total.' }),
+            P({ name:'Nivolumab', short:'Nivolumab', mods:['io'], cycleDays:14, cycles:8, plain:'Immunotherapy by IV every 2 weeks for the first 16 weeks. It helps your immune system recognize and attack cancer cells.' }),
+            P({ name:'Nivolumab', short:'Nivolumab', mods:['io'], cycleDays:28, cycles:9, plain:'Then every 4 weeks to complete one year in total.' }),
           ]),
         ] }),
   ]
@@ -344,14 +344,14 @@ const LIBRARY = [
   title:'Chemotherapy with immunotherapy before surgery, then immunotherapy after',
   subtitle:'Non-small cell lung cancer, stage II to III (operable)',
   nodes:[
-    P({ name:'Cisplatin-based chemotherapy + pembrolizumab (Keytruda)', short:'Cisplatin chemo + pembrolizumab', mods:['chemo','io'], cycleDays:21, cycles:4,
+    P({ name:'Cisplatin-based chemotherapy + pembrolizumab', short:'Cisplatin chemo + pembrolizumab', mods:['chemo','io'], cycleDays:21, cycles:4,
         visits:[{d:1,label:'Cisplatin, pemetrexed (or gemcitabine), and pembrolizumab'}],
         plain:'Chemotherapy (cisplatin with pemetrexed or gemcitabine) plus pembrolizumab every 3 weeks, 4 times, to shrink the cancer before surgery. Pembrolizumab is immunotherapy: it helps your immune system recognize and attack cancer cells.' }),
     RECOVER(4),
     S('Surgery (lung resection)', 'Removal of the lobe (or part) of the lung containing the cancer, plus nearby lymph nodes.'),
     R('Healing after surgery', 6, 'Recovery from surgery. Treatment restarts 4 to 12 weeks after the operation.'),
     RADIATION_AFTER(false),
-    P({ name:'Pembrolizumab (Keytruda)', short:'Pembrolizumab', mods:['io'], cycleDays:21, cycles:13, plain:'Immunotherapy on its own every 3 weeks for 13 doses (about 9 months). Each visit is short.' }),
+    P({ name:'Pembrolizumab', short:'Pembrolizumab', mods:['io'], cycleDays:21, cycles:13, plain:'Immunotherapy on its own every 3 weeks for 13 doses (about 9 months).' }),
   ]
 },
 {
@@ -360,7 +360,7 @@ const LIBRARY = [
   title:'Chemotherapy with immunotherapy before surgery',
   subtitle:'Non-small cell lung cancer, stage IB to IIIA (operable)',
   nodes:[
-    P({ name:'Platinum-based chemotherapy + nivolumab (Opdivo)', short:'Platinum chemo + nivolumab', mods:['chemo','io'], cycleDays:21, cycles:3,
+    P({ name:'Platinum-based chemotherapy + nivolumab', short:'Platinum chemo + nivolumab', mods:['chemo','io'], cycleDays:21, cycles:3,
         plain:'Chemotherapy plus nivolumab immunotherapy every 3 weeks, 3 times, to shrink the cancer before surgery.' }),
     RECOVER(4),
     S('Surgery (lung resection)', 'Removal of the lobe (or part) of the lung containing the cancer, plus nearby lymph nodes.'),
@@ -384,12 +384,12 @@ const LIBRARY = [
   title:'Chemotherapy with immunotherapy before surgery, then immunotherapy after',
   subtitle:'Non-small cell lung cancer, stage II to III (operable)',
   nodes:[
-    P({ name:'Platinum-based chemotherapy + nivolumab (Opdivo)', short:'Platinum chemo + nivolumab', mods:['chemo','io'], cycleDays:21, cycles:4,
+    P({ name:'Platinum-based chemotherapy + nivolumab', short:'Platinum chemo + nivolumab', mods:['chemo','io'], cycleDays:21, cycles:4,
         plain:'Chemotherapy plus nivolumab immunotherapy every 3 weeks, 4 times, to shrink the cancer before surgery.' }),
     RECOVER(4),
     S('Surgery (lung resection)', 'Removal of the lobe (or part) of the lung containing the cancer, plus nearby lymph nodes.'),
     R('Healing after surgery', 6, 'Recovery from surgery before immunotherapy restarts.'),
-    P({ name:'Nivolumab (Opdivo)', short:'Nivolumab', mods:['io'], cycleDays:28, cycles:13, plain:'Immunotherapy on its own every 4 weeks for up to a year. Each visit is short.' }),
+    P({ name:'Nivolumab', short:'Nivolumab', mods:['io'], cycleDays:28, cycles:13, plain:'Immunotherapy on its own every 4 weeks for up to a year.' }),
   ]
 },
 {
@@ -401,7 +401,7 @@ const LIBRARY = [
     P({ name:'Chemoradiation', short:'Chemoradiation', mods:['radiation','chemo'], mode:'weekdays', weeks:6,
         plain:'Radiation to the chest every weekday for about 6 weeks, with chemotherapy at the same time (commonly weekly carboplatin and paclitaxel, or cisplatin and etoposide every 3 weeks).' }),
     R('Recovery', 3, 'A short break of 1 to 6 weeks. A CT scan confirms the cancer has not grown before immunotherapy starts.'),
-    P({ name:'Durvalumab (Imfinzi)', short:'Durvalumab', mods:['io'], cycleDays:14, cycles:26, plain:'Immunotherapy by IV every 2 weeks for up to 12 months, as in the trial. Some centers give a double dose every 4 weeks instead; either way it stops at one year. It helps your immune system keep the cancer from coming back.' }),
+    P({ name:'Durvalumab', short:'Durvalumab', mods:['io'], cycleDays:14, cycles:26, plain:'Immunotherapy by IV every 2 weeks for up to 12 months, as in the trial. Some centers give a double dose every 4 weeks instead; either way it stops at one year. It helps your immune system keep the cancer from coming back.' }),
   ]
 },
 {
@@ -414,7 +414,7 @@ const LIBRARY = [
     HEAL(6),
     P({ name:'Chemotherapy (if recommended)', short:'Cisplatin chemo', mods:['chemo'], cycleDays:21, cycles:4, optional:true, on:true,
         plain:'Cisplatin-based chemotherapy every 3 weeks, 4 times, is recommended for many stage II to III cancers before starting the targeted tablet.' }),
-    P({ name:'Osimertinib (Tagrisso)', short:'Osimertinib', mods:['targeted'], mode:'daily', weeks:156, freqText:'One tablet daily; clinic visits every 2 to 3 months',
+    P({ name:'Osimertinib', short:'Osimertinib', mods:['targeted'], mode:'daily', weeks:156, freqText:'One tablet daily; clinic visits every 2 to 3 months',
         plain:'A targeted tablet taken once a day for 3 years. It blocks the EGFR signal that drives this type of cancer. Clinic visits and scans every few months.' }),
     P({ name:'Monitoring (surveillance)', short:'Surveillance', mods:['watch'], mode:'ongoing', weeks:104, openEnded:true, freqText:'Visits and scans every 6 months', plain:'Regular visits and CT scans after the tablet is finished.' }),
   ]
@@ -427,7 +427,7 @@ const LIBRARY = [
   nodes:[
     S('Surgery (lung resection)', 'Removal of the lobe (or part) of the lung containing the cancer, plus nearby lymph nodes.'),
     HEAL(6),
-    P({ name:'Alectinib (Alecensa)', short:'Alectinib', mods:['targeted'], mode:'daily', weeks:104, freqText:'Tablets twice daily; clinic visits every 2 to 3 months',
+    P({ name:'Alectinib', short:'Alectinib', mods:['targeted'], mode:'daily', weeks:104, freqText:'Tablets twice daily; clinic visits every 2 to 3 months',
         plain:'A targeted tablet taken twice a day for 2 years. It blocks the ALK signal that drives this type of cancer. Clinic visits and scans every few months.' }),
     P({ name:'Monitoring (surveillance)', short:'Surveillance', mods:['watch'], mode:'ongoing', weeks:104, openEnded:true, freqText:'Visits and scans every 6 months', plain:'Regular visits and CT scans after the tablet is finished.' }),
   ]
@@ -441,7 +441,7 @@ const LIBRARY = [
     P({ name:'Chemoradiation', short:'Chemoradiation', mods:['radiation','chemo'], mode:'weekdays', weeks:6,
         plain:'Radiation to the chest every weekday for about 6 weeks, with chemotherapy at the same time.' }),
     R('Recovery', 3, 'A short break of 1 to 6 weeks. A CT scan confirms the cancer has not grown before the tablet starts.'),
-    P({ name:'Osimertinib (Tagrisso)', short:'Osimertinib', mods:['targeted'], mode:'daily', weeks:156, openEnded:true, freqText:'One tablet daily; clinic visits every 2 to 3 months',
+    P({ name:'Osimertinib', short:'Osimertinib', mods:['targeted'], mode:'daily', weeks:156, openEnded:true, freqText:'One tablet daily; clinic visits every 2 to 3 months',
         plain:'A targeted tablet taken once a day for as long as it keeps the cancer controlled, which is often years. Scans every few months check that it is working.' }),
   ]
 },
@@ -459,7 +459,7 @@ const LIBRARY = [
     P({ name:'Preventive brain radiation (PCI)', short:'Brain radiation', mods:['radiation'], mode:'weekdays', weeks:2, optional:true, on:false,
         plain:'Low-dose radiation to the brain over about 2 weeks to lower the chance of cancer spreading there. Recommended for some people; MRI monitoring is an alternative.' }),
     R('Recovery', 3, 'A short break of 1 to 6 weeks, with scans to confirm the cancer has responded.'),
-    P({ name:'Durvalumab (Imfinzi)', short:'Durvalumab', mods:['io'], cycleDays:28, cycles:26, plain:'Immunotherapy by IV every 4 weeks for up to 2 years. Treatment stops at 24 months at the latest; the exact number of doses depends on when it started. It helps your immune system keep the cancer from coming back.' }),
+    P({ name:'Durvalumab', short:'Durvalumab', mods:['io'], cycleDays:28, cycles:26, plain:'Immunotherapy by IV every 4 weeks for up to 2 years. Treatment stops at 24 months at the latest; the exact number of doses depends on when it started. It helps your immune system keep the cancer from coming back.' }),
   ]
 },
 
@@ -560,13 +560,13 @@ const LIBRARY = [
   title:'Chemotherapy with immunotherapy before bladder surgery, then immunotherapy after',
   subtitle:'Muscle-invasive bladder cancer (stage II to IIIA)',
   nodes:[
-    P({ name:'Gemcitabine + cisplatin + durvalumab (Imfinzi)', short:'Gem/cis + durvalumab', mods:['chemo','io'], cycleDays:21, cycles:4,
+    P({ name:'Gemcitabine + cisplatin + durvalumab', short:'Gem/cis + durvalumab', mods:['chemo','io'], cycleDays:21, cycles:4,
         visits:[{d:1,label:'Cisplatin, gemcitabine, and durvalumab'},{d:8,label:'Gemcitabine'}],
         plain:'Two chemotherapy drugs (gemcitabine on days 1 and 8, cisplatin on day 1) plus durvalumab every 3 weeks, 4 times. Durvalumab is immunotherapy: it helps your immune system recognize and attack cancer cells.' }),
     R('Recovery before surgery', 5, 'About 4 to 6 weeks to recover, with scans and surgical planning.'),
     S('Surgery (radical cystectomy)', 'Removal of the bladder with nearby lymph nodes, and creation of a new way for urine to leave the body (a urinary diversion). Recovery takes several weeks.'),
     R('Healing after surgery', 8, 'Recovery from surgery, usually 6 to 10 weeks before immunotherapy restarts.'),
-    P({ name:'Durvalumab (Imfinzi)', short:'Durvalumab', mods:['io'], cycleDays:28, cycles:8, plain:'Immunotherapy on its own every 4 weeks for 8 doses (about 8 months). Each visit is short.' }),
+    P({ name:'Durvalumab', short:'Durvalumab', mods:['io'], cycleDays:28, cycles:8, plain:'Immunotherapy on its own every 4 weeks for 8 doses (about 8 months).' }),
   ]
 },
 {
@@ -577,7 +577,7 @@ const LIBRARY = [
   title:'An antibody-drug medicine with immunotherapy before bladder surgery, then continued after',
   subtitle:'Muscle-invasive bladder cancer (stage II to IIIA), when cisplatin is not an option',
   nodes:[
-    P({ name:'Enfortumab vedotin (Padcev) + pembrolizumab (Keytruda)', short:'Enfortumab + pembrolizumab', mods:['targeted','io'], cycleDays:21, cycles:3,
+    P({ name:'Enfortumab vedotin + pembrolizumab', short:'Enfortumab + pembrolizumab', mods:['targeted','io'], cycleDays:21, cycles:3,
         visits:[{d:1,label:'Enfortumab vedotin and pembrolizumab'},{d:8,label:'Enfortumab vedotin'}],
         plain:'Enfortumab vedotin is an antibody that finds bladder cancer cells and delivers chemotherapy directly into them, given by IV on days 1 and 8 of each 3-week cycle. Pembrolizumab is immunotherapy, given on day 1. Three cycles before surgery.' }),
     R('Recovery before surgery', 5, 'About 4 to 6 weeks to recover, with scans and surgical planning.'),
@@ -586,8 +586,8 @@ const LIBRARY = [
     P({ name:'Enfortumab vedotin + pembrolizumab', short:'Enfortumab + pembrolizumab', mods:['targeted','io'], cycleDays:21, cycles:6,
         visits:[{d:1,label:'Enfortumab vedotin and pembrolizumab'},{d:8,label:'Enfortumab vedotin'}],
         plain:'The same combination continues after surgery for 6 cycles (about 4 months).' }),
-    P({ name:'Pembrolizumab (Keytruda)', short:'Pembrolizumab', mods:['io'], cycleDays:21, cycles:8,
-        plain:'Immunotherapy on its own every 3 weeks for 8 more doses, to complete about one year of pembrolizumab in total. Each visit is short.' }),
+    P({ name:'Pembrolizumab', short:'Pembrolizumab', mods:['io'], cycleDays:21, cycles:8,
+        plain:'Immunotherapy on its own every 3 weeks for 8 more doses, to complete about one year of pembrolizumab in total.' }),
   ]
 },
 {
@@ -612,7 +612,7 @@ const LIBRARY = [
                 plain:'No treatment for now. The blood test is repeated every 6 to 12 weeks for a year, alongside scans. If cancer DNA appears later, immunotherapy can start then.' }),
           ]),
           Br('Cancer DNA detected', [
-            P({ name:'Atezolizumab (Tecentriq)', short:'Atezolizumab', mods:['io'], cycleDays:28, cycles:12,
+            P({ name:'Atezolizumab', short:'Atezolizumab', mods:['io'], cycleDays:28, cycles:12,
                 plain:'Immunotherapy by IV every 4 weeks for up to 12 doses (one year). A version given as an injection under the skin is also available. It helps your immune system find and destroy the remaining cancer cells.' }),
           ]),
         ] }),
@@ -639,7 +639,7 @@ const LIBRARY = [
             P({ name:'Surveillance', short:'Surveillance', mods:['watch'], mode:'ongoing', weeks:104, openEnded:true, freqText:'Scans every 3 to 6 months', plain:'No further treatment. Scans and visits on a regular schedule.' }),
           ]),
           Br('High-risk cancer remained', [
-            P({ name:'Nivolumab (Opdivo)', short:'Nivolumab', mods:['io'], cycleDays:28, cycles:13, plain:'Immunotherapy by IV every 2 or 4 weeks for up to one year. Pembrolizumab is an alternative.' }),
+            P({ name:'Nivolumab', short:'Nivolumab', mods:['io'], cycleDays:28, cycles:13, plain:'Immunotherapy by IV every 2 or 4 weeks for up to one year. Pembrolizumab is an alternative.' }),
           ]),
         ] }),
   ]
@@ -652,7 +652,7 @@ const LIBRARY = [
   title:'Removing the tumor through a scope, then chemoradiation to keep your bladder',
   subtitle:'Muscle-invasive bladder cancer (stage II to IIIA), bladder-preserving approach',
   nodes:[
-    S('Scope surgery to remove the visible tumor (TURBT)', 'The tumor is removed through the urethra with a scope, without any incision. This is done as completely as possible before radiation.'),
+    S('Scope surgery to remove the visible tumor (TURBT)', 'The tumor is removed through the urethra with a scope, without any incision. This is done as completely as possible before radiation.', 'Scope surgery'),
     R('Recovery', 3, 'A few weeks to heal before radiation begins.'),
     P({ name:'Chemoradiation', short:'Radiation + chemo', mods:['radiation','chemo'], mode:'weekdays', weeks:'',
         plain:'Radiation to the bladder every weekday, with low-dose chemotherapy (cisplatin, or 5-FU with mitomycin) to make the radiation more effective. The course is either about 4 weeks or about 6 and a half weeks; your radiation team sets the schedule.' }),
@@ -670,7 +670,7 @@ const LIBRARY = [
   nodes:[
     S('Surgery (nephrectomy)', 'Removal of the affected kidney, or the part of it containing the cancer.'),
     R('Healing after surgery', 8, 'Recovery from surgery. Immunotherapy starts within 12 weeks of the operation.'),
-    P({ name:'Pembrolizumab (Keytruda)', short:'Pembrolizumab', mods:['io'], cycleDays:21, cycles:17, plain:'Immunotherapy by IV every 3 weeks for 17 doses (about one year). It helps your immune system find and destroy any remaining cancer cells.' }),
+    P({ name:'Pembrolizumab', short:'Pembrolizumab', mods:['io'], cycleDays:21, cycles:17, plain:'Immunotherapy by IV every 3 weeks for 17 doses (about one year). It helps your immune system find and destroy any remaining cancer cells.' }),
     P({ name:'Surveillance', short:'Surveillance', mods:['watch'], mode:'ongoing', weeks:104, openEnded:true, freqText:'Scans every 6 months', plain:'Regular visits and CT scans after immunotherapy is finished.' }),
   ]
 },
@@ -770,10 +770,10 @@ const LIBRARY = [
     P({ name:'mFOLFOX6 chemotherapy', short:'FOLFOX', mods:['chemo'], cycleDays:14, cycles:12,
         visits:[{d:1,label:'Oxaliplatin and leucovorin, then a 5-FU pump for about 46 hours'}],
         plain:'Two chemotherapy drugs (oxaliplatin and 5-FU) every 2 weeks for 6 months. One of them runs through a small pump you wear home for about 2 days.' }),
-    P({ name:'Atezolizumab (Tecentriq)', short:'Atezolizumab', mods:['io'], cycleDays:14, cycles:12, concurrent:true,
+    P({ name:'Atezolizumab', short:'Atezolizumab', mods:['io'], cycleDays:14, cycles:12, concurrent:true,
         plain:'Immunotherapy by IV every 2 weeks, given on the same days as chemotherapy. It helps your immune system recognize and attack cancer cells, which works particularly well in mismatch-repair-deficient cancers.' }),
-    P({ name:'Atezolizumab (Tecentriq) alone', short:'Atezolizumab alone', mods:['io'], cycleDays:14, cycles:13,
-        plain:'Immunotherapy continues on its own every 2 weeks for 6 more months, to complete one year in total. Each visit is short.' }),
+    P({ name:'Atezolizumab alone', short:'Atezolizumab alone', mods:['io'], cycleDays:14, cycles:13,
+        plain:'Immunotherapy continues on its own every 2 weeks for 6 more months, to complete one year in total.' }),
     P({ name:'Monitoring (surveillance)', short:'Surveillance', mods:['watch'], mode:'ongoing', weeks:52, openEnded:true, freqText:'Blood test every 3 to 6 months, scan every 6 to 12 months',
         plain:'Regular check-ups: a blood test (CEA) every 3 to 6 months, a CT scan every 6 to 12 months, and a colonoscopy about one year after surgery.' }),
   ]
@@ -862,15 +862,15 @@ const LIBRARY = [
   title:'Immunotherapy before surgery, then immunotherapy with radiation after, then immunotherapy alone',
   subtitle:'Head and neck squamous cell cancer, stage III to IVA (operable), PD-L1 positive',
   nodes:[
-    P({ name:'Pembrolizumab (Keytruda)', short:'Pembrolizumab', mods:['io'], cycleDays:21, cycles:2,
+    P({ name:'Pembrolizumab', short:'Pembrolizumab', mods:['io'], cycleDays:21, cycles:2,
         plain:'Immunotherapy by IV every 3 weeks, 2 doses, before surgery. It helps your immune system recognize and attack cancer cells while the tumor is still present, which appears to make the immune response stronger.' }),
     R('Recovery before surgery', 3, 'Surgery is planned within about 6 weeks of the first dose.'),
     S('Surgery', 'Removal of the tumor with nearby lymph nodes in the neck; reconstruction if needed.'),
     R('Healing after surgery', 5, 'Recovery, usually 4 to 6 weeks, before radiation starts.'),
     P({ name:'Pembrolizumab with radiation (cisplatin added for higher-risk pathology)', short:'Pembrolizumab + radiation', mods:['io','radiation'], cycleDays:21, cycles:3,
         plain:'Radiation every weekday for about 6 weeks, with pembrolizumab every 3 weeks (3 doses) continuing through it. Cisplatin is added if the pathology showed positive margins or cancer growing outside a lymph node.' }),
-    P({ name:'Pembrolizumab (Keytruda)', short:'Pembrolizumab', mods:['io'], cycleDays:21, cycles:12,
-        plain:'Immunotherapy on its own every 3 weeks for 12 more doses (about 9 months), to complete a year in total. Each visit is short.' }),
+    P({ name:'Pembrolizumab', short:'Pembrolizumab', mods:['io'], cycleDays:21, cycles:12,
+        plain:'Immunotherapy on its own every 3 weeks for 12 more doses (about 9 months), to complete a year in total.' }),
     P({ name:'Surveillance', short:'Surveillance', mods:['watch'], mode:'ongoing', weeks:104, openEnded:true, freqText:'Exams every 2 to 3 months in the first year, then less often',
         plain:'Regular exams, swallowing and speech support, thyroid blood tests, and dental care.' }),
   ]
@@ -903,7 +903,7 @@ const LIBRARY = [
   title:'Two doses of combination immunotherapy, then surgery, then more treatment only if the pathology calls for it',
   subtitle:'Melanoma, stage III with lymph node involvement (operable)',
   nodes:[
-    P({ name:'Ipilimumab (Yervoy) + nivolumab (Opdivo)', short:'Ipilimumab + nivolumab', mods:['io'], cycleDays:21, cycles:2,
+    P({ name:'Ipilimumab + nivolumab', short:'Ipilimumab + nivolumab', mods:['io'], cycleDays:21, cycles:2,
         plain:'Two immunotherapy drugs by IV every 3 weeks, 2 doses, before surgery. Given while the tumor is still present, the immune response is stronger than the same drugs given after surgery.' }),
     R('Recovery before surgery', 3, 'Surgery is planned about 6 weeks after the first dose.'),
     S('Surgery (lymph node dissection)', 'Removal of the involved lymph nodes. The pathologist measures how much living cancer remains, which decides the next step.'),
@@ -916,7 +916,7 @@ const LIBRARY = [
                 plain:'No further treatment. Skin and lymph node exams with scans every 3 to 4 months for the first 2 years, then less often.' }),
           ]),
           Br('Less than a major response', [
-            P({ name:'Nivolumab (Opdivo)', short:'Nivolumab', mods:['io'], cycleDays:28, cycles:11,
+            P({ name:'Nivolumab', short:'Nivolumab', mods:['io'], cycleDays:28, cycles:11,
                 plain:'Immunotherapy on its own every 4 weeks for 11 doses (about 10 months), to complete about one year of treatment. If the melanoma has a BRAF mutation, dabrafenib + trametinib tablets for 46 weeks are the alternative.' }),
           ]),
         ] }),
@@ -930,12 +930,12 @@ const LIBRARY = [
   title:'Three doses of immunotherapy before surgery, then the rest of the year after',
   subtitle:'Melanoma, stage IIIB to IV (operable)',
   nodes:[
-    P({ name:'Pembrolizumab (Keytruda)', short:'Pembrolizumab', mods:['io'], cycleDays:21, cycles:3,
+    P({ name:'Pembrolizumab', short:'Pembrolizumab', mods:['io'], cycleDays:21, cycles:3,
         plain:'Immunotherapy by IV every 3 weeks, 3 doses, before surgery. Starting before surgery, while the tumor is present, improves the chance the cancer never returns compared with the same drug given only afterward.' }),
     R('Recovery before surgery', 3, 'Surgery follows about 3 weeks after the third dose.'),
     S('Surgery', 'Removal of the melanoma and involved lymph nodes.'),
     R('Healing after surgery', 4, 'Recovery before immunotherapy resumes.'),
-    P({ name:'Pembrolizumab (Keytruda)', short:'Pembrolizumab', mods:['io'], cycleDays:21, cycles:15,
+    P({ name:'Pembrolizumab', short:'Pembrolizumab', mods:['io'], cycleDays:21, cycles:15,
         plain:'Immunotherapy continues every 3 weeks for 15 more doses, completing 18 in total (about one year).' }),
     P({ name:'Surveillance', short:'Surveillance', mods:['watch'], mode:'ongoing', weeks:104, openEnded:true, freqText:'Exams and scans every 3 to 6 months', plain:'Skin and lymph node exams with scans every 3 to 6 months for the first years.' }),
   ]
@@ -950,7 +950,7 @@ const LIBRARY = [
   nodes:[
     S('Surgery (wide excision with lymph node surgery)', 'Removal of the melanoma with a margin of healthy skin, plus a sentinel lymph node biopsy or removal of involved nodes.'),
     R('Healing after surgery', 6, 'Recovery from surgery. Immunotherapy usually starts within 12 weeks.'),
-    P({ name:'Pembrolizumab (Keytruda)', short:'Pembrolizumab', mods:['io'], cycleDays:21, cycles:18,
+    P({ name:'Pembrolizumab', short:'Pembrolizumab', mods:['io'], cycleDays:21, cycles:18,
         plain:'Immunotherapy by IV every 3 weeks for about one year: 18 doses for stage III cancers, 17 for stage IIB or IIC. Nivolumab every 4 weeks for 12 doses is an equivalent option. It helps your immune system find and destroy any remaining melanoma cells.' }),
     P({ name:'Surveillance', short:'Surveillance', mods:['watch'], mode:'ongoing', weeks:104, openEnded:true, freqText:'Skin exams every 3 to 6 months, scans as advised', plain:'Skin and lymph node exams every 3 to 6 months, with scans for higher-stage disease.' }),
   ]
@@ -965,7 +965,7 @@ const LIBRARY = [
   nodes:[
     S('Surgery (wide excision with lymph node surgery)', 'Removal of the melanoma with a margin of healthy skin, plus removal of involved lymph nodes.'),
     R('Healing after surgery', 6, 'Recovery from surgery. The tablets usually start within 12 weeks.'),
-    P({ name:'Dabrafenib (Tafinlar) + trametinib (Mekinist)', short:'Dabrafenib + trametinib', mods:['targeted'], mode:'daily', weeks:52, freqText:'Tablets twice daily (dabrafenib) and once daily (trametinib); clinic visits monthly at first',
+    P({ name:'Dabrafenib + trametinib', short:'Dabrafenib + trametinib', mods:['targeted'], mode:'daily', weeks:52, freqText:'Tablets twice daily (dabrafenib) and once daily (trametinib); clinic visits monthly at first',
         plain:'Two targeted tablets taken at home for one year. They block the BRAF signal that drives this melanoma. Fevers are the most common side effect and are managed with short breaks in treatment.' }),
     P({ name:'Surveillance', short:'Surveillance', mods:['watch'], mode:'ongoing', weeks:104, openEnded:true, freqText:'Skin exams every 3 to 6 months, scans as advised', plain:'Skin and lymph node exams every 3 to 6 months, with scans for higher-stage disease.' }),
   ]
@@ -992,18 +992,18 @@ const LIBRARY = [
             RADIATION_AFTER(true),
             P({ name:'Hormone (endocrine) therapy', short:'Hormone tablet', mods:['endocrine'], mode:'daily', weeks:260,
                 plain:'One tablet a day (tamoxifen, or an aromatase inhibitor such as letrozole) for 5 to 10 years, starting after chemotherapy.' }),
-            P({ name:'Abemaciclib (Verzenio), if higher-risk', short:'Abemaciclib', mods:['targeted'], mode:'daily', weeks:104, optional:true, on:false, concurrent:true,
+            P({ name:'Abemaciclib, if higher-risk', short:'Abemaciclib', mods:['targeted'], mode:'daily', weeks:104, optional:true, on:false, concurrent:true,
                 plain:'For higher-risk cancers, a targeted tablet taken twice a day alongside the hormone tablet for 2 years (monarchE).' }),
-            P({ name:'Ribociclib (Kisqali), if higher-risk', short:'Ribociclib', mods:['targeted'], mode:'daily', weeks:156, optional:true, on:false, concurrent:true,
+            P({ name:'Ribociclib, if higher-risk', short:'Ribociclib', mods:['targeted'], mode:'daily', weeks:156, optional:true, on:false, concurrent:true,
                 plain:'The other targeted-tablet option for higher-risk cancers: taken alongside the hormone tablet for 3 years, 3 weeks on and 1 week off (NATALEE). Your team recommends one or the other, not both.' }),
           ], 'Chemo beneficial'),
           Br('Chemotherapy would not add benefit', [
             RADIATION_AFTER(true),
             P({ name:'Hormone (endocrine) therapy', short:'Hormone tablet', mods:['endocrine'], mode:'daily', weeks:260,
                 plain:'One tablet a day (tamoxifen, or an aromatase inhibitor such as letrozole) for 5 to 10 years. Skipping chemotherapy does not lower your chance of cure; the test shows it would add side effects without adding benefit.' }),
-            P({ name:'Abemaciclib (Verzenio), if higher-risk', short:'Abemaciclib', mods:['targeted'], mode:'daily', weeks:104, optional:true, on:false, concurrent:true,
+            P({ name:'Abemaciclib, if higher-risk', short:'Abemaciclib', mods:['targeted'], mode:'daily', weeks:104, optional:true, on:false, concurrent:true,
                 plain:'For higher-risk cancers, a targeted tablet taken twice a day alongside the hormone tablet for 2 years (monarchE).' }),
-            P({ name:'Ribociclib (Kisqali), if higher-risk', short:'Ribociclib', mods:['targeted'], mode:'daily', weeks:156, optional:true, on:false, concurrent:true,
+            P({ name:'Ribociclib, if higher-risk', short:'Ribociclib', mods:['targeted'], mode:'daily', weeks:156, optional:true, on:false, concurrent:true,
                 plain:'The other targeted-tablet option for higher-risk cancers: taken alongside the hormone tablet for 3 years, 3 weeks on and 1 week off (NATALEE). Your team recommends one or the other, not both.' }),
           ], 'Chemo not beneficial'),
         ] }),
@@ -1021,9 +1021,9 @@ const LIBRARY = [
   nodes:[
     S('Surgery (nephrectomy)', 'Removal of the affected kidney, or the part of it containing the cancer. Sometimes this also includes removal of a small number of spread deposits.'),
     R('Healing after surgery', 8, 'Recovery from surgery. Treatment starts within 12 weeks of the operation.'),
-    P({ name:'Pembrolizumab (Keytruda)', short:'Pembrolizumab', mods:['io'], cycleDays:42, cycles:9,
+    P({ name:'Pembrolizumab', short:'Pembrolizumab', mods:['io'], cycleDays:42, cycles:9,
         plain:'Immunotherapy by IV every 6 weeks (or every 3 weeks) for up to one year. It helps your immune system find and destroy any remaining cancer cells.' }),
-    P({ name:'Belzutifan (Welireg) tablets', short:'Belzutifan', mods:['targeted'], mode:'daily', weeks:54, concurrent:true,
+    P({ name:'Belzutifan tablets', short:'Belzutifan', mods:['targeted'], mode:'daily', weeks:54, concurrent:true,
         plain:'A targeted tablet taken once a day for up to 54 weeks, alongside the immunotherapy. It blocks HIF-2α, a signal that clear-cell kidney cancer depends on. Anemia and low oxygen levels are the side effects to watch, with regular blood tests.' }),
     P({ name:'Surveillance', short:'Surveillance', mods:['watch'], mode:'ongoing', weeks:104, openEnded:true, freqText:'Scans every 6 months', plain:'Regular visits and CT scans after treatment is finished.' }),
   ]
@@ -1120,7 +1120,7 @@ const LIBRARY = [
   ]
 },
 {
-  id:'gy018', plan:'Chemotherapy with immunotherapy, then immunotherapy alone', group:'Uterine and endometrial', added:'2026-09-08', reviewed:'2026-09-08', reviewedBy:'Source-checked; physician sign-off pending',
+  id:'gy018', plan:'Chemotherapy with immunotherapy, then immunotherapy alone', group:'Uterine and endometrial', added:'2026-09-08', reviewed:'2026-09-19', reviewedBy:'Source-checked; physician sign-off pending',
   refs:[{t:'Eskander RN et al. NRG-GY018: pembrolizumab plus chemotherapy in advanced endometrial cancer. NEJM 2023',q:'NRG-GY018 pembrolizumab chemotherapy advanced endometrial cancer Eskander NEJM 2023'},{t:'Westin SN et al. DUO-E: durvalumab plus carboplatin/paclitaxel with maintenance durvalumab with or without olaparib in endometrial cancer. JCO 2024',q:'DUO-E durvalumab carboplatin paclitaxel olaparib endometrial cancer Westin JCO'}],
   disease:'gyn', name:'Surgery, carboplatin + paclitaxel + pembrolizumab ×6, then pembrolizumab maintenance (NRG-GY018)',
   trial:'NRG-GY018', summary:'Endometrial cancer, stage III to IVA with measurable disease, stage IVB, or first recurrence. Surgery where possible, then carboplatin + paclitaxel + pembrolizumab every 3 weeks ×6, then pembrolizumab every 6 weeks for up to 14 doses. Approved for both mismatch-repair-deficient and proficient tumors; durvalumab (DUO-E) is an alternative for mismatch-repair-deficient tumors. Remove the surgery step for recurrent or inoperable disease.',
@@ -1129,7 +1129,7 @@ const LIBRARY = [
   nodes:[
     S('Surgery (hysterectomy and removal of visible cancer)', 'Removal of the uterus, cervix, ovaries, and fallopian tubes, with removal of as much visible cancer as possible. The removed tissue is tested for mismatch-repair proteins, which tells the team how much benefit to expect from immunotherapy.'),
     HEAL(4),
-    P({ name:'Carboplatin + paclitaxel + pembrolizumab (Keytruda)', short:'Carbo + paclitaxel + immunotherapy', mods:['chemo','io'], cycleDays:21, cycles:6,
+    P({ name:'Carboplatin + paclitaxel + pembrolizumab', short:'Carbo + paclitaxel + pembrolizumab', mods:['chemo','io'], cycleDays:21, cycles:6,
         plain:'Two chemotherapy drugs plus pembrolizumab, an immunotherapy that helps your own immune system recognize and attack cancer cells, all by IV every 3 weeks, 6 times (about 4 and a half months).' }),
     P({ name:'Pembrolizumab maintenance', short:'Pembrolizumab', mods:['io'], cycleDays:42, cycles:14,
         plain:'Immunotherapy on its own, by IV every 6 weeks, for up to 14 doses (about 20 months). Visits are short. Treatment stops earlier if the cancer grows or side effects require it.' }),
@@ -1138,7 +1138,7 @@ const LIBRARY = [
   ]
 },
 {
-  id:'ruby', plan:'Chemotherapy with immunotherapy, then immunotherapy for up to 3 years', group:'Uterine and endometrial', added:'2026-09-08', reviewed:'2026-09-08', reviewedBy:'Source-checked; physician sign-off pending',
+  id:'ruby', plan:'Chemotherapy with immunotherapy, then immunotherapy for up to 3 years', group:'Uterine and endometrial', added:'2026-09-08', reviewed:'2026-09-19', reviewedBy:'Source-checked; physician sign-off pending',
   refs:[{t:'Mirza MR et al. RUBY: dostarlimab for primary advanced or recurrent endometrial cancer. NEJM 2023',q:'RUBY dostarlimab primary advanced recurrent endometrial cancer Mirza NEJM 2023'}],
   disease:'gyn', name:'Surgery, carboplatin + paclitaxel + dostarlimab ×6, then dostarlimab for up to 3 years (RUBY)',
   trial:'RUBY', summary:'Endometrial cancer, primary stage III to IV or first recurrence. Surgery where possible, then carboplatin + paclitaxel + dostarlimab every 3 weeks ×6, then dostarlimab every 6 weeks for up to 3 years in total. Greatest benefit in mismatch-repair-deficient tumors; approved for all comers. Remove the surgery step for recurrent or inoperable disease.',
@@ -1147,7 +1147,7 @@ const LIBRARY = [
   nodes:[
     S('Surgery (hysterectomy and removal of visible cancer)', 'Removal of the uterus, cervix, ovaries, and fallopian tubes, with removal of as much visible cancer as possible. The removed tissue is tested for mismatch-repair proteins, which tells the team how much benefit to expect from immunotherapy.'),
     HEAL(4),
-    P({ name:'Carboplatin + paclitaxel + dostarlimab (Jemperli)', short:'Carbo + paclitaxel + immunotherapy', mods:['chemo','io'], cycleDays:21, cycles:6,
+    P({ name:'Carboplatin + paclitaxel + dostarlimab', short:'Carbo + paclitaxel + dostarlimab', mods:['chemo','io'], cycleDays:21, cycles:6,
         plain:'Two chemotherapy drugs plus dostarlimab, an immunotherapy that helps your own immune system recognize and attack cancer cells, all by IV every 3 weeks, 6 times (about 4 and a half months).' }),
     P({ name:'Dostarlimab maintenance', short:'Dostarlimab', mods:['io'], cycleDays:42, cycles:23,
         plain:'Immunotherapy on its own, by IV every 6 weeks, continuing until 3 years from the start of treatment. Visits are short. Treatment stops earlier if the cancer grows or side effects require it.' }),
@@ -1165,7 +1165,7 @@ const LIBRARY = [
   nodes:[
     S('Surgery (hysterectomy and removal of visible cancer)', 'Removal of the uterus, cervix, ovaries, and fallopian tubes, with removal of as much visible cancer as possible. The removed tissue is tested for HER2, a protein on the cancer cells that the antibody in this plan targets.'),
     HEAL(4),
-    P({ name:'Carboplatin + paclitaxel + trastuzumab (Herceptin)', short:'Carbo + paclitaxel + trastuzumab', mods:['chemo','targeted'], cycleDays:21, cycles:6,
+    P({ name:'Carboplatin + paclitaxel + trastuzumab', short:'Carbo + paclitaxel + trastuzumab', mods:['chemo','targeted'], cycleDays:21, cycles:6,
         plain:'Two chemotherapy drugs plus trastuzumab, an antibody that targets the HER2 protein on the cancer cells, all by IV every 3 weeks, 6 times (about 4 and a half months). Heart function is checked before and during treatment.' }),
     P({ name:'Trastuzumab maintenance', short:'Trastuzumab', mods:['targeted'], mode:'ongoing', weeks:52, openEnded:true, freqText:'By IV every 3 weeks, for as long as it keeps working',
         plain:'The antibody on its own, by IV every 3 weeks, continuing for as long as it keeps the cancer controlled and side effects allow. Visits are short, with heart checks every few months.' }),
@@ -1183,21 +1183,21 @@ const LIBRARY = [
     HEAL(4),
     P({ name:'Carboplatin + paclitaxel', short:'Carboplatin + paclitaxel', mods:['chemo'], cycleDays:21, cycles:6,
         plain:'Two chemotherapy drugs by IV every 3 weeks, 6 times (about 4 and a half months). Each visit takes several hours. Blood counts are checked before each dose.' }),
-    P({ name:'Bevacizumab (Avastin), if used', short:'Bevacizumab', mods:['targeted'], cycleDays:21, cycles:5, optional:true, on:false, concurrent:true,
+    P({ name:'Bevacizumab, if used', short:'Bevacizumab', mods:['targeted'], cycleDays:21, cycles:5, optional:true, on:false, concurrent:true,
         plain:'An antibody that blocks the blood supply to tumors, given by IV with the chemotherapy from the second cycle onwards, then continued in the maintenance step. Used mainly when cancer could not be fully removed. Your team will say whether it is part of your plan.' }),
     D({ name:'Tumor test result (BRCA and HRD)', short:'Gene test', question:'What did the tumor\'s gene tests show?',
         plain:'The removed tumor is tested for BRCA mutations and for a wider repair defect called homologous recombination deficiency (HRD). About half of high-grade ovarian cancers have one of these, and they respond especially well to PARP inhibitor tablets.',
         branches:[
           Br('BRCA mutation or HRD-positive', [
-            P({ name:'Olaparib (Lynparza) tablets for 2 years', short:'Olaparib', mods:['targeted'], mode:'daily', weeks:104, optional:true, on:true,
+            P({ name:'Olaparib tablets for 2 years', short:'Olaparib', mods:['targeted'], mode:'daily', weeks:104, optional:true, on:true,
                 plain:'A PARP inhibitor tablet taken twice a day for 2 years, starting within about 2 months of the last chemotherapy (SOLO-1). If bevacizumab is part of your plan, olaparib is given alongside it (PAOLA-1). Blood counts are checked regularly.' }),
-            P({ name:'Niraparib (Zejula) tablets for 3 years', short:'Niraparib', mods:['targeted'], mode:'daily', weeks:156, optional:true, on:false,
+            P({ name:'Niraparib tablets for 3 years', short:'Niraparib', mods:['targeted'], mode:'daily', weeks:156, optional:true, on:false,
                 plain:'The other PARP inhibitor option: one tablet a day for up to 3 years (PRIMA). Your team recommends one PARP inhibitor, not both.' }),
           ], 'BRCA or HRD positive'),
           Br('No BRCA mutation and HRD-negative', [
-            P({ name:'Bevacizumab (Avastin) maintenance, if used', short:'Bevacizumab', mods:['targeted'], cycleDays:21, cycles:16, optional:true, on:false,
+            P({ name:'Bevacizumab maintenance, if used', short:'Bevacizumab', mods:['targeted'], cycleDays:21, cycles:16, optional:true, on:false,
                 plain:'If bevacizumab was started with chemotherapy, it continues on its own by IV every 3 weeks for about 15 months in total (GOG-218).' }),
-            P({ name:'Niraparib (Zejula) tablets, if recommended', short:'Niraparib', mods:['targeted'], mode:'daily', weeks:156, optional:true, on:false,
+            P({ name:'Niraparib tablets, if recommended', short:'Niraparib', mods:['targeted'], mode:'daily', weeks:156, optional:true, on:false,
                 plain:'Niraparib is approved for all patients after a response to chemotherapy, but the benefit is smaller when the tumor is HRD-negative (PRIMA). Your team will weigh it against side effects.' }),
             P({ name:'Surveillance', short:'Surveillance', mods:['watch'], mode:'ongoing', weeks:104, openEnded:true, freqText:'Visits, blood tests (CA-125), and scans every 3 months at first',
                 plain:'Regular visits with a blood test for the tumor marker CA-125 and scans when needed, every 3 months at first and less often over time.' }),
@@ -1219,21 +1219,21 @@ const LIBRARY = [
     HEAL(4),
     P({ name:'Carboplatin + paclitaxel (after surgery)', short:'Carboplatin + paclitaxel', mods:['chemo'], cycleDays:21, cycles:3,
         plain:'Three more cycles of the same two drugs by IV every 3 weeks, to complete 6 cycles in total.' }),
-    P({ name:'Bevacizumab (Avastin), if used', short:'Bevacizumab', mods:['targeted'], cycleDays:21, cycles:3, optional:true, on:false, concurrent:true,
+    P({ name:'Bevacizumab, if used', short:'Bevacizumab', mods:['targeted'], cycleDays:21, cycles:3, optional:true, on:false, concurrent:true,
         plain:'An antibody that blocks the blood supply to tumors, given by IV with the chemotherapy after surgery, then continued in the maintenance step. Your team will say whether it is part of your plan.' }),
     D({ name:'Tumor test result (BRCA and HRD)', short:'Gene test', question:'What did the tumor\'s gene tests show?',
         plain:'The tumor is tested for BRCA mutations and for a wider repair defect called homologous recombination deficiency (HRD). About half of high-grade ovarian cancers have one of these, and they respond especially well to PARP inhibitor tablets.',
         branches:[
           Br('BRCA mutation or HRD-positive', [
-            P({ name:'Olaparib (Lynparza) tablets for 2 years', short:'Olaparib', mods:['targeted'], mode:'daily', weeks:104, optional:true, on:true,
+            P({ name:'Olaparib tablets for 2 years', short:'Olaparib', mods:['targeted'], mode:'daily', weeks:104, optional:true, on:true,
                 plain:'A PARP inhibitor tablet taken twice a day for 2 years, starting within about 2 months of the last chemotherapy (SOLO-1). If bevacizumab is part of your plan, olaparib is given alongside it (PAOLA-1). Blood counts are checked regularly.' }),
-            P({ name:'Niraparib (Zejula) tablets for 3 years', short:'Niraparib', mods:['targeted'], mode:'daily', weeks:156, optional:true, on:false,
+            P({ name:'Niraparib tablets for 3 years', short:'Niraparib', mods:['targeted'], mode:'daily', weeks:156, optional:true, on:false,
                 plain:'The other PARP inhibitor option: one tablet a day for up to 3 years (PRIMA). Your team recommends one PARP inhibitor, not both.' }),
           ], 'BRCA or HRD positive'),
           Br('No BRCA mutation and HRD-negative', [
-            P({ name:'Bevacizumab (Avastin) maintenance, if used', short:'Bevacizumab', mods:['targeted'], cycleDays:21, cycles:16, optional:true, on:false,
+            P({ name:'Bevacizumab maintenance, if used', short:'Bevacizumab', mods:['targeted'], cycleDays:21, cycles:16, optional:true, on:false,
                 plain:'If bevacizumab was started with chemotherapy, it continues on its own by IV every 3 weeks for about 15 months in total (GOG-218).' }),
-            P({ name:'Niraparib (Zejula) tablets, if recommended', short:'Niraparib', mods:['targeted'], mode:'daily', weeks:156, optional:true, on:false,
+            P({ name:'Niraparib tablets, if recommended', short:'Niraparib', mods:['targeted'], mode:'daily', weeks:156, optional:true, on:false,
                 plain:'Niraparib is approved for all patients after a response to chemotherapy, but the benefit is smaller when the tumor is HRD-negative (PRIMA). Your team will weigh it against side effects.' }),
             P({ name:'Surveillance', short:'Surveillance', mods:['watch'], mode:'ongoing', weeks:104, openEnded:true, freqText:'Visits, blood tests (CA-125), and scans every 3 months at first',
                 plain:'Regular visits with a blood test for the tumor marker CA-125 and scans when needed, every 3 months at first and less often over time.' }),
@@ -1254,15 +1254,16 @@ const COMPARE_EXAMPLE = {
   options:[
     { name:'Trastuzumab deruxtecan first (DESTINY-Breast11)', regimenId:'db11',
       pros:'A newer approach designed for higher-risk HER2-positive cancer\nMay increase the chance that no cancer is left by the time of surgery',
-      cons:'Trastuzumab deruxtecan (Enhertu) carries a small but serious risk of lung inflammation, which we watch for closely\nMore months of treatment before surgery' },
+      cons:'Trastuzumab deruxtecan carries a small but serious risk of lung inflammation, which we watch for closely\nMore months of treatment before surgery' },
     { name:'TCHP before surgery', regimenId:'tchp',
       pros:'A long-established standard, with many years of experience and results behind it\nWell-understood side effects and a familiar schedule',
       cons:'Lowers blood counts more, so an injection to help them recover is often needed' },
   ],
 };
 
-const APP_VERSION = '0.20.0';
+const APP_VERSION = '0.20.1';
 const CHANGELOG = [
+  { date:'2026-09-19', text:'0.20.1: Drug names are now generic only; brand names such as Keytruda, Opdivo and Enhertu are gone from every step across the library. KEYNOTE-522 step text shortened and the map labels name the drug ("Carbo + paclitaxel + pembrolizumab", "AC + pembrolizumab") instead of "immunotherapy"; the same map wording is used in the NRG-GY018 and RUBY pathways. No schedule changed.' },
   { date:'2026-09-19', text:'0.20.0: A plan that cannot fit one page without small type now prints at full size on two or more pages instead of shrinking further. Body text never drops below 82% of normal and map labels never below 9 px. The preview says before you print how many pages a plan will take; shortening the care-team note or the step text brings it back to one.' },
   { date:'2026-09-19', text:'0.19.0: Printing fits every plan on one page in both the builder and the patient view; the patient view could run to a second page. A tight plan now closes up whitespace and changes the number of step columns before any text shrinks, map labels never print smaller than 9 px, and body text never drops below 82% of its normal size. A surgery that starts the timeline no longer has its label clipped at the left edge of the printed map.' },
   { date:'2026-09-08', text:'0.18.0: New Gynecologic tab with eight pathways. Uterine and endometrial: PORTEC-2 (surgery, vaginal brachytherapy), PORTEC-3 (surgery, radiation with cisplatin, carboplatin + paclitaxel), GOG-258 (surgery, carboplatin + paclitaxel ×6), NRG-GY018 (chemotherapy + pembrolizumab, then pembrolizumab), RUBY (chemotherapy + dostarlimab, then dostarlimab up to 3 years), HER2-positive uterine serous (chemotherapy + trastuzumab, then trastuzumab). Ovarian: surgery-first and chemotherapy-first sequences, each ending in a maintenance choice set by the BRCA and HRD results.' },
