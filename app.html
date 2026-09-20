@@ -1195,7 +1195,7 @@ function renderRoute(ctx, startDate, colors){
       const flush = (txt, size) => it.x + 11 - txt.length * size * 0.27 < 0;
       const label = trunc(n.short || n.name.replace(/\s*\(.*\)\s*$/, ''), 12), lf = flush(label, 11.5);
       if (callouts.has(idx)){
-        const co = callouts.get(idx), ly = y0 + nameY - 14;
+        const co = callouts.get(idx), ly = y0 + nameY - 18;
         s += T(co.start, ly, co.label, { size:11.5, weight:600, fill:'#172033', halo:3.5 });
         s += `<path d="M${(it.x + 11).toFixed(1)} ${(ly + 3).toFixed(1)} V${(y0 + barY - 8).toFixed(1)}" stroke="#9AA3B2" stroke-width="1.2" fill="none"/>`;
       } else
@@ -1228,7 +1228,11 @@ function renderRoute(ctx, startDate, colors){
         const co = callouts.get(idx);
         const lines = co ? [label] : phaseLines(label, maxC, hasUp);
         if (co){
-          const ly = y0 + nameY - 14;
+          // the callout sits a little higher than a plain label line, so it
+          // does not merge with the neighbour's label beneath it; the tick
+          // is longer for it (the owner chose this over a background pill,
+          // which a patient might read as a highlight)
+          const ly = y0 + nameY - 18;
           s += T(co.start, ly, label, { size:12.5, weight:600, fill:'#172033', halo:3.5 });
           s += `<path d="M${(it.x + 3).toFixed(1)} ${(ly + 3).toFixed(1)} V${(y0 + barY - 3).toFixed(1)}" stroke="#9AA3B2" stroke-width="1.2" fill="none"/>`;
         } else lines.forEach((ln, i) => { s += T(it.x + 2, y0 + nameY - (lines.length - 1 - i) * 12.5, ln, { size:12.5, weight:600, fill:'#172033' }); });
