@@ -132,6 +132,18 @@ if (ctx.COMPARE_EXAMPLE){ const m = JSON.stringify(ctx.COMPARE_EXAMPLE).match(br
     for (const need of ['<link rel="icon" href="assets/brand/favicon.svg" type="image/svg+xml">', '<link rel="icon" href="assets/brand/favicon.ico" sizes="32x32">', '<link rel="apple-touch-icon" href="assets/brand/apple-touch-icon.png">', '<meta property="og:site_name" content="Roadbook Oncology">'])
       if (!h.includes(need)) errors.push(`${f}: missing ${need}`);
   }
+  // (b2) every landing image has its WebP twin, listed first in a <picture>, with the PNG as fallback
+  {
+    const h = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+    for (const m of h.matchAll(/<img [^>]*\b(?:data-src|src)="([^"]+)\.png"/g)){
+      const base = m[1];
+      if (!fs.existsSync(path.join(root, base + '.webp'))) errors.push(`index.html: ${base}.png has no ${base}.webp twin (run tools/webp-landing.py)`);
+      const pic = new RegExp('<picture><source type="image/webp" (?:data-srcset|srcset)="' + base.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\.webp"><img [^>]*"' + base.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\.png"');
+      if (!pic.test(h)) errors.push(`index.html: ${base}.png is not wrapped in a <picture> with its WebP source first`);
+      const png = fs.statSync(path.join(root, base + '.png')).mtimeMs, webp = fs.existsSync(path.join(root, base + '.webp')) ? fs.statSync(path.join(root, base + '.webp')).mtimeMs : 0;
+      if (webp && png > webp + 1000) warnings.push(`${base}.png is newer than ${base}.webp — re-run tools/webp-landing.py`);
+    }
+  }
   // (c) rasterised brand files exist
   for (const f of ['og.png', 'favicon.ico', 'favicon.svg', 'apple-touch-icon.png', 'roadbook-mark.svg', 'roadbook-wordmark-color-outlined.svg', 'roadbook-wordmark-mono-outlined.svg'])
     if (!fs.existsSync(path.join(root, 'assets', 'brand', f))) errors.push(`assets/brand/${f} is missing (run tools/outline-brand.js then tools/rasterize-brand.js)`);
