@@ -285,7 +285,7 @@ body.patient .main{padding:24px 20px 60px}
   .topbar>div:first-child{display:none}
   .topbar .tb-r{width:100%;flex-wrap:wrap}
   /* the page-count note takes one short line under the buttons instead of squeezing between them */
-  .topbar .tb-r .fitnote{flex-basis:100%;order:3;margin:0;text-align:center;font-size:12px}
+  .topbar .tb-r .fitnote{flex-basis:100%;order:3;margin:-3px 0 -2px;text-align:center;font-size:11px;line-height:1.2;font-weight:500}
   .topbar .tb-r .btn{flex:1}
   .topbar .btn{padding:7px 10px;font-size:12.5px;white-space:nowrap}
   .app{display:flex;flex-direction:column;height:auto}
@@ -1651,11 +1651,8 @@ function fitNotice(){
   let msg = '';
   if (fit && fit.multiPage){
     const n = (['', '', 'two', 'three', 'four', 'five', 'six'][fit.pages] || fit.pages) + ' pages';
-    // on a phone the top bar stacks and the note gets a whole line, so it is one short line there
-    const narrow = matchMedia('(max-width:900px)').matches, np = fit.pages + ' pages';
-    msg = state.opts.detail === 'visits'
-      ? (narrow ? `Prints on ${np}; overview detail or a shorter note fits more.` : `This plan prints on ${n}. Overview detail, or a shorter note, fits more on each page.`)
-      : (narrow ? `Prints on ${np}; shorten text to fit one.` : `This plan prints on ${n}. Shorten the note or the step text to fit one.`);
+    // the count only: two pages is a fine outcome, and any "shorten it" wording read as a requirement
+    msg = matchMedia('(max-width:900px)').matches ? `Prints on ${fit.pages} pages.` : `This plan prints on ${n}.`;
   }
   for (const el of els){ el.textContent = msg; el.hidden = !msg; }
 }

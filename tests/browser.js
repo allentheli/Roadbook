@@ -147,7 +147,7 @@ const BASE = `http://localhost:${PORT}`;
       await ph3.goto(`${BASE}/app.html#r=kn522`, { waitUntil: 'load' }); await ph3.waitForTimeout(300);
       await ph3.evaluate((t) => { state.opts.notes = t; renderAll(); }, note.repeat(2)); await ph3.waitForTimeout(700);
       const phn = await ph3.evaluate(() => { const n = document.getElementById('tb-fitnote'); return { hidden: n.hidden, text: n.textContent }; });
-      ok('phone: the page-count note is one short line', !phn.hidden && /^Prints on \d+ pages; shorten text to fit one\.$/.test(phn.text));
+      ok('phone: the page-count note is one short line', !phn.hidden && /^Prints on \d+ pages\.$/.test(phn.text));
       await ph3.goto('about:blank'); await ph3.goto(`${BASE}/app.html#r=kn522&demo=1`, { waitUntil: 'load' }); await ph3.waitForTimeout(300);
       await ph3.evaluate((t) => { state.opts.notes = t; renderAll(); }, note.repeat(2)); await ph3.waitForTimeout(700);
       const dm = await ph3.evaluate(() => ({ demo: document.body.classList.contains('demo'), shown: getComputedStyle(document.getElementById('tb-fitnote')).display !== 'none' }));
