@@ -3,7 +3,7 @@
 // ffmpeg with libx264 and libvpx-vp9 (set FFMPEG to its path; defaults to `ffmpeg` on PATH).
 //   node tests/record-demo.js
 // Serves the repo locally, drives the builder at 1280x800 with a drawn cursor (search for NATALEE, include the
-// optional TC chemotherapy, set six cycles, print the handout), then encodes:
+// optional TC chemotherapy, set six cycles, print the handout; the share link's host is masked), then encodes:
 // WebM (VP9, listed first for Chromium builds without H.264), MP4 (H.264, Safari), JPEG poster.
 const { spawn, execFileSync } = require('child_process');
 const fs = require('fs');
@@ -55,8 +55,9 @@ const CURSOR = `(() => {
     await p.addInitScript(() => { window.print = () => setTimeout(() => window.dispatchEvent(new Event('afterprint')), 400); try { localStorage.setItem('roadmap.terms', '2026-09-05'); } catch (e) {} });
     await p.goto(`${BASE}/app.html`, { waitUntil: 'load' });
     await p.mouse.move(cx, cy); await sleep(300);
-    // the share box should show the public address, not the local server
-    await p.evaluate(() => { const orig = window.updateShare; const fix = () => { const lk = document.getElementById('linkout'); if (lk) lk.value = lk.value.replace(/^https?:\/\/[^\/]+\//, 'https://allentheli.github.io/ONCourse/'); };
+    // the share box must not show the local server, and not the site's address either (the
+    // owner may move domains): the host is masked with bullets, the rest of the link stays
+    await p.evaluate(() => { const orig = window.updateShare; const fix = () => { const lk = document.getElementById('linkout'); if (lk) lk.value = lk.value.replace(/^https?:\/\/[^\/]+\//, 'https://\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022/'); };
       window.updateShare = async function(){ await orig.apply(this, arguments); fix(); }; fix(); });
     await sleep(900);
     // 1. search for the pathway, choose it, confirm it
