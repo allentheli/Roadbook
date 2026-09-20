@@ -960,7 +960,7 @@ function layout(nodes, cfg){
   const C = Object.assign({}, L, cfg || {});
   const ctx = { items:[], forks:[], merges:[], rows:1, rowExt:{}, week:new Map(), branchTotals:[], maxX:0, scale:1, noDate:new Set(), unknownTreat:false, maxLane:-1 };
   ctx.scale = C.scale || Math.min(C.maxScale, Math.max(200, C.W - fixedPx(nodes, C)) / Math.max(seqUnits(nodes), 1));
-  const ext = (row, a, b) => { const e = ctx.rowExt[row] || (ctx.rowExt[row] = { min:Infinity, max:-Infinity }); e.min = Math.min(e.min, a); e.max = Math.max(e.max, b); ctx.maxX = Math.max(ctx.maxX, b); };
+  const ext = (row, a, b) => { const e = ctx.rowExt[row] || (ctx.rowExt[row] = { min:Infinity, max:-Infinity }); e.min = Math.min(e.min, a); e.max = Math.max(e.max, b); ctx.maxX = Math.max(ctx.maxX, b); ctx.barMaxX = Math.max(ctx.barMaxX || 0, b); };
   function place(list, x, week, row, dim, unk){
     let lastStart = x, lastWeek = week, conc = 0, treat = week, hasDecision = false, prevConc = null;
     const active = list.filter(act);
@@ -1022,14 +1022,39 @@ function layout(nodes, cfg){
         if (counted(n)) treat = Math.max(treat, cw + w);
         return;
       }
-      ctx.items.push({ kind:n.t, x, row, w:px, node:n, week, dim });
+      ctx.items.push({ kind:n.t, x, row, w:px, node:n, week, dim, pinned: px > units(w) * ctx.scale + 0.5 });
       ext(row, x, x + px); lastStart = x; lastWeek = week; conc = 0; prevConc = null; x += px + C.gap; week += w;
       if (counted(n)) treat = Math.max(treat, week);
       if (lenUnknown(n)){ unk = true; if (counted(n)) ctx.unknownTreat = true; }
     });
     return { x, week, treat, hasDecision, unk };
   }
-  const res = place(nodes, 0, 1, 0, false, false);
+  let res = place(nodes, 0, 1, 0, false, false);
+  // Bars pinned at their minimum width (a "to be set" radiation course, a
+  // very short phase) are not in the scale's arithmetic, so a map can run
+  // past its frame and print smaller. Bring the scale down until the bars
+  // fit: every proportional bar shrinks together, so their ratios hold. An
+  // alongside bar or label running past the last bar is left alone; it
+  // widens the frame by a few percent on a couple of maps, and correcting
+  // for it would cost KEYNOTE-522 its one page.
+  if (!C.scale){
+    for (let pass = 0; pass < 4 && (ctx.barMaxX || 0) > C.W - 6; pass++){
+      const pinnedRow = {};
+      for (const it of ctx.items) if (it.kind !== 'up' && (it.kind !== 'phase' || it.pinned)) pinnedRow[it.row] = (pinnedRow[it.row] || 0) + it.w;
+      const rows = Object.keys(ctx.rowExt).map(r => ({ w: ctx.rowExt[r].max, pinned: (pinnedRow[r] || 0) + fixedPx(nodes, C) * 0.5, hasPinned: ctx.items.some(it => it.row === +r && it.kind === 'phase' && it.pinned) }));
+      const worst = rows.reduce((a, b) => (b.w > a.w ? b : a), rows[0]);
+      // Only a pinned bar justifies the correction; an alongside bar that
+      // runs a little past the frame (KEYNOTE-522's capecitabine) is left as
+      // it has always been.
+      if (!worst.hasPinned) break;
+      const flex = Math.max(1, worst.w - worst.pinned), target = Math.max(1, C.W - 6 - worst.pinned);
+      const next = ctx.scale * target / flex;
+      if (next >= ctx.scale - 0.01) break;
+      ctx.scale = next;
+      Object.assign(ctx, { items:[], forks:[], merges:[], rows:1, rowExt:{}, week:new Map(), branchTotals:[], maxX:0, barMaxX:0, noDate:new Set(), unknownTreat:false, maxLane:-1 });
+      res = place(nodes, 0, 1, 0, false, false);
+    }
+  }
   ctx.endWeek = res.week;
   // alongside bars that share an anchor: the longest chain sits closest to the main bar,
   // shorter ones stack above it, so stacked lanes read as a neat staircase
@@ -1195,7 +1220,7 @@ function renderRoute(ctx, startDate, colors){
       const flush = (txt, size) => it.x + 11 - txt.length * size * 0.27 < 0;
       const label = trunc(n.short || n.name.replace(/\s*\(.*\)\s*$/, ''), 12), lf = flush(label, 11.5);
       if (callouts.has(idx)){
-        const co = callouts.get(idx), ly = y0 + nameY - 14;
+        const co = callouts.get(idx), ly = y0 + nameY - 18;
         s += T(co.start, ly, co.label, { size:11.5, weight:600, fill:'#172033', halo:3.5 });
         s += `<path d="M${(it.x + 11).toFixed(1)} ${(ly + 3).toFixed(1)} V${(y0 + barY - 8).toFixed(1)}" stroke="#9AA3B2" stroke-width="1.2" fill="none"/>`;
       } else
@@ -1228,7 +1253,11 @@ function renderRoute(ctx, startDate, colors){
         const co = callouts.get(idx);
         const lines = co ? [label] : phaseLines(label, maxC, hasUp);
         if (co){
-          const ly = y0 + nameY - 14;
+          // the callout sits a little higher than a plain label line, so it
+          // does not merge with the neighbour's label beneath it; the tick
+          // is longer for it (the owner chose this over a background pill,
+          // which a patient might read as a highlight)
+          const ly = y0 + nameY - 18;
           s += T(co.start, ly, label, { size:12.5, weight:600, fill:'#172033', halo:3.5 });
           s += `<path d="M${(it.x + 3).toFixed(1)} ${(ly + 3).toFixed(1)} V${(y0 + barY - 3).toFixed(1)}" stroke="#9AA3B2" stroke-width="1.2" fill="none"/>`;
         } else lines.forEach((ln, i) => { s += T(it.x + 2, y0 + nameY - (lines.length - 1 - i) * 12.5, ln, { size:12.5, weight:600, fill:'#172033' }); });
