@@ -177,9 +177,13 @@ const BASE = `http://localhost:${PORT}`;
         const bars = [...svg.querySelectorAll('rect')].filter(x => +x.getAttribute('height') === 8).length; // thin lane bars
         const grads = svg.querySelectorAll('linearGradient[id^="g-"]').length;
         const steps = [...document.querySelectorAll('#sheet .also')].map(e => e.textContent).filter(t => /Durvalumab/.test(t)).length;
-        return { two: labels.filter(l => l === 'FLOT + durvalumab').length, lone: labels.filter(l => /^Durvalumab ~/.test(l)).length, bars, grads, steps };
+        // the same drug keeps one shade: the immunotherapy colour inside the combined bar equals the "Durvalumab alone" bar
+        const stops = [...svg.querySelectorAll('linearGradient[id^="g-"] stop')].map(x => x.getAttribute('stop-color'));
+        const main = [...svg.querySelectorAll('rect')].filter(x => +x.getAttribute('height') === 20 || +x.getAttribute('height') > 12).map(x => x.getAttribute('fill')).filter(f => f && f.startsWith('#'));
+        return { two: labels.filter(l => l === 'FLOT + durvalumab').length, lone: labels.filter(l => /^Durvalumab ~/.test(l)).length, bars, grads, steps, sameShade: main.some(c => stops.includes(c)) };
       });
       ok('FLOT + durvalumab draws as one two-colour bar per block, durvalumab still listed under the map', r.two === 2 && r.lone === 0 && r.bars === 0 && r.grads >= 1 && r.steps === 2);
+      ok('durvalumab keeps one shade inside the combined bar and on its own', r.sameShade);
       await f.close();
     }
 

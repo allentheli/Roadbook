@@ -710,6 +710,19 @@ function mixc(hex, f){
   return '#' + [m(r), m(g), m(bl)].map(x => x.toString(16).padStart(2, '0')).join('');
 }
 function shadeOf(base, i){ if (!i || i <= 0) return base; if (i === 1) return mixc(base, 0.42); if (i === 2) return mixc(base, -0.24); return mixc(base, 0.64); }
+// The shade key is the drug, not the step's wording: "Durvalumab", "Durvalumab
+// alone" and "Durvalumab maintenance, if used" are one drug and get one shade,
+// while "Carboplatin + paclitaxel" and "AC" stay apart. Qualifier words are
+// dropped; a parenthetical is dropped too unless it is where the drug is named
+// ("Chemotherapy (docetaxel + cyclophosphamide), if beneficial").
+const SHADE_STOP = new Set(['alone','continues','continued','continue','continuing','maintenance','then','and','plus','with','or','the','of','on','its','own','therapy','tablet','tablets','chemo','chemotherapy','immunotherapy','more','cycles','cycle','doses','dose','if','recommended','beneficial','optional','used','after','before','surgery','oral','iv','weekly','daily','same','drugs','drug','two','three','four','antibody','antibodies','hormone','endocrine','targeted','radiation','to','in','a','for','part','course','block','again','second','first','round','phase','years','year','months','month','weeks','week','positive','receptor','monitoring','surveillance']);
+function drugKey(name){
+  const toks = (t) => t.toLowerCase().replace(/[^a-z0-9\-\/ ]+/g, ' ').split(/\s+/).filter(w => w && !SHADE_STOP.has(w) && !/^\d+$/.test(w));
+  const full = name || '';
+  const outside = full.replace(/\([^)]*\)/g, ' ');
+  const words = toks(outside).length ? toks(outside) : toks(full.replace(/[()]/g, ' '));
+  return words.length ? words.sort().join(' ') : full.toLowerCase().trim();
+}
 function assignColors(reg){
   const map = new Map(); const fam = {};
   (function walk(ns){
@@ -719,7 +732,7 @@ function assignColors(reg){
       const mods = (n.mods || ['chemo']).filter(k => MODS[k]);
       const m0 = mods[0] || 'chemo';
       const fm = fam[m0] || (fam[m0] = new Map());
-      const key = (n.name || '').toLowerCase().trim();
+      const key = drugKey(n.name);
       if (!fm.has(key)) fm.set(key, fm.size);
       const idx = (n.shade != null && n.shade !== '') ? +n.shade : fm.get(key);
       map.set(n.id, [shadeOf(MODS[m0].color, idx)].concat(mods.slice(1).map(k => MODS[k].color)));
