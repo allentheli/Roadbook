@@ -40,3 +40,20 @@ Roadbook (formerly ONCourse) is a static site (GitHub Pages) that turns cancer t
 
 ## Style
 No em dashes in patient text; no emoji; sentence case; generic drug names only, never brand names (pembrolizumab, not Keytruda); tests/check.js rejects the common ones.
+
+## Study materials: frozen, do not touch
+
+`study/` holds the verification-audit materials built from tag `v0.18.0-audit` under protocol v2.1:
+the locked assertion inventory, the reviewer worksheets, the password-locked key archives, the review
+order, the pathway log, the loop partition and the sha256 manifest (`study/HASHES.txt`). These files
+are pre-registered by hash.
+
+- Do not edit, regenerate, reformat, rename, move or delete anything under `study/`.
+- Do not run `study/scripts/build-study.js` again.
+- Do not extract `study/keys/*.zip` unless the owner asks for it in the same session.
+- Never commit `study/keys/PASSWORDS.local.txt` or any plain `study/keys/*.csv`.
+- Later study outputs (reviewer export, adjudication, analysis code and results) are added only as
+  new files under `study/`, with names given in a brief, never by changing an existing file.
+- If a task appears to require touching `study/`, stop and ask the owner before doing anything.
+
+`study/` is not part of the site. It carries no `CHANGELOG` entry and never affects `APP_VERSION`.
