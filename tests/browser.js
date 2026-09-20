@@ -152,7 +152,42 @@ const BASE = `http://localhost:${PORT}`;
       ok('shared plan is never gated', await p2.evaluate(() => document.getElementById('gate').hidden));
       ok('shared plan is a dead end: no visible link leads anywhere', await p2.evaluate(() =>
         [...document.querySelectorAll('a[href]')].every(a => { const r = a.getBoundingClientRect(); return r.width === 0 || r.height === 0 || getComputedStyle(a).visibility === 'hidden'; })));
+      ok('shared plan hides the builder\'s page-count note', await p2.evaluate(() => getComputedStyle(document.getElementById('tb-fitnote')).display === 'none'));
       await p2.close();
+      // the same link on a phone: the map at readable size in a strip that scrolls sideways
+      const ph = await b.newPage({ viewport: { width: 390, height: 844 } }); hook(ph);
+      await ph.goto(link.replace(/^https?:\/\/[^\/]+/, BASE), { waitUntil: 'load' });
+      await ph.waitForTimeout(350);
+      const strip = await ph.evaluate(() => {
+        const route = document.querySelector('#sheet>.route'), svg = route.querySelector('svg');
+        const labels = [...svg.querySelectorAll('text')].map(t => t.getBoundingClientRect().height).filter(h => h > 0);
+        return { pageW: document.documentElement.scrollWidth, svgW: svg.getBoundingClientRect().width, scrolls: route.scrollWidth > route.clientWidth + 100, minLabel: Math.min(...labels), hint: getComputedStyle(route, '::after').content };
+      });
+      ok('phone: shared plan\'s map is a sideways strip with readable labels', strip.pageW === 390 && strip.svgW >= 800 && strip.scrolls && strip.minLabel >= 10 && /Swipe/.test(strip.hint));
+      await ph.close();
+    }
+
+    // ---- public pages: skip link, main landmark, 404 page ----
+    {
+      const q = await b.newPage({ viewport: { width: 1280, height: 950 } }); hook(q);
+      let allOk = true;
+      for (const f of ['index.html', 'about.html', 'updates.html', 'references.html', 'disclaimer.html', 'how-it-works.html', '404.html']){
+        await q.goto(`${BASE}/${f}`, { waitUntil: 'load' });
+        const r = await q.evaluate(() => {
+          const skip = document.querySelector('a.skip[href="#content"]'), main = document.getElementById('content');
+          const hidden = skip && skip.getBoundingClientRect().right <= 0;
+          skip && skip.focus();
+          const shown = skip && skip.getBoundingClientRect().left >= 0 && skip.getBoundingClientRect().width > 0;
+          return !!(skip && main && main.tagName === 'MAIN' && hidden && shown && document.querySelectorAll('main').length === 1);
+        });
+        if (!r) allOk = false;
+      }
+      ok('every public page has a skip link that appears on focus and one main landmark', allOk);
+      await q.goto(`${BASE}/some/missing/path/404.html`, { waitUntil: 'load' }).catch(() => {});
+      await q.goto(`${BASE}/404.html`, { waitUntil: 'load' });
+      const nf = await q.evaluate(() => ({ home: [...document.querySelectorAll('a')].some(a => /home page/i.test(a.textContent) && a.href.endsWith('/index.html')), noLib: !document.querySelector('script[src^="regimens.js"]'), styled: getComputedStyle(document.querySelector('header.top')).position === 'sticky' }));
+      ok('404 page links home, loads no library, and is styled', nf.home && nf.noLib && nf.styled);
+      await q.close();
     }
 
     // ---- phone: pick flow, docked sticky map, expander ----
