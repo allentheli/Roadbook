@@ -214,7 +214,7 @@ body.patient .main{padding:24px 20px 60px}
 .fork{grid-column:1/-1;border-top:1px solid var(--line);padding-top:12px;margin-top:2px}
 .fork>h3{margin:0 0 4px;font:600 15px/1.3 var(--serif)}
 .fork>p{margin:0 0 10px;font-size:12.5px;color:var(--ink-2);max-width:90ch}
-.branches{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.branches{display:grid;grid-template-columns:repeat(var(--nb,2),1fr);gap:16px}
 .branch{padding:0 0 0 12px;border-left:3px solid var(--line)}
 .branch.expected{border-left-color:var(--ink)}
 .branch.dim{opacity:.55}
@@ -363,7 +363,7 @@ body.patient .main{padding:24px 20px 60px}
   .route{display:block!important;margin:calc(var(--k,1)*var(--g,1)*10px) 0 calc(var(--k,1)*var(--g,1)*2px)}
   .route svg{max-height:var(--maph,230px);width:auto;max-width:100%}
   .steps{grid-template-columns:repeat(var(--cols,3),1fr);gap:calc(var(--k,1)*var(--g,1)*8px) calc(var(--k,1)*16px);margin-top:calc(var(--k,1)*var(--g,1)*4px)}
-  .branches{grid-template-columns:1fr 1fr;gap:calc(var(--k,1)*12px)}
+  .branches{grid-template-columns:repeat(var(--nb,2),1fr);gap:calc(var(--k,1)*12px)}
   .sh-head{padding-bottom:calc(var(--k,1)*6px);font-size:calc(var(--k,1)*10.5px)}
   .sh-prep{gap:calc(var(--k,1)*2px)}
   .sh-prep .prepfor b{font-size:calc(var(--k,1)*11px)}
@@ -994,13 +994,14 @@ function layout(nodes, cfg){
         ext(row, x, x + C.diamond);
         const vis = visibleBranches(n);
         const bx = x + C.diamond + (vis.length > 1 ? C.fork : C.forkSingle);
-        let maxX = bx, maxWeek = week, maxTreat = treat, anyUnk = false; const ends = [];
+        let maxX = bx, maxWeek = week, maxTreat = treat, anyUnk = false, expRes = null; const ends = [];
         vis.forEach((v, bi) => {
           const r = row + bi;
           const isExp = n.emph === v.idx;
           const dimB = dim || (n.emph != null && !isExp);
           ctx.forks.push({ fx:x + C.diamond, frow:row, tx:bx, trow:r, cond:v.b.short || v.b.cond, expected:isExp, single:vis.length === 1, dim:dimB });
           const res = place(v.b.nodes, bx, week, r, dimB, unk);
+          if (isExp) expRes = res;
           anyUnk = anyUnk || res.unk;
           ends.push({ x:res.x, row:r });
           ctx.rows = Math.max(ctx.rows, r + 1);
@@ -1008,7 +1009,12 @@ function layout(nodes, cfg){
           ctx.branchTotals.push({ treat:res.treat, end:res.week });
           maxX = Math.max(maxX, res.x); maxWeek = Math.max(maxWeek, res.week); maxTreat = Math.max(maxTreat, res.treat);
         });
-        x = maxX; week = maxWeek; treat = maxTreat; lastStart = x; lastWeek = week; unk = unk || anyUnk;
+        // the drawing continues after the longest path, but the dates of the
+        // steps that follow the fork run from the expected path when one is set
+        x = maxX; lastStart = x;
+        if (expRes){ week = expRes.week; treat = expRes.treat; unk = unk || expRes.unk; }
+        else { week = maxWeek; treat = maxTreat; unk = unk || anyUnk; }
+        lastWeek = week;
         if (i < active.length - 1){ ctx.merges.push({ ends, tx:x + C.merge, trow:row }); ext(row, x, x + C.merge); x += C.merge; }
         return;
       }
@@ -1134,8 +1140,10 @@ function renderRoute(ctx, startDate, colors){
   const labelFor = (it) => (it.node.short || it.node.name) + (it.merged || []).map(m => ' + ' + lc(m.short || m.name)).join('');
   // each concurrent lane needs its own label line above its bar
   const extra = Math.max(0, ctx.maxLane) * 20;
-  const rowH = L.rowH + extra, barY = L.barY + extra, nameY = L.nameY + extra, durY = L.durY + extra, startY = L.startY + extra;
-  const width = Math.max(L.W, ctx.maxX + 6), height = ctx.rows * rowH - 4;
+  // three or more rows (a three-way fork) sit a little closer, so the map's
+  // print cap shrinks them less and their labels stay near the readable floor
+  let rowH = (ctx.rows >= 3 ? 92 : L.rowH) + extra, barY = L.barY + extra, nameY = L.nameY + extra, durY = L.durY + extra, startY = L.startY + extra;
+  const width = Math.max(L.W, ctx.maxX + 6); let height = ctx.rows * rowH - 4;
   let defs = `<pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#EEF1F5"/><rect width="2.2" height="6" fill="#CBD3DD"/></pattern>
   <linearGradient id="fade" x1="0" y1="0" x2="1" y2="0"><stop offset="0.5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity="1"/></linearGradient>`;
   const grads = new Set();
@@ -1156,16 +1164,6 @@ function renderRoute(ctx, startDate, colors){
   };
   const startText = (week) => startDate ? fmtShort(addDays(startDate, (week - 1) * 7), startDate) : `week ${Math.round(week)}`;
   const curve = (x1, y1, x2, y2, dim) => `<path d="M${x1.toFixed(1)} ${y1} C${(x1 + 44).toFixed(1)} ${y1}, ${(x2 - 44).toFixed(1)} ${y2}, ${x2.toFixed(1)} ${y2}" fill="none" stroke="#B8C0CC" stroke-width="2"${dim ? ' opacity=".4"' : ''}/>`;
-  const cy = (row) => row * rowH + barY + L.barH / 2;
-  let g = '';
-  for (let r = 0; r < ctx.rows; r++){ const e = ctx.rowExt[r]; if (!e || !isFinite(e.min)) continue; g += `<line x1="${e.min}" y1="${cy(r)}" x2="${e.max}" y2="${cy(r)}" stroke="#D9DEE7" stroke-width="2"/>`; }
-  for (const f of ctx.forks){
-    g += curve(f.fx, cy(f.frow), f.tx, cy(f.trow), f.dim);
-    const lines = wrapText(f.cond, 21, 3);
-    if (f.single){ lines.forEach((ln, i) => { g += T(f.fx + 8, cy(f.frow) + 24 + i * 12, ln, { size:10.5, fill:'#3B4557', weight:600, halo:3.5 }); }); }
-    else { const base = cy(f.trow) - 10 - (lines.length - 1) * 12; lines.forEach((ln, i) => { g += T(f.tx - 6, base + i * 12, ln, { size:10.5, anchor:'end', fill: f.dim ? '#9AA3B2' : '#172033', weight: f.expected ? 600 : 400, halo:3.5 }); }); }
-  }
-  for (const m of ctx.merges){ for (const e of m.ends) g += curve(e.x, cy(e.row), m.tx, cy(m.trow)); }
   const prevUp = (i) => { const it = ctx.items[i]; for (let j = i - 1; j >= 0; j--){ const q = ctx.items[j]; if (q.kind === 'up' && q.row === it.row && q.lane === it.lane) return j; } return -1; };
   const continued = new Set();
   ctx.items.forEach((it, i) => { if (it.kind === 'up' && it.node.afterPrev){ const j = prevUp(i); if (j >= 0) continued.add(j); } });
@@ -1215,9 +1213,9 @@ function renderRoute(ctx, startDate, colors){
   // choice over an angled leader).
   const callouts = new Map();
   {
-    const taken = {};   // per row: intervals occupied on the upper line
-    const claim = (row, a, b, who) => (taken[row] = taken[row] || []).push([a, b, who]);
-    const others = (row, self) => (taken[row] || []).filter(t => t[2] !== self);
+    const taken = {};   // per row and level: intervals occupied on the lines above the bars
+    const claim = (row, a, b, who, level = 1) => (taken[row + ':' + level] = taken[row + ':' + level] || []).push([a, b, who]);
+    const others = (row, self, level = 1) => (taken[row + ':' + level] || []).filter(t => t[2] !== self);
     const labelOf = (it) => it.kind === 'event' ? (it.node.short || it.node.name.replace(/\s*\(.*\)\s*$/, '')) : labelFor(it);
     // natural two-line labels occupy the upper line already
     ctx.items.forEach((it, idx) => {
@@ -1234,17 +1232,43 @@ function renderRoute(ctx, startDate, colors){
       }
       if (!need) return;
       const label = labelOf(it), w = cw * label.length + 4;
-      // slide left (a little) when a neighbour owns the upper line to the right
-      const occ = others(it.row, idx);
-      let start = x0;
-      const blockedAt = (a) => occ.find(([p, q]) => a < q && a + w > p);
-      for (let tries = 0; tries < 3; tries++){
-        const hit = blockedAt(start); if (!hit) break;
-        start = hit[0] - w - 4;
-      }
-      if (start < 0 || start > x0 || x0 - start > 60 || start + w > width - 2 || blockedAt(start)) return;
-      callouts.set(idx, { label, start }); claim(it.row, start, start + w, idx);
+      // slide left (a little) when a neighbour owns the upper line to the right;
+      // when the upper line is taken, the label goes one line higher still
+      // (a long callout to the left often covers a short bar's own line)
+      const tryLevel = (level) => {
+        const occ = others(it.row, idx, level);
+        let start = x0;
+        const blockedAt = (a) => occ.find(([p, q]) => a < q && a + w > p);
+        for (let tries = 0; tries < 3; tries++){
+          const hit = blockedAt(start); if (!hit) break;
+          start = hit[0] - w - 4;
+        }
+        if (start < 0 || start > x0 || x0 - start > 60 || start + w > width - 2 || blockedAt(start)) return false;
+        callouts.set(idx, { label, start, level }); claim(it.row, start, start + w, idx, level); return true;
+      };
+      if (!tryLevel(1)) tryLevel(2);
     });
+  }
+  // a callout on the second line needs one more line of room in every row
+  const coExtra = [...callouts.values()].some(c => c.level === 2) ? 14 : 0;
+  if (coExtra){ rowH += coExtra; barY += coExtra; nameY += coExtra; durY += coExtra; startY += coExtra; height = ctx.rows * rowH - 4; }
+  const cy = (row) => row * rowH + barY + L.barH / 2;
+  let g = '';
+  for (let r = 0; r < ctx.rows; r++){ const e = ctx.rowExt[r]; if (!e || !isFinite(e.min)) continue; g += `<line x1="${e.min}" y1="${cy(r)}" x2="${e.max}" y2="${cy(r)}" stroke="#D9DEE7" stroke-width="2"/>`; }
+  for (const f of ctx.forks){
+    g += curve(f.fx, cy(f.frow), f.tx, cy(f.trow), f.dim);
+    const lines = wrapText(f.cond, 21, 3);
+    if (f.single){ lines.forEach((ln, i) => { g += T(f.fx + 8, cy(f.frow) + 24 + i * 12, ln, { size:10.5, fill:'#3B4557', weight:600, halo:3.5 }); }); }
+    else { const base = cy(f.trow) - 10 - (lines.length - 1) * 12; lines.forEach((ln, i) => { g += T(f.tx - 6, base + i * 12, ln, { size:10.5, anchor:'end', fill: f.dim ? '#9AA3B2' : '#172033', weight: f.expected ? 600 : 400, halo:3.5 }); }); }
+  }
+  for (const m of ctx.merges){ for (const e of m.ends) g += curve(e.x, cy(e.row), m.tx, cy(m.trow)); }
+  // ticks of second-line callouts go under everything else, so a first-line
+  // callout's halo stays readable where the tick passes behind it
+  for (const [idx, co] of callouts){
+    if (co.level !== 2) continue;
+    const it = ctx.items[idx], y0 = it.row * rowH, ly = y0 + nameY - 18 - 14;
+    const tx = it.kind === 'event' ? it.x + 11 : it.x + 3, ty = it.kind === 'event' ? y0 + barY - 8 : y0 + barY - 3;
+    g += `<path d="M${tx.toFixed(1)} ${(ly + 3).toFixed(1)} V${ty.toFixed(1)}" stroke="#9AA3B2" stroke-width="1.2" fill="none"/>`;
   }
   for (const it of ctx.items){
     const n = it.node, y0 = it.row * rowH, idx = ctx.items.indexOf(it); let s = '';
@@ -1260,9 +1284,9 @@ function renderRoute(ctx, startDate, colors){
       const flush = (txt, size) => it.x + 11 - txt.length * size * 0.27 < 0;
       const label = trunc(n.short || n.name.replace(/\s*\(.*\)\s*$/, ''), 12), lf = flush(label, 11.5);
       if (callouts.has(idx)){
-        const co = callouts.get(idx), ly = y0 + nameY - 18;
+        const co = callouts.get(idx), ly = y0 + nameY - 18 - (co.level === 2 ? 14 : 0);
         s += T(co.start, ly, co.label, { size:11.5, weight:600, fill:'#172033', halo:3.5 });
-        s += `<path d="M${(it.x + 11).toFixed(1)} ${(ly + 3).toFixed(1)} V${(y0 + barY - 8).toFixed(1)}" stroke="#9AA3B2" stroke-width="1.2" fill="none"/>`;
+        if (co.level !== 2) s += `<path d="M${(it.x + 11).toFixed(1)} ${(ly + 3).toFixed(1)} V${(y0 + barY - 8).toFixed(1)}" stroke="#9AA3B2" stroke-width="1.2" fill="none"/>`;
       } else
       s += T(lf ? it.x : it.x + 11, y0 + nameY - 5, label, { size:11.5, weight:600, fill:'#172033', anchor: lf ? '' : 'middle' });
       if (!ctx.noDate.has(n.id)){ const d = startText(it.week), df = flush(d, 10.5); s += T(df ? it.x : it.x + 11, y0 + startY, d, { size:10.5, anchor: df ? '' : 'middle' }); }
@@ -1297,9 +1321,9 @@ function renderRoute(ctx, startDate, colors){
           // does not merge with the neighbour's label beneath it; the tick
           // is longer for it (the owner chose this over a background pill,
           // which a patient might read as a highlight)
-          const ly = y0 + nameY - 18;
+          const ly = y0 + nameY - 18 - (co.level === 2 ? 14 : 0);
           s += T(co.start, ly, label, { size:12.5, weight:600, fill:'#172033', halo:3.5 });
-          s += `<path d="M${(it.x + 3).toFixed(1)} ${(ly + 3).toFixed(1)} V${(y0 + barY - 3).toFixed(1)}" stroke="#9AA3B2" stroke-width="1.2" fill="none"/>`;
+          if (co.level !== 2) s += `<path d="M${(it.x + 3).toFixed(1)} ${(ly + 3).toFixed(1)} V${(y0 + barY - 3).toFixed(1)}" stroke="#9AA3B2" stroke-width="1.2" fill="none"/>`;
         } else lines.forEach((ln, i) => { s += T(it.x + 2, y0 + nameY - (lines.length - 1 - i) * 12.5, ln, { size:12.5, weight:600, fill:'#172033' }); });
         s += T(it.x + 2, y0 + durY, n.openEnded ? 'ongoing' : (n.mode === 'weekdays' && !(w > 0)) ? 'to be set' : durShort(w), { size:11 });
         if (!ctx.noDate.has(n.id)) s += T(it.x + 2, y0 + startY, startText(it.week), { size:10.5 });
@@ -1373,7 +1397,7 @@ function stepsHtml(nodes, start, ctx, startDate, detail, colors){
         next = Math.max(next, inner.next);
         return `<div class="branch${decided ? (isExp ? ' expected' : ' dim') : ''}"><h4>${esc(v.b.cond)}</h4><ol class="steps">${inner.html}</ol></div>`;
       });
-      parts.push(`<li class="fork"><h3>${esc(n.question || n.name)}</h3>${n.plain ? `<p>${esc(n.plain)}</p>` : ''}<div class="branches">${cols.join('')}</div></li>`);
+      parts.push(`<li class="fork"><h3>${esc(n.question || n.name)}</h3>${n.plain ? `<p>${esc(n.plain)}</p>` : ''}<div class="branches" style="--nb:${vis.length}">${cols.join('')}</div></li>`);
       num = next; lastIdx = -1; prevConcNode = null;
       continue;
     }
@@ -2069,7 +2093,9 @@ function printFit(width, target, portrait, limit, pageH){
     }
     return n;
   };
-  const multiPage = h > lim;
+  const multiPage = h > lim, hLadder = h;
+  // per-section heights at the end of the ladder, for anyone tuning a plan to one page (window.__fitDebug = true)
+  const parts = window.__fitDebug ? Object.fromEntries([['head', '.sh-top'], ['map', '.route'], ['steps', '.sheet > .steps'], ['fork', 'li.fork'], ['bottom', '.sh-bottom'], ['foot', '.sh-foot']].map(([n, sel]) => { const e = wrap.querySelector(sel); return [n, e ? Math.round(e.getBoundingClientRect().height) : 0]; })) : undefined;
   let pages = 1;
   if (multiPage){ k = 1; maph = 230; cols = 3; g = 1; h = put(); pages = pageCount(pageH || lim); }
   // The map is sized by width, so on wider paper (A4 landscape) an uncapped
@@ -2077,7 +2103,8 @@ function printFit(width, target, portrait, limit, pageH){
   // has here, and the fit holds on either paper.
   if (svg){ const mh = svg.getBoundingClientRect().height; if (mh > 0 && mh < maph) maph = Math.ceil(mh); }
   wrap.remove();
-  return { k: +k.toFixed(4), maph, cols, g: +g.toFixed(3), multiPage, pages };
+  // h: the sheet's height as it will print; hLadder: its height at the end of the squeeze ladder (the one-page test)
+  return { k: +k.toFixed(4), maph, cols, g: +g.toFixed(3), multiPage, pages, h: Math.round(h), hLadder: Math.round(hLadder), ...(parts ? { parts } : {}) };
 }
 // content box at .35in margins: landscape height binds on A4, width on Letter
 async function saveImage(){
