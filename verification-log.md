@@ -378,3 +378,57 @@ through a course of daily radiation (kn689); pembrolizumab "every 6 weeks (or ev
 trastuzumab emtansine alternative matching the 14 doses (db11). The last "Visits are short"
 phrase (usc-her2 maintenance) is gone, per the owner's earlier instruction. Review metadata
 untouched; owner sign-off pending on the wording.
+
+## 2026-09-26: new pathway `genomic-tier` (surgery, gene test, chemotherapy matched to the risk tier)
+
+Owner's request: a three-way version of the gene-test decision, kept separate from `genomic`
+because the anthracycline evidence comes from different populations than the whether-to-give-
+chemotherapy trials. The library's first three-branch decision.
+
+Sources opened (PubMed abstracts via the PubMed connector; full text not retrievable from this
+environment, and the NCCN guideline text itself is behind a login):
+- O'Shaughnessy J et al., JCO Precision Oncology 2026;10(6):e2501285 (PMID 42341255). FLEX
+  study, prospectively collected real-world data, stage I-III HR+/HER2-, MammaPrint High Risk,
+  BluePrint Luminal B, adjuvant AC-T vs TC, inverse-probability weighting, 3-year IDFS. High
+  Risk 1 (n=1,106): 95.9% vs 95.9%, adjusted HR 1.14 (0.64-2.06). High Risk 2 (n=153): 100% vs
+  94.8%, adjusted HR 0.10 (0.01-0.75), absolute 5.2%, p=.025; treatment-by-MammaPrint
+  interaction p=.036. Nonrandomized.
+- Chen N et al., Annals of Oncology 2025;36(11):1356-65 (PMID 40972946). TAILORx secondary
+  analysis, node-negative, RS >= 11 treated with T-AC or TC (n=2,549): RS >= 31, 5-year DRFI
+  96.1% vs 91.0%, adjusted HR 0.31, p=0.006; benefit rose with RS. Regimen was physician's
+  choice.
+- Nitz U et al., ESMO Open 2025;10(12):105891 (PMID 41313970). WSG PlanB registry, 10-year
+  iDFS TC 90.8% vs EC-T 92.1% (p=0.546); RS not predictive of the EC-T vs TC difference. Its top
+  band was RS > 25 (about a quarter of patients), not RS >= 31. Cited as the counterweight.
+- Brufsky AM et al., JNCI Cancer Spectrum 2025;9(5) (PMID 40796181). FLEX registry, 1,002
+  patients, 5-year median follow-up: absolute chemotherapy benefit on DRFI 5.6% High 1, 10.9%
+  High 2, 1.7% Low, <1% UltraLow.
+- Piccart M et al., Lancet Oncology 2021 (PMID 33721561), MINDACT long-term: genomic low risk
+  without chemotherapy. Sparano NEJM 2018 (TAILORx) and Kalinsky NEJM 2021 (RxPONDER) as
+  already cited on `genomic`.
+- NCCN Breast Cancer, January 2026 update recognising MammaPrint with BluePrint to identify
+  patients most likely to benefit from anthracycline-based chemotherapy: read only through
+  press and trade coverage (Agendia announcement; Pharmacy Times; Targeted Oncology). The exact
+  footnote wording and evidence category are NOT confirmed.
+
+What was encoded, and its source: the three tiers (low / high / higher) and their regimens
+(none / TC / dose-dense AC then paclitaxel) follow the FLEX and TAILORx analyses above and the
+NCCN update; the schedules are the ones already sourced on `genomic` and `ddac-t-hr` (TC every
+3 weeks x4, US Oncology 9735; dose-dense AC x4 then paclitaxel x4 every 2 weeks or weekly x12,
+CALGB 9741 / ECOG 1199), unchanged. Radiation, endocrine therapy and the optional CDK4/6
+steps are the shared library steps. The low-risk path is a 1-week "No chemotherapy" rest so the
+map draws the fork. The premenopausal node-positive caveat (RxPONDER) is in the builder summary
+rather than the patient text, since such patients are not test-guided and would not be given
+this plan.
+
+Not confirmed: the NCCN footnote text; whether FLEX's "AC-T" was dose-dense (the abstract says
+anthracycline- and taxane-based); the TAILORx analysis is node-negative only, while FLEX
+included node-positive disease. The plan's scope line says stage I-II, node-negative or 1-3
+nodes. Owner sign-off pending.
+
+Builder changes made for it (app.html): a decision's branch columns follow the branch count
+(the grid was fixed at two); a map label whose callout line is covered by a neighbour's callout
+goes one line higher rather than truncating; maps with three or more rows sit their rows 12px
+closer so the print cap shrinks them less (labels 8.9px at the cap, against the 9px floor);
+the dates of steps after a fork follow the expected path when one is set, where before they
+followed the longest path.

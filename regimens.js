@@ -1010,6 +1010,41 @@ const LIBRARY = [
   ]
 },
 
+/* ---------- BREAST: genomic-assay pathway, chemotherapy matched to the risk tier ---------- */
+{
+  id:'genomic-tier', plan:'Surgery, then a gene test sets the chemotherapy', group:'HR-positive, HER2-negative', added:'2026-09-26', reviewed:'2026-09-26', reviewedBy:'Source-checked; physician sign-off pending',
+  refs:[{t:'O\'Shaughnessy J et al. FLEX study: MammaPrint High Risk 1 vs High Risk 2 and benefit from anthracycline plus taxane (AC-T) vs TC in HR-positive, HER2-negative early breast cancer. JCO Precision Oncology 2026',q:'O\'Shaughnessy FLEX MammaPrint anthracycline benefit High Risk 2 JCO Precision Oncology 2026'},{t:'Chen N et al. Impact of anthracyclines in genomic high-risk (recurrence score 31 or higher), node-negative, HR-positive/HER2-negative breast cancer: TAILORx secondary analysis. Annals of Oncology 2025',q:'Chen anthracyclines genomic high-risk node-negative recurrence score TAILORx Annals of Oncology 2025'},{t:'Brufsky AM et al. MammaPrint predicts chemotherapy benefit in HR+HER2- early breast cancer: FLEX Registry real-world data. JNCI Cancer Spectrum 2025',q:'Brufsky FLEX Registry MammaPrint chemotherapy benefit JNCI Cancer Spectrum 2025'},{t:'Nitz U et al. WSG PlanB registry: 10-year outcomes of TC vs EC-T in HR-positive early breast cancer preselected by the 21-gene assay; recurrence score did not predict a difference. ESMO Open 2025',q:'Nitz WSG PlanB registry 10-year TC EC-T recurrence score ESMO Open 2025'},{t:'Sparano JA et al. TAILORx: adjuvant chemotherapy guided by a 21-gene expression assay. NEJM 2018',q:'TAILORx 21-gene recurrence score adjuvant chemotherapy Sparano NEJM 2018'},{t:'Kalinsky K et al. RxPONDER: 21-gene assay in node-positive breast cancer. NEJM 2021',q:'RxPONDER 21-gene assay node-positive breast cancer Kalinsky NEJM 2021'},{t:'Piccart M et al. MINDACT: 70-gene signature, updated results with an exploratory analysis by age. Lancet Oncology 2021',q:'MINDACT 70-gene signature updated results exploratory analysis age Piccart Lancet Oncology 2021'},{t:'NCCN Guidelines: Breast Cancer, January 2026 update recognizing MammaPrint with BluePrint to guide anthracycline use in HR-positive, HER2-negative early breast cancer',q:'NCCN breast cancer MammaPrint BluePrint anthracycline 2026'}],
+  disease:'breast', name:'Surgery, genomic test (Oncotype DX / MammaPrint), then chemotherapy matched to the risk tier: none, TC, or dose-dense AC then paclitaxel',
+  trial:'FLEX / TAILORx / MINDACT', summary:'HR-positive, HER2-negative, stage I–II (node-negative or 1–3 nodes), where the gene test guides both whether chemotherapy is given and which regimen. Low risk: radiation and endocrine therapy. High risk: TC ×4. Higher risk (Oncotype DX 31 or higher; MammaPrint High Risk 2): dose-dense AC ×4 then weekly paclitaxel ×12. The anthracycline signal in the top tier is from nonrandomized data (FLEX; TAILORx secondary analysis); PlanB found no difference by score. Not for premenopausal node-positive disease, where chemotherapy is recommended regardless of the score (RxPONDER). Optional adjuvant CDK4/6 inhibitor.',
+  title:'Surgery, then a test of the tumor\'s genes shows whether chemotherapy would help, and which kind',
+  subtitle:'Hormone-receptor positive, HER2-negative breast cancer, stage I to II',
+  nodes:[
+    S('Surgery', 'Lumpectomy or mastectomy, with lymph node surgery. The removed tissue confirms the stage and goes for the gene test.'),
+    R('Healing and test results', 4, 'Recovery from surgery while the tumor is tested (Oncotype DX or MammaPrint); the result takes about 2 weeks.'),
+    D({ name:'Genomic test result', short:'Gene test', question:'What did the gene-expression test show?',
+        branches:[
+          Br('Low risk', [
+            R('No chemotherapy', 1, 'Straight on to radiation and hormone therapy; skipping chemotherapy does not lower your chance of cure.'),
+          ], 'Low risk'),
+          Br('High risk', [
+            P({ name:'Chemotherapy (docetaxel + cyclophosphamide)', short:'Docetaxel + cyclophosphamide', mods:['chemo'], cycleDays:21, cycles:4,
+                plain:'Two chemotherapy drugs by IV, with a growth-factor injection after each dose.' }),
+          ], 'High risk'),
+          Br('Higher risk', [
+            P({ name:'Chemotherapy (dose-dense AC then paclitaxel)', short:'ddAC then paclitaxel', mods:['chemo'], cycleDays:14, cycles:8,
+                plain:'Doxorubicin and cyclophosphamide every 2 weeks, 4 times, then paclitaxel every 2 weeks, 4 times, or weekly for 12 weeks. Doxorubicin, the anthracycline, appears to add protection for this tier. A growth-factor injection follows each dose.' }),
+          ], 'Higher risk'),
+        ] }),
+    RADIATION_AFTER(true),
+    P({ name:'Hormone (endocrine) therapy', short:'Hormone tablet', mods:['endocrine'], mode:'daily', weeks:260,
+        plain:'One tablet a day (tamoxifen, or an aromatase inhibitor such as letrozole) for 5 to 10 years, starting once any chemotherapy is finished.' }),
+    P({ name:'Abemaciclib, if recommended', short:'Abemaciclib', mods:['targeted'], mode:'daily', weeks:104, optional:true, on:false, concurrent:true,
+        plain:'For cancers at higher clinical risk (larger tumors or involved nodes), a targeted tablet taken twice a day alongside the hormone tablet for 2 years (monarchE).' }),
+    P({ name:'Ribociclib, if recommended', short:'Ribociclib', mods:['targeted'], mode:'daily', weeks:156, optional:true, on:false, concurrent:true,
+        plain:'The other targeted-tablet option for cancers at higher clinical risk: taken alongside the hormone tablet for 3 years, 3 weeks on and 1 week off (NATALEE). Your team recommends one or the other, not both.' }),
+  ]
+},
+
 /* ---------- KIDNEY: belzutifan + pembrolizumab ---------- */
 {
   id:'ls022', plan:'Kidney surgery, then immunotherapy with a targeted tablet', group:'Kidney', added:'2026-09-01', reviewed:'2026-09-02', reviewedBy:'AL, 2026-09-02',
@@ -1261,8 +1296,9 @@ const COMPARE_EXAMPLE = {
   ],
 };
 
-const APP_VERSION = '0.22.3';
+const APP_VERSION = '0.22.4';
 const CHANGELOG = [
+  { date:'2026-09-26', text:'0.22.4: New breast pathway: surgery, then a gene test (Oncotype DX or MammaPrint) matches the chemotherapy to the risk tier. Three paths: low risk, radiation and hormone therapy; high risk, docetaxel + cyclophosphamide; higher risk (Oncotype DX 31 or higher, MammaPrint High Risk 2), dose-dense AC then paclitaxel, on the FLEX and TAILORx analyses behind the January 2026 NCCN update. The first pathway in the library with a three-way decision. The existing gene-test pathway, which decides only whether chemotherapy is given, is unchanged.' },
   { date:'2026-09-20', text:'0.22.3: The page-count note in the preview bar now says only how many pages the plan prints on ("This plan prints on two pages."); the advice to shorten the text is gone, since two pages is a fine outcome. It no longer appears on the landing-page examples, and on a phone it is one short line under the buttons.' },
   { date:'2026-09-20', text:'0.22.2: A drug given alongside a treatment step for exactly the same span now joins that step\'s bar on the map, in two colours with one label ("FLOT + durvalumab", "FOLFOX + atezolizumab"), the way a step carrying both types has always drawn. It stays its own step in the list under the map and can still be switched off. A drug that runs for a different span keeps its own thin bar above the step. A drug also keeps one shade wherever it appears in a plan: "Durvalumab alone" after "FLOT + durvalumab", or carboplatin and paclitaxel before and after surgery, no longer draw in a lighter shade than the same drug earlier on.' },
   { date:'2026-09-20', text:'0.22.1: Step descriptions no longer state the step\'s own cycle length or dose count in any pathway; the schedule line under each step carries it. A cadence stays in the text only where it adds something the line cannot show, such as two cadences within one step, a choice of spacing, or a dose count that depends on stage.' },
