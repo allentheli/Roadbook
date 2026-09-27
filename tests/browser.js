@@ -195,6 +195,30 @@ const BASE = `http://localhost:${PORT}`;
       });
       ok('FLOT + durvalumab draws as one two-colour bar per block, durvalumab still listed under the map', r.two === 2 && r.lone === 0 && r.bars === 0 && r.grads >= 1 && r.steps === 2);
       ok('durvalumab keeps one shade inside the combined bar and on its own', r.sameShade);
+      // three short bars with long names in a row: the second label's callout line is
+      // covered by the first's, so it goes one line higher instead of truncating
+      const lv = await f.evaluate(() => {
+        const mk = (name) => ({ t:'phase', mods:['chemo'], mode:'cycles', cycleDays:21, cycles:2, on:true, name, short:name, plain:'Test.' });
+        state.regimen.nodes = [mk('Doxorubicin + cyclophosphamide'), mk('Carboplatin + paclitaxel'), mk('Trastuzumab + pertuzumab'), { t:'phase', mods:['endocrine'], mode:'daily', weeks:260, on:true, name:'Hormone tablet', short:'Hormone tablet', plain:'Test.' }];
+        renderAll();
+        const svg = document.querySelector('#sheet .route svg');
+        const labels = [...svg.querySelectorAll('text')].map(t => t.textContent);
+        const ys = [...svg.querySelectorAll('text')].filter(t => /Doxorubicin|Carboplatin|paclitaxel|Trastuzumab|pertuzumab/.test(t.textContent)).map(t => +t.getAttribute('y'));
+        return { truncated: labels.filter(l => /…/.test(l)).length, distinctLines: new Set(ys.map(y => Math.round(y))).size, ticks: svg.querySelectorAll('path[stroke="#9AA3B2"]').length, height: svg.viewBox.baseVal.height };
+      });
+      // the first label's callout line is covered by the neighbour's two-line label, so it sits one line higher (three label lines, a taller map) with its tick, and nothing is truncated
+      ok('a label blocked on the callout line goes one line higher rather than truncating', lv.truncated === 0 && lv.distinctLines >= 3 && lv.ticks >= 1 && lv.height >= 110);
+      // steps that end every path the same way are listed once after the fork, while the
+      // map still draws them on each path; a path left with no steps of its own shows its sentence
+      const eb = await f.evaluate(() => {
+        loadRegimen('genomic-tier'); renderAll();
+        const svg = document.querySelector('#sheet .route svg');
+        const low = document.querySelector('#sheet .branch');
+        const heads = [...document.querySelectorAll('#sheet .steps .step h3')].map(h => h.textContent.trim());
+        return { radBars: [...svg.querySelectorAll('text')].filter(t => t.textContent === 'Radiation').length, steps: low.querySelectorAll('.step').length, note: (low.querySelector('p') || {}).textContent || '',
+                 every: document.querySelectorAll('#sheet > .steps > li.every').length, rad: heads.filter(h => /^Radiation/.test(h)).length, hormone: heads.filter(h => /^Hormone/.test(h)).length, last: heads[heads.length - 1] };
+      });
+      ok('a tail shared by every path is drawn on each row but listed once after the fork', eb.radBars === 3 && eb.every === 1 && eb.rad === 1 && eb.hormone === 1 && /^Hormone/.test(eb.last) && eb.steps === 0 && /^No chemotherapy\./.test(eb.note));
       await f.close();
     }
 
