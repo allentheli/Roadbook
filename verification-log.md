@@ -416,8 +416,9 @@ What was encoded, and its source: the three tiers (low / high / higher) and thei
 NCCN update; the schedules are the ones already sourced on `genomic` and `ddac-t-hr` (TC every
 3 weeks x4, US Oncology 9735; dose-dense AC x4 then paclitaxel x4 every 2 weeks or weekly x12,
 CALGB 9741 / ECOG 1199), unchanged. Radiation, endocrine therapy and the optional CDK4/6
-steps are the shared library steps. The low-risk path is a 1-week "No chemotherapy" rest so the
-map draws the fork. The premenopausal node-positive caveat (RxPONDER) is in the builder summary
+steps are the shared library steps. The low-risk path has no steps of its own; it carries the
+sentence "No chemotherapy. Straight on to radiation and hormone therapy; skipping chemotherapy
+does not lower your chance of cure." (same text as before, no longer a 1-week placeholder rest). The premenopausal node-positive caveat (RxPONDER) is in the builder summary
 rather than the patient text, since such patients are not test-guided and would not be given
 this plan.
 
@@ -431,4 +432,6 @@ Builder changes made for it (app.html): a decision's branch columns follow the b
 goes one line higher rather than truncating; maps with three or more rows sit their rows 12px
 closer so the print cap shrinks them less (labels 8.9px at the cap, against the 9px floor);
 the dates of steps after a fork follow the expected path when one is set, where before they
-followed the longest path.
+followed the longest path; a path with no steps of its own draws as a plain line on the map and
+shows its own sentence (`Br(cond, [], short, plain)`) in the steps list, so no placeholder step
+is needed (2026-09-27).

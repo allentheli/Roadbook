@@ -204,7 +204,8 @@ body.patient .main{padding:24px 20px 60px}
 .chip{width:10px;height:10px;border-radius:2px;flex:none;margin-top:3px;background:var(--c1)}
 .chip.two{background:linear-gradient(180deg,var(--c1) 50%,var(--c2) 50%)}
 .chip.rest{background:repeating-linear-gradient(45deg,#E9EDF2 0 2px,#C9D1DC 2px 4px)}
-.step p{margin:4px 0 0;font-size:13.25px;line-height:1.5;color:var(--ink-2)}
+.step p,.branch>p{margin:4px 0 0;font-size:13.25px;line-height:1.5;color:var(--ink-2)}
+.branch>p{margin:0 0 6px}
 .step p.meta{color:var(--muted);font-size:12px}
 .step.rest .step-n{color:var(--muted)}
 .step.rest h3{font-weight:600;color:var(--ink-2)}
@@ -381,7 +382,8 @@ body.patient .main{padding:24px 20px 60px}
   .step{grid-template-columns:calc(var(--k,1)*18px) 1fr;gap:calc(var(--k,1)*5px)}
   .step-n{font-size:calc(var(--k,1)*12px)}
   .step h3{font-size:calc(var(--k,1)*12px)}
-  .step p{font-size:calc(var(--k,1)*11px);line-height:1.36;margin-top:calc(var(--k,1)*3px)}
+  .step p,.branch>p{font-size:calc(var(--k,1)*11px);line-height:1.36;margin-top:calc(var(--k,1)*3px)}
+  .branch>p{margin:0 0 calc(var(--k,1)*4px)}
   .step p.meta{font-size:calc(var(--k,1)*10px)}
   .chip{width:calc(var(--k,1)*9px);height:calc(var(--k,1)*9px);margin-top:calc(var(--k,1)*2px)}
   .also{font-size:calc(var(--k,1)*10.5px);padding:calc(var(--k,1)*4px) calc(var(--k,1)*6px);margin-top:calc(var(--k,1)*4px)}
@@ -856,6 +858,7 @@ function fieldsFor(n, path){
       <label class="chk"><input type="checkbox" ${P_} data-k="only" ${n.only ? 'checked' : ''} ${n.emph == null ? 'disabled' : ''}> Show only this path</label>
     </div>
     ${n.branches.map((b, i) => `<div class="branch-ed"><div class="f"><label>Path ${i + 1}: shown when…</label><div style="display:flex;gap:6px"><input type="text" data-bp="${path}.${i}" data-k="cond" value="${esc(b.cond)}">${n.branches.length > 2 ? `<button type="button" class="ibtn" title="Remove this path" data-act="delbranch" data-bp="${path}.${i}">✕</button>` : ''}</div></div>
+      <div class="f"><label>What happens on this path <span style="color:var(--muted)">(optional; shown above its steps, or alone when it has none)</span></label><textarea data-bp="${path}.${i}" data-k="plain">${esc(b.plain || '')}</textarea></div>
       <div style="margin-top:8px">${renderNodes(b.nodes, `${path}.${i}`, false, assignColors(state.regimen))}</div></div>`).join('')}
     ${n.branches.length < 3 ? `<div class="add"><button type="button" data-act="addbranch" data-p="${path}">+ Another outcome</button></div>` : ''}`;
   // phase
@@ -1395,7 +1398,8 @@ function stepsHtml(nodes, start, ctx, startDate, detail, colors){
         const isExp = n.emph === v.idx, decided = n.emph != null;
         const inner = stepsHtml(v.b.nodes, num, ctx, startDate, detail, colors);
         next = Math.max(next, inner.next);
-        return `<div class="branch${decided ? (isExp ? ' expected' : ' dim') : ''}"><h4>${esc(v.b.cond)}</h4><ol class="steps">${inner.html}</ol></div>`;
+        const note = v.b.plain || (v.b.nodes.filter(act).length ? '' : 'Straight on to the next step.');
+        return `<div class="branch${decided ? (isExp ? ' expected' : ' dim') : ''}"><h4>${esc(v.b.cond)}</h4>${note ? `<p>${esc(note)}</p>` : ''}<ol class="steps">${inner.html}</ol></div>`;
       });
       parts.push(`<li class="fork"><h3>${esc(n.question || n.name)}</h3>${n.plain ? `<p>${esc(n.plain)}</p>` : ''}<div class="branches" style="--nb:${vis.length}">${cols.join('')}</div></li>`);
       num = next; lastIdx = -1; prevConcNode = null;
@@ -1702,6 +1706,7 @@ function diffNodes(A, B, base, out){
       if (a.branches.length !== b.branches.length) return false;
       for (let j = 0; j < a.branches.length; j++){
         if ((a.branches[j].cond || '') !== (b.branches[j].cond || '')) out.push([`${p}.${j}`, 'cond', b.branches[j].cond]);
+        if ((a.branches[j].plain || '') !== (b.branches[j].plain || '')) out.push([`${p}.${j}`, 'plain', b.branches[j].plain || '']);
         if (!diffNodes(a.branches[j].nodes, b.branches[j].nodes, `${p}.${j}`, out)) return false;
       }
     }
@@ -1887,8 +1892,8 @@ function bind(){
       scheduleSheet(); return;
     }
     if (el.dataset.r){ state.regimen[el.dataset.r] = el.value; scheduleSheet(); return; }
-    if (el.dataset.bp && el.dataset.k === 'cond'){
-      const bp = el.dataset.bp; const d = nodeAt(bp.slice(0, bp.lastIndexOf('.'))); d.branches[+bp.split('.').pop()].cond = el.value; scheduleSheet(); return;
+    if (el.dataset.bp && (el.dataset.k === 'cond' || el.dataset.k === 'plain')){
+      const bp = el.dataset.bp; const d = nodeAt(bp.slice(0, bp.lastIndexOf('.'))); d.branches[+bp.split('.').pop()][el.dataset.k] = el.value; scheduleSheet(); return;
     }
     if (!el.dataset.p || !el.dataset.k) return;
     const n = nodeAt(el.dataset.p); const k = el.dataset.k;

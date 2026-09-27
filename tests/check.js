@@ -16,7 +16,7 @@ for (const r of LIBRARY){
   if (!Array.isArray(r.refs) || !r.refs.length) warnings.push(`${tag} has no references`);
   let decisions = 0;
   (function walk(ns, depth){
-    if (!Array.isArray(ns) || !ns.length) errors.push(`${tag} empty node list`);
+    if (!Array.isArray(ns) || (!ns.length && depth === 0)) errors.push(`${tag} empty node list`);
     for (const n of ns || []){
       if (!['phase','rest','event','decision'].includes(n.t)) errors.push(`${tag} bad node type ${n.t}`);
       if (n.t === 'phase'){
@@ -31,7 +31,12 @@ for (const r of LIBRARY){
         decisions++;
         if (depth > 0) errors.push(`${tag} decisions must be top-level`);
         if (!n.branches || n.branches.length < 2) errors.push(`${tag} decision "${n.name}" needs 2+ branches`);
-        for (const b of n.branches || []){ if (!b.cond) errors.push(`${tag} branch without a condition`); walk(b.nodes, depth + 1); }
+        for (const b of n.branches || []){
+          if (!b.cond) errors.push(`${tag} branch without a condition`);
+          if (!Array.isArray(b.nodes) || (!b.nodes.length && !b.plain)) errors.push(`${tag} path "${b.cond}" has no steps and no sentence of its own`);
+          if (b.plain && b.plain.length > 300) warnings.push(`${tag} path "${b.cond}" sentence is long (${b.plain.length} chars)`);
+          walk(b.nodes || [], depth + 1);
+        }
       }
     }
   })(r.nodes, 0);

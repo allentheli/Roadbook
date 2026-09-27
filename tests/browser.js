@@ -208,6 +208,15 @@ const BASE = `http://localhost:${PORT}`;
       });
       // the first label's callout line is covered by the neighbour's two-line label, so it sits one line higher (three label lines, a taller map) with its tick, and nothing is truncated
       ok('a label blocked on the callout line goes one line higher rather than truncating', lv.truncated === 0 && lv.distinctLines >= 3 && lv.ticks >= 1 && lv.height >= 110);
+      // a path with no steps of its own: the map draws it as a plain line to the next step,
+      // and the steps list shows the path's own sentence where its steps would be
+      const eb = await f.evaluate(() => {
+        loadRegimen('genomic-tier'); renderAll();
+        const svg = document.querySelector('#sheet .route svg');
+        const low = document.querySelector('#sheet .branch');
+        return { rests: svg.querySelectorAll('rect[fill="url(#hatch)"]').length, steps: low.querySelectorAll('.step').length, note: (low.querySelector('p') || {}).textContent || '' };
+      });
+      ok('an empty path draws as a line and shows its own sentence in the steps list', eb.rests === 1 && eb.steps === 0 && /^No chemotherapy\./.test(eb.note));
       await f.close();
     }
 
