@@ -30,6 +30,17 @@ const SURGERY_BREAST = (afterTreatment=false) => S('Surgery', afterTreatment
 const HEAL = (weeks=4) => R('Healing after surgery', weeks, 'Time to recover from surgery before treatment restarts.');
 const RECOVER = (weeks=4) => R('Recovery before surgery', weeks, 'A break for your body to recover and for the surgical team to plan. Imaging is often repeated now.');
 
+// the steps that follow chemotherapy on every path of the gene-tier pathway; each path
+// carries its own copy so the map draws its own dates, and the steps list shows them once
+const TIER_TAIL = () => [
+  RADIATION_AFTER(true),
+  P({ name:'Hormone (endocrine) therapy', short:'Hormone tablet', mods:['endocrine'], mode:'daily', weeks:260,
+      plain:'One tablet a day (tamoxifen, or an aromatase inhibitor such as letrozole) for 5 to 10 years, starting once any chemotherapy is finished.' }),
+  P({ name:'Abemaciclib, if recommended', short:'Abemaciclib', mods:['targeted'], mode:'daily', weeks:104, optional:true, on:false, concurrent:true,
+      plain:'For cancers at higher clinical risk (larger tumors or involved nodes), a targeted tablet taken twice a day alongside the hormone tablet for 2 years (monarchE).' }),
+  P({ name:'Ribociclib, if recommended', short:'Ribociclib', mods:['targeted'], mode:'daily', weeks:156, optional:true, on:false, concurrent:true,
+      plain:'The other targeted-tablet option for cancers at higher clinical risk: taken alongside the hormone tablet for 3 years, 3 weeks on and 1 week off (NATALEE). Your team recommends one or the other, not both.' }),
+];
 const LIBRARY = [
 
 /* ---------------- BREAST ---------------- */
@@ -1023,23 +1034,18 @@ const LIBRARY = [
     R('Healing and test results', 4, 'Recovery from surgery while the tumor is tested (Oncotype DX or MammaPrint); the result takes about 2 weeks.'),
     D({ name:'Genomic test result', short:'Gene test', question:'What did the gene-expression test show?',
         branches:[
-          Br('Low risk', [], 'Low risk', 'No chemotherapy. Straight on to radiation and hormone therapy; skipping chemotherapy does not lower your chance of cure.'),
+          Br('Low risk', TIER_TAIL(), 'Low risk', 'No chemotherapy. Straight on to radiation and hormone therapy; skipping chemotherapy does not lower your chance of cure.'),
           Br('High risk', [
             P({ name:'Chemotherapy (docetaxel + cyclophosphamide)', short:'Docetaxel + cyclophosphamide', mods:['chemo'], cycleDays:21, cycles:4,
                 plain:'Two chemotherapy drugs by IV, with a growth-factor injection after each dose.' }),
+            ...TIER_TAIL(),
           ], 'High risk'),
           Br('Higher risk', [
             P({ name:'Chemotherapy (dose-dense AC then paclitaxel)', short:'ddAC then paclitaxel', mods:['chemo'], cycleDays:14, cycles:8,
                 plain:'Doxorubicin and cyclophosphamide every 2 weeks, 4 times, then paclitaxel every 2 weeks, 4 times, or weekly for 12 weeks. Doxorubicin, the anthracycline, appears to add protection for this tier. A growth-factor injection follows each dose.' }),
+            ...TIER_TAIL(),
           ], 'Higher risk'),
         ] }),
-    RADIATION_AFTER(true),
-    P({ name:'Hormone (endocrine) therapy', short:'Hormone tablet', mods:['endocrine'], mode:'daily', weeks:260,
-        plain:'One tablet a day (tamoxifen, or an aromatase inhibitor such as letrozole) for 5 to 10 years, starting once any chemotherapy is finished.' }),
-    P({ name:'Abemaciclib, if recommended', short:'Abemaciclib', mods:['targeted'], mode:'daily', weeks:104, optional:true, on:false, concurrent:true,
-        plain:'For cancers at higher clinical risk (larger tumors or involved nodes), a targeted tablet taken twice a day alongside the hormone tablet for 2 years (monarchE).' }),
-    P({ name:'Ribociclib, if recommended', short:'Ribociclib', mods:['targeted'], mode:'daily', weeks:156, optional:true, on:false, concurrent:true,
-        plain:'The other targeted-tablet option for cancers at higher clinical risk: taken alongside the hormone tablet for 3 years, 3 weeks on and 1 week off (NATALEE). Your team recommends one or the other, not both.' }),
   ]
 },
 
@@ -1296,7 +1302,7 @@ const COMPARE_EXAMPLE = {
 
 const APP_VERSION = '0.22.4';
 const CHANGELOG = [
-  { date:'2026-09-26', text:'0.22.4: New breast pathway: surgery, then a gene test (Oncotype DX or MammaPrint) matches the chemotherapy to the risk tier. Three paths: low risk, radiation and hormone therapy; high risk, docetaxel + cyclophosphamide; higher risk (Oncotype DX 31 or higher, MammaPrint High Risk 2), dose-dense AC then paclitaxel, on the FLEX and TAILORx analyses behind the January 2026 NCCN update. The first pathway in the library with a three-way decision. The existing gene-test pathway, which decides only whether chemotherapy is given, is unchanged. Builder: a path with no steps of its own draws as a plain line on the map and shows its own sentence in the steps list; the path editor has a box for it. Paths that rejoin before a later step get the same room to rejoin as the fork gave them to split.' },
+  { date:'2026-09-26', text:'0.22.4: New breast pathway: surgery, then a gene test (Oncotype DX or MammaPrint) matches the chemotherapy to the risk tier. Three paths: low risk, radiation and hormone therapy; high risk, docetaxel + cyclophosphamide; higher risk (Oncotype DX 31 or higher, MammaPrint High Risk 2), dose-dense AC then paclitaxel, on the FLEX and TAILORx analyses behind the January 2026 NCCN update. The first pathway in the library with a three-way decision. The existing gene-test pathway, which decides only whether chemotherapy is given, is unchanged. Builder: steps that end every path the same way are listed once after the fork ("Then, on every path") while the map still draws each path with its own dates; a path with nothing else of its own shows a sentence in its column, and the path editor has a box for it. Paths that rejoin before a later step get the same room to rejoin as the fork gave them to split.' },
   { date:'2026-09-20', text:'0.22.3: The page-count note in the preview bar now says only how many pages the plan prints on ("This plan prints on two pages."); the advice to shorten the text is gone, since two pages is a fine outcome. It no longer appears on the landing-page examples, and on a phone it is one short line under the buttons.' },
   { date:'2026-09-20', text:'0.22.2: A drug given alongside a treatment step for exactly the same span now joins that step\'s bar on the map, in two colours with one label ("FLOT + durvalumab", "FOLFOX + atezolizumab"), the way a step carrying both types has always drawn. It stays its own step in the list under the map and can still be switched off. A drug that runs for a different span keeps its own thin bar above the step. A drug also keeps one shade wherever it appears in a plan: "Durvalumab alone" after "FLOT + durvalumab", or carboplatin and paclitaxel before and after surgery, no longer draw in a lighter shade than the same drug earlier on.' },
   { date:'2026-09-20', text:'0.22.1: Step descriptions no longer state the step\'s own cycle length or dose count in any pathway; the schedule line under each step carries it. A cadence stays in the text only where it adds something the line cannot show, such as two cadences within one step, a choice of spacing, or a dose count that depends on stage.' },

@@ -215,6 +215,7 @@ body.patient .main{padding:24px 20px 60px}
 .fork{grid-column:1/-1;border-top:1px solid var(--line);padding-top:12px;margin-top:2px}
 .fork>h3{margin:0 0 4px;font:600 15px/1.3 var(--serif)}
 .fork>p{margin:0 0 10px;font-size:12.5px;color:var(--ink-2);max-width:90ch}
+.every{grid-column:1/-1;margin:2px 0 -4px;font:600 13.5px/1.3 var(--serif);color:var(--ink-2)}
 .branches{display:grid;grid-template-columns:repeat(var(--nb,2),1fr);gap:16px}
 .branch{padding:0 0 0 12px;border-left:3px solid var(--line)}
 .branch.expected{border-left-color:var(--ink)}
@@ -390,6 +391,7 @@ body.patient .main{padding:24px 20px 60px}
   .fork{padding-top:calc(var(--k,1)*var(--g,1)*8px)}
   .fork>h3{font-size:calc(var(--k,1)*12.5px);margin-bottom:calc(var(--k,1)*2px)}
   .fork>p{font-size:calc(var(--k,1)*10.5px);margin-bottom:calc(var(--k,1)*var(--g,1)*6px)}
+  .every{font-size:calc(var(--k,1)*11px);margin:0 0 calc(var(--k,1)*-3px)}
   .branch{padding-left:calc(var(--k,1)*9px)}
   .branch h4{font-size:calc(var(--k,1)*11px);margin-bottom:calc(var(--k,1)*4px)}
   .branch .steps{gap:calc(var(--k,1)*var(--g,1)*6px)}
@@ -1216,8 +1218,8 @@ function renderRoute(ctx, startDate, colors){
   // The leader is a short straight tick at the bar's left edge (the owner's
   // choice over an angled leader).
   const callouts = new Map();
+  const taken = {};   // per row and level: intervals occupied on the lines above the bars
   {
-    const taken = {};   // per row and level: intervals occupied on the lines above the bars
     const claim = (row, a, b, who, level = 1) => (taken[row + ':' + level] = taken[row + ':' + level] || []).push([a, b, who]);
     const others = (row, self, level = 1) => (taken[row + ':' + level] || []).filter(t => t[2] !== self);
     const labelOf = (it) => it.kind === 'event' ? (it.node.short || it.node.name.replace(/\s*\(.*\)\s*$/, '')) : labelFor(it);
@@ -1267,12 +1269,17 @@ function renderRoute(ctx, startDate, colors){
   }
   for (const m of ctx.merges){ for (const e of m.ends) g += curve(e.x, cy(e.row), m.tx, cy(m.trow)); }
   // ticks of second-line callouts go under everything else, so a first-line
-  // callout's halo stays readable where the tick passes behind it
+  // callout's halo stays readable where the tick passes behind it; where the
+  // tick would run through a neighbour's first-line label it breaks around
+  // the text instead of threading between its letters
   for (const [idx, co] of callouts){
     if (co.level !== 2) continue;
-    const it = ctx.items[idx], y0 = it.row * rowH, ly = y0 + nameY - 18 - 14;
+    const it = ctx.items[idx], y0 = it.row * rowH, ly = y0 + nameY - 18 - 14, l1 = y0 + nameY - 18;
     const tx = it.kind === 'event' ? it.x + 11 : it.x + 3, ty = it.kind === 'event' ? y0 + barY - 8 : y0 + barY - 3;
-    g += `<path d="M${tx.toFixed(1)} ${(ly + 3).toFixed(1)} V${ty.toFixed(1)}" stroke="#9AA3B2" stroke-width="1.2" fill="none"/>`;
+    const through = (taken[it.row + ':1'] || []).some(([p, q, who]) => who !== idx && tx > p - 2 && tx < q + 2);
+    g += through
+      ? `<path d="M${tx.toFixed(1)} ${(ly + 3).toFixed(1)} V${(l1 - 10).toFixed(1)} M${tx.toFixed(1)} ${(l1 + 3).toFixed(1)} V${ty.toFixed(1)}" stroke="#9AA3B2" stroke-width="1.2" fill="none"/>`
+      : `<path d="M${tx.toFixed(1)} ${(ly + 3).toFixed(1)} V${ty.toFixed(1)}" stroke="#9AA3B2" stroke-width="1.2" fill="none"/>`;
   }
   for (const it of ctx.items){
     const n = it.node, y0 = it.row * rowH, idx = ctx.items.indexOf(it); let s = '';
@@ -1395,15 +1402,33 @@ function stepsHtml(nodes, start, ctx, startDate, detail, colors){
   for (const n of nodes.filter(act)){
     if (n.t === 'decision'){
       const vis = visibleBranches(n); let next = num;
-      const cols = vis.map(v => {
+      // steps that end every path the same way (same name, schedule, type and text) are
+      // listed once after the fork; the map still draws them on each path with its own dates
+      const acts = vis.map(v => v.b.nodes.filter(act));
+      const sig = (m) => m.t === 'decision' ? null : [m.t, String(m.name || '').trim().toLowerCase(), m.mode || '', m.mode === 'cycles' ? `${m.cycleDays}x${m.cycles}` : String(m.weeks ?? ''), (m.mods || []).slice().sort().join('+'), m.concurrent ? 'c' : '', String(m.plain || '').trim()].join('|');
+      let k = 0;
+      if (vis.length > 1){
+        const min = Math.min(...acts.map(a => a.length));
+        const at = (a, j) => sig(a[a.length - 1 - j]);
+        while (k < min && at(acts[0], k) && acts.every(a => at(a, k) === at(acts[0], k))) k++;
+        while (k > 0 && acts[0][acts[0].length - k].concurrent) k--;   // an alongside step stays with the step it runs beside
+      }
+      const cols = vis.map((v, i) => {
         const isExp = n.emph === v.idx, decided = n.emph != null;
-        const inner = stepsHtml(v.b.nodes, num, ctx, startDate, detail, colors);
+        const own = acts[i].slice(0, acts[i].length - k);
+        const inner = stepsHtml(own, num, ctx, startDate, detail, colors);
         next = Math.max(next, inner.next);
-        const note = v.b.plain || (v.b.nodes.filter(act).length ? '' : 'Straight on to the next step.');
+        const note = v.b.plain || (own.length ? '' : 'Straight on to the next step.');
         return `<div class="branch${decided ? (isExp ? ' expected' : ' dim') : ''}"><h4>${esc(v.b.cond)}</h4>${note ? `<p>${esc(note)}</p>` : ''}<ol class="steps">${inner.html}</ol></div>`;
       });
       parts.push(`<li class="fork"><h3>${esc(n.question || n.name)}</h3>${n.plain ? `<p>${esc(n.plain)}</p>` : ''}<div class="branches" style="--nb:${vis.length}">${cols.join('')}</div></li>`);
       num = next; lastIdx = -1; prevConcNode = null;
+      if (k){
+        const ei = n.emph != null ? vis.findIndex(v => v.idx === n.emph) : -1;
+        const src = acts[ei >= 0 ? ei : 0];
+        const tail = stepsHtml(src.slice(src.length - k), num, ctx, startDate, detail, colors);
+        parts.push(`<li class="every">Then, on every path:</li>`, tail.html); num = tail.next;
+      }
       continue;
     }
     if (n.t === 'phase' && n.concurrent && lastIdx >= 0){

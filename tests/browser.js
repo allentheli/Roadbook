@@ -208,15 +208,17 @@ const BASE = `http://localhost:${PORT}`;
       });
       // the first label's callout line is covered by the neighbour's two-line label, so it sits one line higher (three label lines, a taller map) with its tick, and nothing is truncated
       ok('a label blocked on the callout line goes one line higher rather than truncating', lv.truncated === 0 && lv.distinctLines >= 3 && lv.ticks >= 1 && lv.height >= 110);
-      // a path with no steps of its own: the map draws it as a plain line to the next step,
-      // and the steps list shows the path's own sentence where its steps would be
+      // steps that end every path the same way are listed once after the fork, while the
+      // map still draws them on each path; a path left with no steps of its own shows its sentence
       const eb = await f.evaluate(() => {
         loadRegimen('genomic-tier'); renderAll();
         const svg = document.querySelector('#sheet .route svg');
         const low = document.querySelector('#sheet .branch');
-        return { rests: svg.querySelectorAll('rect[fill="url(#hatch)"]').length, steps: low.querySelectorAll('.step').length, note: (low.querySelector('p') || {}).textContent || '' };
+        const heads = [...document.querySelectorAll('#sheet .steps .step h3')].map(h => h.textContent.trim());
+        return { radBars: [...svg.querySelectorAll('text')].filter(t => t.textContent === 'Radiation').length, steps: low.querySelectorAll('.step').length, note: (low.querySelector('p') || {}).textContent || '',
+                 every: document.querySelectorAll('#sheet > .steps > li.every').length, rad: heads.filter(h => /^Radiation/.test(h)).length, hormone: heads.filter(h => /^Hormone/.test(h)).length, last: heads[heads.length - 1] };
       });
-      ok('an empty path draws as a line and shows its own sentence in the steps list', eb.rests === 1 && eb.steps === 0 && /^No chemotherapy\./.test(eb.note));
+      ok('a tail shared by every path is drawn on each row but listed once after the fork', eb.radBars === 3 && eb.every === 1 && eb.rad === 1 && eb.hormone === 1 && /^Hormone/.test(eb.last) && eb.steps === 0 && /^No chemotherapy\./.test(eb.note));
       await f.close();
     }
 
