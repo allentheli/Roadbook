@@ -438,3 +438,15 @@ followed the longest path; steps that end every path the same way are listed onc
 fork, and a path with nothing else of its own shows its sentence (`Br(cond, nodes, short, plain)`)
 in its column, so no placeholder step is needed (2026-09-27). The owner chose this over a map
 that rejoins the paths before radiation, so that each row shows its own dates.
+
+## 2026-09-27: "genomic test" replaces "gene test" on the two breast genomic-test pathways
+
+Wording only, at the owner's request: `genomic` and `genomic-tier` now say "genomic test" on the
+patient page (plan title, map label on the diamond, fork question, surgery and healing step text)
+where they said "gene test" or "gene-expression test", so the tumor test is not confused with
+hereditary genetic testing. First mention says "a genomic test of the tumor (Oncotype DX or
+MammaPrint)". The `genomic` plan title is shortened to "shows whether chemotherapy would help" so
+it stays on one line; with "would be beneficial" it wrapped and the plan went to two pages. The
+two ovarian pathways keep "Gene test" on their diamond (tumor BRCA and HRD testing, a different
+test). No schedule, agent or timing changed; no source re-opened. `reviewed` set to 2026-09-27 on
+both pathways.
