@@ -973,11 +973,12 @@ function seqUnits(nodes){
 }
 function fixedPx(nodes, C=L){
   let px = 0;
-  for (const n of nodes.filter(act)){
+  const active = nodes.filter(act);
+  active.forEach((n, i) => {
     if (n.t === 'event') px += C.evW + C.gap;
-    else if (n.t === 'decision'){ const vis = visibleBranches(n); px += C.diamond + (vis.length > 1 ? C.fork : C.forkSingle) + Math.max(0, ...vis.map(v => fixedPx(v.b.nodes, C))) + C.merge; }
+    else if (n.t === 'decision'){ const vis = visibleBranches(n); px += C.diamond + (vis.length > 1 ? C.fork : C.forkSingle) + Math.max(0, ...vis.map(v => fixedPx(v.b.nodes, C))) + (i < active.length - 1 && vis.length > 1 ? C.fork : C.merge); }
     else if (!n.concurrent) px += C.gap;
-  }
+  });
   return px;
 }
 function layout(nodes, cfg){
@@ -1018,7 +1019,7 @@ function layout(nodes, cfg){
         if (expRes){ week = expRes.week; treat = expRes.treat; unk = unk || expRes.unk; }
         else { week = maxWeek; treat = maxTreat; unk = unk || anyUnk; }
         lastWeek = week;
-        if (i < active.length - 1){ ctx.merges.push({ ends, tx:x + C.merge, trow:row }); ext(row, x, x + C.merge); x += C.merge; }
+        if (i < active.length - 1){ const mw = ends.some(e => e.row !== row) ? C.fork : C.merge; /* the rejoin gets the same room as the fork */ ctx.merges.push({ ends, tx:x + mw, trow:row }); ext(row, x, x + mw); x += mw; }
         return;
       }
       const w = nodeWeeks(n);
@@ -1166,7 +1167,7 @@ function renderRoute(ctx, startDate, colors){
     return cs[0];
   };
   const startText = (week) => startDate ? fmtShort(addDays(startDate, (week - 1) * 7), startDate) : `week ${Math.round(week)}`;
-  const curve = (x1, y1, x2, y2, dim) => `<path d="M${x1.toFixed(1)} ${y1} C${(x1 + 44).toFixed(1)} ${y1}, ${(x2 - 44).toFixed(1)} ${y2}, ${x2.toFixed(1)} ${y2}" fill="none" stroke="#B8C0CC" stroke-width="2"${dim ? ' opacity=".4"' : ''}/>`;
+  const curve = (x1, y1, x2, y2, dim) => { const d = Math.min(44, Math.max(8, (x2 - x1) / 2)); return `<path d="M${x1.toFixed(1)} ${y1} C${(x1 + d).toFixed(1)} ${y1}, ${(x2 - d).toFixed(1)} ${y2}, ${x2.toFixed(1)} ${y2}" fill="none" stroke="#B8C0CC" stroke-width="2"${dim ? ' opacity=".4"' : ''}/>`; };
   const prevUp = (i) => { const it = ctx.items[i]; for (let j = i - 1; j >= 0; j--){ const q = ctx.items[j]; if (q.kind === 'up' && q.row === it.row && q.lane === it.lane) return j; } return -1; };
   const continued = new Set();
   ctx.items.forEach((it, i) => { if (it.kind === 'up' && it.node.afterPrev){ const j = prevUp(i); if (j >= 0) continued.add(j); } });
@@ -1547,7 +1548,7 @@ function renderMiniRoute(ctx, colors, width){
     return cs[0];
   };
   const cy = (row) => row * MINI.rowH + MINI.barY + MINI.barH / 2;
-  const curve = (x1, y1, x2, y2) => `<path d="M${x1.toFixed(1)} ${y1} C${(x1 + 14).toFixed(1)} ${y1}, ${(x2 - 14).toFixed(1)} ${y2}, ${x2.toFixed(1)} ${y2}" fill="none" stroke="#B8C0CC" stroke-width="1.4"/>`;
+  const curve = (x1, y1, x2, y2) => { const d = Math.min(14, Math.max(3, (x2 - x1) / 2)); return `<path d="M${x1.toFixed(1)} ${y1} C${(x1 + d).toFixed(1)} ${y1}, ${(x2 - d).toFixed(1)} ${y2}, ${x2.toFixed(1)} ${y2}" fill="none" stroke="#B8C0CC" stroke-width="1.4"/>`; };
   let g = '';
   for (let r = 0; r < ctx.rows; r++){ const e = ctx.rowExt[r]; if (!e || !isFinite(e.min)) continue; g += `<line x1="${e.min}" y1="${cy(r)}" x2="${e.max}" y2="${cy(r)}" stroke="#E3E7ED" stroke-width="1.4"/>`; }
   for (const f of ctx.forks){ g += curve(f.fx, cy(f.frow), f.tx, cy(f.trow)); }
